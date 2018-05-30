@@ -12,6 +12,7 @@ import CoreLocation
 import MapKit
 
 class ViewController: UIViewController {
+    @IBOutlet var menuButton: UIButton!
     @IBOutlet var MapView: MKMapView!
     
     override func viewDidLoad() {
@@ -22,6 +23,8 @@ class ViewController: UIViewController {
         let camera = GMSCameraPosition.camera(withLatitude: 51.4989562, longitude: -0.1801277, zoom: 100)
         let rect = CGRect(origin: CGPoint(x: 0,y :0), size: CGSize(width: 100, height: 100))
         let MapView = GMSMapView.map(withFrame: rect, camera: camera)
+        
+        menuButton.bringSubview(toFront: view)
         
     }
 
