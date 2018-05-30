@@ -51,7 +51,7 @@
 		6E03486E20BEBC79008EFC5D /* smallstepsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = smallstepsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E03487220BEBC79008EFC5D /* smallstepsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = smallstepsUITests.swift; sourceTree = "<group>"; };
 		6E03487420BEBC79008EFC5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6E03488020BECC62008EFC5D /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
+		6E03488020BECC62008EFC5D /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		A2D4966D20D1BE09456D34A8 /* Pods-smallsteps.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-smallsteps.release.xcconfig"; path = "Pods/Target Support Files/Pods-smallsteps/Pods-smallsteps.release.xcconfig"; sourceTree = "<group>"; };
 		C0F2DAE76E7D67759002A8FC /* Pods-smallsteps.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-smallsteps.debug.xcconfig"; path = "Pods/Target Support Files/Pods-smallsteps/Pods-smallsteps.debug.xcconfig"; sourceTree = "<group>"; };
 		EF5748F1A7EFABFAC6523CE4 /* libPods-smallsteps.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-smallsteps.a"; sourceTree = BUILT_PRODUCTS_DIR; };

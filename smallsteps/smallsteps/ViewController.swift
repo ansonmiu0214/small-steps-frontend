@@ -8,24 +8,29 @@
 
 import UIKit
 import GoogleMaps
+import CoreLocation
+import MapKit
 
 class ViewController: UIViewController {
-
+    @IBOutlet var MapView: MKMapView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         GMSServices.provideAPIKey("AIzaSyATspIpIWzFayJLuLkTOCXaeuhCoEfLfIo")
         
-        let camera = GMSCameraPosition.camera(withLatitude: 51.4989562, longitude: -0.1801277, zoom: 10)
+        let camera = GMSCameraPosition.camera(withLatitude: 51.4989562, longitude: -0.1801277, zoom: 100)
         let rect = CGRect(origin: CGPoint(x: 0,y :0), size: CGSize(width: 100, height: 100))
-        let mapView = GMSMapView.map(withFrame: rect, camera: camera)
-        view = mapView
+        let MapView = GMSMapView.map(withFrame: rect, camera: camera)
+        
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
 
 
 }
