@@ -18,7 +18,6 @@ class ViewController: UIViewController {
     @IBOutlet var MapView: MKMapView!
     
     override func viewDidLoad() {
-        //Alamofire.request(.GET, "http://146.169.45.120:8080/smallsteps/greeting")
         super.viewDidLoad()
         
         GMSServices.provideAPIKey("AIzaSyATspIpIWzFayJLuLkTOCXaeuhCoEfLfIo")
@@ -28,6 +27,20 @@ class ViewController: UIViewController {
         let MapView = GMSMapView.map(withFrame: rect, camera: camera)
         
         menuButton.bringSubview(toFront: view)
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/greeting").responseJSON { response in
+            print("Request: \(String(describing: response.request))")   // original url request
+            print("Response: \(String(describing: response.response))") // http url response
+            print("Result: \(response.result)")                         // response serialization result
+            
+            if let json = response.result.value {
+                print("JSON: \(json)") // serialized json response
+            }
+            
+            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                print("Data: \(utf8Text)") // original server data as UTF8 string
+            }
+        }
+        
         
     }
 

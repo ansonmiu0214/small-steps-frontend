@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="gr2-ve-oyL">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="gr2-ve-oyL">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -80,24 +80,36 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Uw-Uv-jWq">
-                                <rect key="frame" x="48" y="172" width="225" height="225"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Uw-Uv-jWq">
+                                <rect key="frame" x="47.5" y="181.5" width="225" height="225"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="225" id="8ue-0w-kMV"/>
+                                    <constraint firstAttribute="width" constant="225" id="Fhe-SM-WGu"/>
+                                </constraints>
                                 <state key="normal" image="plusButton"/>
                                 <connections>
                                     <action selector="createNewUser:" destination="gr2-ve-oyL" eventType="touchUpInside" id="1gX-pI-tuA"/>
                                     <segue destination="BYZ-38-t0r" kind="presentation" id="TwD-6q-5uc"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Your Name" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="bVa-nI-LCx">
-                                <rect key="frame" x="99" y="123" width="123" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Your Name" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="bVa-nI-LCx">
+                                <rect key="frame" x="98.5" y="151" width="123" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="AqC-l5-3lE"/>
+                                    <constraint firstAttribute="width" constant="123" id="Bt2-Fq-5YY"/>
+                                </constraints>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="7Uw-Uv-jWq" firstAttribute="centerX" secondItem="d91-Ef-fY3" secondAttribute="centerX" id="9lJ-DL-9WE"/>
+                            <constraint firstItem="7Uw-Uv-jWq" firstAttribute="firstBaseline" secondItem="bVa-nI-LCx" secondAttribute="baseline" constant="11" symbolType="layoutAnchor" id="C6O-xI-ylr"/>
+                            <constraint firstItem="7Uw-Uv-jWq" firstAttribute="centerY" secondItem="d91-Ef-fY3" secondAttribute="centerY" id="EBe-FT-xsF"/>
+                            <constraint firstItem="bVa-nI-LCx" firstAttribute="centerX" secondItem="d91-Ef-fY3" secondAttribute="centerX" id="NUC-pu-SkW"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="d91-Ef-fY3"/>
                     </view>
                     <connections>
