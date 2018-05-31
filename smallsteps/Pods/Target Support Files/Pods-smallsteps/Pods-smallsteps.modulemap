@@ -1,0 +1,6 @@
+module Pods_smallsteps {
+  umbrella header "Pods-smallsteps-umbrella.h"
+
+  export *
+  module * { export * }
+}

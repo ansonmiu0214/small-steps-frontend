@@ -1,7 +1,11 @@
 source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '10.0'
+use_frameworks!
+
 target 'smallsteps' do
-pod 'GoogleMaps'
-pod 'GooglePlaces'
-pod 'Firebase/Core'
-pod 'Firebase/Database'
+    pod 'GoogleMaps'
+    pod 'GooglePlaces'
+    pod 'Firebase/Core'
+    pod 'Firebase/Database'
+    pod 'Alamofire', '~> 4.7'
 end

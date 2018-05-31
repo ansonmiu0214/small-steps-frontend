@@ -10,12 +10,15 @@ import UIKit
 import GoogleMaps
 import CoreLocation
 import MapKit
+import Alamofire
+
 
 class ViewController: UIViewController {
     @IBOutlet var menuButton: UIButton!
     @IBOutlet var MapView: MKMapView!
     
     override func viewDidLoad() {
+        //Alamofire.request(.GET, "http://146.169.45.120:8080/smallsteps/greeting")
         super.viewDidLoad()
         
         GMSServices.provideAPIKey("AIzaSyATspIpIWzFayJLuLkTOCXaeuhCoEfLfIo")
