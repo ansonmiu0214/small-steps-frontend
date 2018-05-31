@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="gr2-ve-oyL">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="gr2-ve-oyL">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -20,8 +20,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Ed8-hf-3OK">
-                                <rect key="frame" x="0.0" y="77" width="320" height="491"/>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="akb-p8-7hS">
+                                <rect key="frame" x="0.0" y="76" width="320" height="492"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </mapView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IA5-rf-PJ4">
                                 <rect key="frame" x="230" y="478" width="80" height="80"/>
@@ -42,21 +43,17 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="Qmg-G7-4Cw" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="HAK-lN-hSj"/>
-                            <constraint firstItem="Ed8-hf-3OK" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="LOh-bR-KhF"/>
                             <constraint firstItem="Qmg-G7-4Cw" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="UlJ-sM-618"/>
                             <constraint firstItem="Qmg-G7-4Cw" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="1" id="VI8-sU-On0"/>
                             <constraint firstItem="IA5-rf-PJ4" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" constant="-10" id="WNE-xp-keG"/>
-                            <constraint firstItem="Ed8-hf-3OK" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="eCQ-Qf-CbZ"/>
                             <constraint firstItem="IA5-rf-PJ4" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" constant="-10" id="gmf-Zu-Ind"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="dlk-ge-SIu" secondAttribute="bottom" constant="10" id="nKa-RO-Oos"/>
-                            <constraint firstItem="Ed8-hf-3OK" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="oD3-2E-SbJ"/>
-                            <constraint firstItem="Qmg-G7-4Cw" firstAttribute="baseline" secondItem="Ed8-hf-3OK" secondAttribute="firstBaseline" symbolType="layoutAnchor" id="q0G-xR-zfx"/>
                             <constraint firstItem="dlk-ge-SIu" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="10" id="wLe-Ql-vzV"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
-                        <outlet property="MapView" destination="Ed8-hf-3OK" id="CkX-J7-DDY"/>
+                        <outlet property="map" destination="akb-p8-7hS" id="aTz-l3-85d"/>
                         <outlet property="menuButton" destination="IA5-rf-PJ4" id="9n9-9N-T5c"/>
                         <outlet property="searchBar" destination="Qmg-G7-4Cw" id="AFT-NP-gnx"/>
                     </connections>

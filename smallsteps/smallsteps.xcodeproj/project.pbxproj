@@ -18,6 +18,7 @@
 		6E03488120BECC62008EFC5D /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 6E03488020BECC62008EFC5D /* Podfile */; };
 		6E0348C620BF3A72008EFC5D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6E0348C520BF3A72008EFC5D /* GoogleService-Info.plist */; };
 		6E0348CA20BF4077008EFC5D /* CreateUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E0348C920BF4076008EFC5D /* CreateUserViewController.swift */; };
+		6EA7782820C0483A00D885C8 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EA7782720C0483A00D885C8 /* CoreLocation.framework */; };
 		E5308FDE632403EB2FD8F542 /* Pods_smallsteps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 31BE804FD74B4010CC95E798 /* Pods_smallsteps.framework */; };
 /* End PBXBuildFile section */
 
@@ -57,6 +58,7 @@
 		6E03488020BECC62008EFC5D /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		6E0348C520BF3A72008EFC5D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		6E0348C920BF4076008EFC5D /* CreateUserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUserViewController.swift; sourceTree = "<group>"; };
+		6EA7782720C0483A00D885C8 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		A2D4966D20D1BE09456D34A8 /* Pods-smallsteps.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-smallsteps.release.xcconfig"; path = "Pods/Target Support Files/Pods-smallsteps/Pods-smallsteps.release.xcconfig"; sourceTree = "<group>"; };
 		C0F2DAE76E7D67759002A8FC /* Pods-smallsteps.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-smallsteps.debug.xcconfig"; path = "Pods/Target Support Files/Pods-smallsteps/Pods-smallsteps.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -66,6 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6EA7782820C0483A00D885C8 /* CoreLocation.framework in Frameworks */,
 				E5308FDE632403EB2FD8F542 /* Pods_smallsteps.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -147,6 +150,7 @@
 		8591F96C0DDC4BA7C66A2311 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6EA7782720C0483A00D885C8 /* CoreLocation.framework */,
 				31BE804FD74B4010CC95E798 /* Pods_smallsteps.framework */,
 			);
 			name = Frameworks;
@@ -520,16 +524,18 @@
 			baseConfigurationReference = C0F2DAE76E7D67759002A8FC /* Pods-smallsteps.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = KVLV4PH39V;
+				DEVELOPMENT_TEAM = C5S2XY3BH2;
 				INFOPLIST_FILE = smallsteps/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.group29.smallstep;
+				PRODUCT_BUNDLE_IDENTIFIER = com.group29.smallsteps;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -540,16 +546,18 @@
 			baseConfigurationReference = A2D4966D20D1BE09456D34A8 /* Pods-smallsteps.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = KVLV4PH39V;
+				DEVELOPMENT_TEAM = C5S2XY3BH2;
 				INFOPLIST_FILE = smallsteps/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.group29.smallstep;
+				PRODUCT_BUNDLE_IDENTIFIER = com.group29.smallsteps;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
