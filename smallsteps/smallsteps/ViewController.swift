@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import GoogleMaps
 import CoreLocation
 import MapKit
 import Alamofire
@@ -16,26 +15,21 @@ import SwiftyJSON
 class ViewController: UIViewController {
     @IBOutlet var menuButton: UIButton!
     @IBOutlet var MapView: MKMapView!
+    @IBOutlet weak var searchBar: UISearchBar!
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        menuButton.bringSubview(toFront: view)
-        Alamofire.request("http://146.169.45.120:8080/smallsteps/greeting").responseJSON { response in
-            print("Request: \(String(describing: response.request))")   // original url request
-            print("Response: \(String(describing: response.response))") // http url response
-            print("Result: \(response.result)")                         // response serialization result
-            
-            if let json = response.result.value {
-                print("JSON: \(json)") // serialized json response
-            }
-            
-            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                print("Data: \(utf8Text)") // original server data as UTF8 string
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/greeting").responseJSON { (responseData) -> Void in
+            if((responseData.result.value) != nil) {
+                let swiftyJsonVar = JSON(responseData.result.value!)
+                print(swiftyJsonVar)
+                let resData = swiftyJsonVar["content"].stringValue
+                self.searchBar.text = resData
+
             }
         }
-        
-        
     }
 
     override func didReceiveMemoryWarning() {
