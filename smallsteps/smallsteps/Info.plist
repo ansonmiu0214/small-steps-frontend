@@ -38,6 +38,8 @@
 	<string>We would like to use your current location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We would like to use your current location</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Small Steps wants to use your location</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

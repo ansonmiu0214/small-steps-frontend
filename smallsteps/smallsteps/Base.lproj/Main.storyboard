@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="gr2-ve-oyL">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -72,9 +72,47 @@
             </objects>
             <point key="canvasLocation" x="28.985507246376812" y="-40.760869565217398"/>
         </scene>
+        <!--Create User View Controller-->
+        <scene sceneID="H7p-Ni-zHo">
+            <objects>
+                <viewController id="gr2-ve-oyL" customClass="CreateUserViewController" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="RfB-DF-Oni">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Uw-Uv-jWq">
+                                <rect key="frame" x="48" y="172" width="225" height="225"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" image="plusButton"/>
+                                <connections>
+                                    <action selector="createNewUser:" destination="gr2-ve-oyL" eventType="touchUpInside" id="1gX-pI-tuA"/>
+                                    <segue destination="BYZ-38-t0r" kind="presentation" id="TwD-6q-5uc"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Your Name" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="bVa-nI-LCx">
+                                <rect key="frame" x="99" y="123" width="123" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="d91-Ef-fY3"/>
+                    </view>
+                    <connections>
+                        <outlet property="AddUserButton" destination="7Uw-Uv-jWq" id="JCk-Fb-vkg"/>
+                        <outlet property="name" destination="bVa-nI-LCx" id="WPb-TT-G0G"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1Ep-j2-vBY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1.875" y="653.87323943661977"/>
+        </scene>
     </scenes>
     <resources>
         <image name="friendIcon" width="80" height="80"/>
         <image name="menuButton" width="80" height="80"/>
+        <image name="plusButton" width="225" height="225"/>
     </resources>
 </document>
