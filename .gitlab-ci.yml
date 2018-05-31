@@ -1,0 +1,8 @@
+stages:
+  - build
+
+build_project:
+  stage: build
+  script:
+    - xcodebuild clean -project smallsteps.xcodeproj -scheme smallsteps | xcpretty
+    - xcodebuild test -project smallsteps.xcodeproj -scheme smallsteps -destination 'platform=iOS Simulator,name=iPhone 8,OS=11.3' | xcpretty -s
