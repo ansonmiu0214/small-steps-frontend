@@ -7,17 +7,17 @@
 //
 
 import UIKit
-import Firebase
+//import Firebase
 
 class CreateUserViewController: UIViewController {
     @IBOutlet var name: UITextField!
     
     @IBOutlet var AddUserButton: UIButton!
-    var ref:DatabaseReference?
+    //var ref:DatabaseReference?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-            ref = Database.database().reference()
+           // ref = Database.database().reference()
         // Do any additional setup after loading the view.
     }
 
@@ -28,7 +28,7 @@ class CreateUserViewController: UIViewController {
     
     @IBAction func createNewUser(_ sender: Any) {
         //Post data to firebase
-        ref?.child("Users").childByAutoId().child("Name").setValue(name.text)
+       // ref?.child("Users").childByAutoId().child("Name").setValue(name.text)
         
         //Dismiss the popover
         presentingViewController?.dismiss(animated: true, completion: nil)
