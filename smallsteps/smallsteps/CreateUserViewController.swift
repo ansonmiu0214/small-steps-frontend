@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Alamofire
 //import Firebase
 
 class CreateUserViewController: UIViewController {
@@ -30,8 +31,10 @@ class CreateUserViewController: UIViewController {
         //Post data to firebase
        // ref?.child("Users").childByAutoId().child("Name").setValue(name.text)
         
+//        Alamofire.request("http://146.169.45.120:8080/smallsteps/greeting?name=" + name.text!)
+        
         //Dismiss the popover
-        presentingViewController?.dismiss(animated: true, completion: nil)
+//        presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
     /*
