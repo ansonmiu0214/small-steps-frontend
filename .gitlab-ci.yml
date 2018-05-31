@@ -6,7 +6,3 @@ build_project:
   script:
     - xcodebuild clean -project smallsteps.xcodeproj -scheme smallsteps | xcpretty
     - xcodebuild test -project smallsteps.xcodeproj -scheme smallsteps -destination 'platform=iOS Simulator,name=iPhone 8,OS=11.3' | xcpretty -s
-  tags:
-    - ios_11-3
-    - xcode_9-3
-    - osx_10-13
