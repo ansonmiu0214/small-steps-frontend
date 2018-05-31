@@ -1,4 +1,4 @@
-module Pods_smallsteps {
+framework module Pods_smallsteps {
   umbrella header "Pods-smallsteps-umbrella.h"
 
   export *

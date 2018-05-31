@@ -18,7 +18,7 @@
 		6E03488120BECC62008EFC5D /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 6E03488020BECC62008EFC5D /* Podfile */; };
 		6E0348C620BF3A72008EFC5D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6E0348C520BF3A72008EFC5D /* GoogleService-Info.plist */; };
 		6E0348CA20BF4077008EFC5D /* CreateUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E0348C920BF4076008EFC5D /* CreateUserViewController.swift */; };
-		8C998CB5013861907F628715 /* libPods-smallsteps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF5748F1A7EFABFAC6523CE4 /* libPods-smallsteps.a */; };
+		E5308FDE632403EB2FD8F542 /* Pods_smallsteps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 31BE804FD74B4010CC95E798 /* Pods_smallsteps.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		31BE804FD74B4010CC95E798 /* Pods_smallsteps.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_smallsteps.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E03484C20BEBC77008EFC5D /* smallsteps.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = smallsteps.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E03484F20BEBC77008EFC5D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6E03485120BEBC77008EFC5D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -58,7 +59,6 @@
 		6E0348C920BF4076008EFC5D /* CreateUserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUserViewController.swift; sourceTree = "<group>"; };
 		A2D4966D20D1BE09456D34A8 /* Pods-smallsteps.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-smallsteps.release.xcconfig"; path = "Pods/Target Support Files/Pods-smallsteps/Pods-smallsteps.release.xcconfig"; sourceTree = "<group>"; };
 		C0F2DAE76E7D67759002A8FC /* Pods-smallsteps.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-smallsteps.debug.xcconfig"; path = "Pods/Target Support Files/Pods-smallsteps/Pods-smallsteps.debug.xcconfig"; sourceTree = "<group>"; };
-		EF5748F1A7EFABFAC6523CE4 /* libPods-smallsteps.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-smallsteps.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C998CB5013861907F628715 /* libPods-smallsteps.a in Frameworks */,
+				E5308FDE632403EB2FD8F542 /* Pods_smallsteps.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,7 +147,7 @@
 		8591F96C0DDC4BA7C66A2311 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EF5748F1A7EFABFAC6523CE4 /* libPods-smallsteps.a */,
+				31BE804FD74B4010CC95E798 /* Pods_smallsteps.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -173,6 +173,7 @@
 				6E03484920BEBC77008EFC5D /* Frameworks */,
 				6E03484A20BEBC77008EFC5D /* Resources */,
 				4A545D951FA4ED619ACA18AE /* [CP] Copy Pods Resources */,
+				31E8DA8FF0664E136DF0ECF9 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -292,6 +293,32 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		31E8DA8FF0664E136DF0ECF9 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-smallsteps/Pods-smallsteps-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-smallsteps/Pods-smallsteps-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		4A545D951FA4ED619ACA18AE /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

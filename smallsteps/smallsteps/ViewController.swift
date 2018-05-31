@@ -11,7 +11,7 @@ import GoogleMaps
 import CoreLocation
 import MapKit
 import Alamofire
-
+import SwiftyJSON
 
 class ViewController: UIViewController {
     @IBOutlet var menuButton: UIButton!
@@ -19,12 +19,6 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        GMSServices.provideAPIKey("AIzaSyATspIpIWzFayJLuLkTOCXaeuhCoEfLfIo")
-        
-        let camera = GMSCameraPosition.camera(withLatitude: 51.4989562, longitude: -0.1801277, zoom: 100)
-        let rect = CGRect(origin: CGPoint(x: 0,y :0), size: CGSize(width: 100, height: 100))
-        let MapView = GMSMapView.map(withFrame: rect, camera: camera)
         
         menuButton.bringSubview(toFront: view)
         Alamofire.request("http://146.169.45.120:8080/smallsteps/greeting").responseJSON { response in

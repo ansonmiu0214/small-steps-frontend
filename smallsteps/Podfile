@@ -8,4 +8,5 @@ target 'smallsteps' do
     pod 'Firebase/Core'
     pod 'Firebase/Database'
     pod 'Alamofire', '~> 4.7'
+    pod 'SwiftyJSON'
 end
