@@ -40,6 +40,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         manager.requestWhenInUseAuthorization()
         manager.startUpdatingLocation()
         
+        let txtField = searchBar.value(forKey: "searchField") as? UITextField
+        txtField?.textColor = UIColor(displayP3Red: 255, green: 0, blue: 0, alpha: 1.0)
+        
 //        Alamofire.request("http://146.169.45.120:8080/smallsteps/startingWalk").responseJSON { (responseData) -> Void in
 //            if((responseData.result.value) != nil) {
 //                let swiftyJsonVar = JSON(responseData.result.value!)
