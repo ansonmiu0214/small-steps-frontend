@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="gr2-ve-oyL">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="huQ-lK-Xjb">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -16,7 +16,7 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="isRegistered" useStoryboardIdentifierAsRestorationIdentifier="YES" id="BYZ-38-t0r" customClass="ViewController" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -80,16 +80,33 @@
             </objects>
             <point key="canvasLocation" x="27.536231884057973" y="-42.391304347826093"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="b41-Uf-n7W">
+            <objects>
+                <navigationController id="huQ-lK-Xjb" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="aot-X9-BXa">
+                        <rect key="frame" x="0.0" y="20" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="isRegistered" id="HDT-eh-8a2"/>
+                        <segue destination="gr2-ve-oyL" kind="show" identifier="isNotRegistered" id="v2k-T8-9OW"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ofx-hS-UZt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1119" y="370"/>
+        </scene>
         <!--Create User View Controller-->
         <scene sceneID="H7p-Ni-zHo">
             <objects>
-                <viewController id="gr2-ve-oyL" customClass="CreateUserViewController" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="isNotRegistered" id="gr2-ve-oyL" customClass="CreateUserViewController" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="RfB-DF-Oni">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="29" translatesAutoresizingMaskIntoConstraints="NO" id="hCG-Y3-oSt">
-                                <rect key="frame" x="53" y="320" width="214" height="198"/>
+                                <rect key="frame" x="53" y="322" width="214" height="196"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="rmv-kH-agz">
                                         <rect key="frame" x="0.0" y="0.0" width="214" height="57.5"/>
@@ -125,14 +142,15 @@
                                             </textField>
                                         </subviews>
                                     </stackView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g1E-rg-ief">
-                                        <rect key="frame" x="0.0" y="166" width="214" height="32"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uVz-aa-ojX">
+                                        <rect key="frame" x="0.0" y="166" width="214" height="30"/>
                                         <state key="normal" title="Continue">
-                                            <color key="titleColor" red="0.7686274509803922" green="0.36470588235294116" blue="0.49803921568627452" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="titleColor" red="0.80984109640000002" green="0.16353999080000001" blue="0.56681650880000001" alpha="1" colorSpace="calibratedRGB"/>
                                         </state>
                                         <connections>
-                                            <segue destination="BYZ-38-t0r" kind="presentation" id="Oar-x8-seY"/>
+                                            <segue destination="BYZ-38-t0r" kind="popoverPresentation" popoverAnchorView="uVz-aa-ojX" id="oLy-xK-1t4">
+                                                <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                            </segue>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -149,6 +167,9 @@
                                         </constraints>
                                     </imageView>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstItem="feF-2K-ysf" firstAttribute="top" secondItem="q7M-W1-ijF" secondAttribute="top" constant="50" id="vbV-yv-fnw"/>
+                                </constraints>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -174,4 +195,7 @@
         <image name="friendIcon" width="80" height="80"/>
         <image name="menuButton" width="80" height="80"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="oLy-xK-1t4"/>
+    </inferredMetricsTieBreakers>
 </document>

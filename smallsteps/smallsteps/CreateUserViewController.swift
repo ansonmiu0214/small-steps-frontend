@@ -13,12 +13,10 @@ import Alamofire
 class CreateUserViewController: UIViewController {
     @IBOutlet var name: UITextField!
     
-    @IBOutlet var AddUserButton: UIButton!
     //var ref:DatabaseReference?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-           // ref = Database.database().reference()
         // Do any additional setup after loading the view.
     }
 
@@ -27,15 +25,8 @@ class CreateUserViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func createNewUser(_ sender: Any) {
-        //Post data to firebase
-       // ref?.child("Users").childByAutoId().child("Name").setValue(name.text)
-        
-//        Alamofire.request("http://146.169.45.120:8080/smallsteps/greeting?name=" + name.text!)
-        
-        //Dismiss the popover
-//        presentingViewController?.dismiss(animated: true, completion: nil)
-    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) { self.view.endEditing(true) }
     
     /*
     // MARK: - Navigation

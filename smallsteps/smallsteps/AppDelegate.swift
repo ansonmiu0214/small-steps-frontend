@@ -15,12 +15,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
+    func recognisedDevice(deviceID: String) -> Bool {
+        return false
+    }
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        //Setting the appropriate initial view controller
+        let navigationController = window!.rootViewController! as! UINavigationController
+        let deviceID: String = UIDevice.current.identifierForVendor!.uuidString
+        let identifier = recognisedDevice(deviceID: deviceID) ? "isRegistered" : "isNotRegistered"
+        navigationController.performSegue(withIdentifier: identifier, sender: self)
         
-        //FirebaseApp.configure()
-        
+        //Set window and open the correct view controller
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let initialViewController = storyboard.instantiateViewController(withIdentifier: identifier)
+        self.window?.rootViewController = initialViewController
+        self.window?.makeKeyAndVisible()
         return true
     }
 
