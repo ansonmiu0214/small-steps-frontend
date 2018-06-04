@@ -15,12 +15,11 @@ import SwiftyJSON
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
     
     func recognisedDevice(deviceID: String, completion: @escaping (Bool) -> Void) {
         
-        //let requestURL = "http://146.169.45.120:8080/smallsteps/walker?device_id=" + deviceID
-        let requestURL = "http://146.169.45.120:8080/smallsteps/walker?device_id=wpefhflaimcbcypsygywqqyutvtxvbhpdnlb"
+        let requestURL = "http://146.169.45.120:8080/smallsteps/walker?device_id=" + deviceID
+        //let requestURL = "http://146.169.45.120:8080/smallsteps/walker?device_id=wpefhflaimcbcypsygywqqyutvtxvbhpdnlb"
         
         var statusCode: Int = 404
         Alamofire.request(requestURL, method: .get)
@@ -46,7 +45,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 identifier = "isRegistered"
             } else{
                 identifier = "isNotRegistered"
-                //TODO: register the device ID to the database
             }
             navigationController.performSegue(withIdentifier: identifier, sender: self)
         
