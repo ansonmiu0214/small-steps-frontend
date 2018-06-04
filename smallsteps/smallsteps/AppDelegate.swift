@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if let optStatusCode = response.response?.statusCode{
                     statusCode = optStatusCode
                 }
-                print("the status code is: ")
+                print("the status code is when checking the device ID is: ")
                 print(statusCode)
                 completion(statusCode == 200)
         }

@@ -34,6 +34,8 @@ class CreateUserViewController: UIViewController {
         let defaultImg: String = "default.png"
         let phoneNumber: String  = "123456"
         
+        print("deviceID is \(deviceID), name = \(name)")
+        
         //Create the walker parameters
         
         let walkerParams: Parameters = [
@@ -42,10 +44,13 @@ class CreateUserViewController: UIViewController {
             "picture": defaultImg,
             "phone_number": phoneNumber
         ]
-        
-        
+
         //POST the JSON to the server
-        Alamofire.request("http://146.169.45.120:8080/smallsteps/walker", method: .post, parameters: walkerParams)
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/walker", method: .post, parameters: walkerParams).response {response in
+            if let optStatusCode = response.response?.statusCode{
+                print(optStatusCode)
+            }
+        }
     }
     
     /*
