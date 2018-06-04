@@ -17,8 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     
-    func recognisedDevice(deviceID: String) -> Bool {
-        print("now checking deviceeeeeeee")
+    func recognisedDevice(deviceID: String, completion: @escaping (Bool) -> Void) {
         
         //let requestURL = "http://146.169.45.120:8080/smallsteps/walker?device_id=" + deviceID
         let requestURL = "http://146.169.45.120:8080/smallsteps/walker?device_id=wpefhflaimcbcypsygywqqyutvtxvbhpdnlb"
@@ -26,29 +25,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         var statusCode: Int = 404
         Alamofire.request(requestURL, method: .get)
             .response { response in
-                if let statusCode = response.response?.statusCode {
-                    print("the status code is: ")
-                    print(statusCode)
+                if let optStatusCode = response.response?.statusCode{
+                    statusCode = optStatusCode
                 }
+                print("the status code is: ")
+                print(statusCode)
+                completion(statusCode == 200)
         }
-        print("status code: \(statusCode)")
 
-        return  statusCode == 200
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         //Setting the appropriate initial view controller
         let navigationController = window!.rootViewController! as! UINavigationController
         let deviceID: String = UIDevice.current.identifierForVendor!.uuidString
-        let identifier = recognisedDevice(deviceID: deviceID) ? "isRegistered" : "isNotRegistered"
-        navigationController.performSegue(withIdentifier: identifier, sender: self)
+
+        recognisedDevice(deviceID: deviceID){ response in
+            var identifier: String
+            if response {
+                identifier = "isRegistered"
+            } else{
+                identifier = "isNotRegistered"
+            }
+            navigationController.performSegue(withIdentifier: identifier, sender: self)
         
-        //Set window and open the correct view controller
-        self.window = UIWindow(frame: UIScreen.main.bounds)
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let initialViewController = storyboard.instantiateViewController(withIdentifier: identifier)
-        self.window?.rootViewController = initialViewController
-        self.window?.makeKeyAndVisible()
+            //Set window and open the correct view controller
+            self.window = UIWindow(frame: UIScreen.main.bounds)
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: identifier)
+            self.window?.rootViewController = initialViewController
+            self.window?.makeKeyAndVisible()
+        }
+      
         return true
     }
 
