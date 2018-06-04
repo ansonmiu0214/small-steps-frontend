@@ -54,20 +54,19 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     @IBAction func findFriends(_ sender: Any) {
-<<<<<<< HEAD
+
         let name = searchBar.text
         Alamofire.request("http://146.169.45.120:8080/smallsteps/startingWalk?name=" + name!).responseJSON { (responseData) -> Void in
             if((responseData.result.value) != nil) {
                 let swiftyJsonVar = JSON(responseData.result.value!)
                 print(swiftyJsonVar)
                 let resData = swiftyJsonVar["numberOfWalkers"].stringValue
-                //self.userId = swiftyJsonVar["id"].int!
+                self.userId = swiftyJsonVar["id"].int!
                 self.searchBar.text = "Currently there are: " + resData + " walkers"
                 print(resData)
 
             }
         }
-=======
      //   let name = searchBar.text
 //        Alamofire.request("http://146.169.45.120:8080/smallsteps/startingWalk?name=" + name!).responseJSON { (responseData) -> Void in
 //            if((responseData.result.value) != nil) {
@@ -80,7 +79,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
 //
 //            }
 //        }
->>>>>>> 0ba2b18c61d1fbd8d6015a61f0dacefdcdecf3f3
+
     }
     
     @IBAction func stopWalking(_ sender: Any) {
