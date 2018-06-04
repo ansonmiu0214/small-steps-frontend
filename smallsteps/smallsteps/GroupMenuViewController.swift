@@ -1,21 +1,18 @@
 //
-//  CreateUserViewController.swift
+//  GroupMenuViewController.swift
 //  smallsteps
 //
-//  Created by Jin Sun Park on 30/05/2018.
+//  Created by Jin Sun Park on 04/06/2018.
 //  Copyright © 2018 group29. All rights reserved.
 //
 
 import UIKit
-import Alamofire
 
-class CreateUserViewController: UIViewController {
-    @IBOutlet var name: UITextField!
-    
-    //var ref:DatabaseReference?
-    
+class GroupMenuViewController: UIViewController {
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
         // Do any additional setup after loading the view.
     }
 
@@ -24,9 +21,7 @@ class CreateUserViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) { self.view.endEditing(true) }
-    
+
     /*
     // MARK: - Navigation
 
