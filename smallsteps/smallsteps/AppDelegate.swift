@@ -46,6 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 identifier = "isRegistered"
             } else{
                 identifier = "isNotRegistered"
+                //TODO: register the device ID to the database
             }
             navigationController.performSegue(withIdentifier: identifier, sender: self)
         
@@ -56,7 +57,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
         }
-      
         return true
     }
 
