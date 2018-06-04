@@ -8,15 +8,32 @@
 
 import UIKit
 import CoreData
-//import Firebase
+import Alamofire
+import SwiftyJSON
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
+    
     func recognisedDevice(deviceID: String) -> Bool {
-        return false
+        print("now checking deviceeeeeeee")
+        
+        //let requestURL = "http://146.169.45.120:8080/smallsteps/walker?device_id=" + deviceID
+        let requestURL = "http://146.169.45.120:8080/smallsteps/walker?device_id=wpefhflaimcbcypsygywqqyutvtxvbhpdnlb"
+        
+        var statusCode: Int = 404
+        Alamofire.request(requestURL, method: .get)
+            .response { response in
+                if let statusCode = response.response?.statusCode {
+                    print("the status code is: ")
+                    print(statusCode)
+                }
+        }
+        print("status code: \(statusCode)")
+
+        return  statusCode == 200
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {

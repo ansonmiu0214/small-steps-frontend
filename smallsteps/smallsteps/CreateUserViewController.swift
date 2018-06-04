@@ -8,7 +8,6 @@
 
 import UIKit
 import Alamofire
-//import Firebase
 
 class CreateUserViewController: UIViewController {
     @IBOutlet var name: UITextField!
