@@ -12,8 +12,6 @@ import Eureka
 import Alamofire
 class CreateGroupVC: FormViewController {
     
-    var group: Group
-    
     override func viewDidLoad() {
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(tapButton))
         self.navigationItem.rightBarButtonItem = doneButton
@@ -21,19 +19,23 @@ class CreateGroupVC: FormViewController {
         super.viewDidLoad()
         form +++ Section("Group Details")
             <<< TextRow(){ row in
+                row.tag = "groupName"
                 row.title = "Name"
                 row.placeholder = "Enter group name here"
             }
             +++ Section("Meeting Date and Time")
             <<< DateRow(){
-                $0.title = "Date Row"
+                $0.tag = "date"
+                $0.title = "Date"
                 $0.value = Date()
             }
             <<< TimeRow(){
+                $0.tag = "time"
                 $0.title = "Time"
                 $0.value = Date()
             }
             <<< ActionSheetRow<String>() {
+                $0.tag = "repeat"
                 $0.title = "Repeat"
                 $0.selectorTitle = "Pick a Day"
                 $0.options = ["Every Day",
@@ -47,6 +49,7 @@ class CreateGroupVC: FormViewController {
                 $0.value = "Every Day"    // initially selected
             }
             <<< ActionSheetRow<String>() {
+                $0.tag = "duration"
                 $0.title = "Estimated Duration"
                 $0.selectorTitle = "Pick a Duration"
                 $0.options = ["15 mins",
@@ -57,8 +60,9 @@ class CreateGroupVC: FormViewController {
             }
             +++ Section("Meeting Point")
             <<< TextRow() { row in
-                    row.title = "Location"
-                    //TODO!!!!!
+                row.tag = "location"
+                row.title = "Location"
+                //TODO!!!!!
             }
             +++ Section("Details")
             <<< SwitchRow() { row in
@@ -66,86 +70,47 @@ class CreateGroupVC: FormViewController {
                 row.title = "Dogs"
             }
             <<< SwitchRow() { row in
-                row.ta
+                row.tag = "hasKids"
                 row.title = "Kids"
-            }
+        }
     }
     
     @objc func tapButton() {
+        let valuesDict = form.values()
+        print(type(of: valuesDict))
+        
+        let newGroup: Group = Group(groupName: valuesDict["groupName"] as! String,
+                                    date: "", //valuesDict["date"] as! Int,
+                                    time: "", //valuesDict["time"] as! Int,
+                                    repeats: valuesDict["repeat"] as! String ,
+                                    duration: valuesDict["duration"] as! String,
+                                    location: "", //valuesDict["location"] as! String,
+                                    hasDog: (valuesDict["hasDog"] != nil),
+                                    hasKid: (valuesDict["hasKid"] != nil),
+                                    adminID: UIDevice.current.identifierForVendor!.uuidString)
+        print("Group created \(newGroup.groupName)")
+
         
         //Create the walker parameters
         let groupParams: Parameters = [
-            "name": group.groupName,
-            "time": "\(group.date) \(group.time)",
-            "admin_id": group.adminID,
-            "location_latitude": group.location.coordinate.latitude,
-            "location_longitude": group.location.coordinate.longitude,
-            "duration": group.duration,
-            "has_dogs": group.hasDogs,
-            "has_kids": group.hasKids
+            "id": "3",
+            "name": newGroup.groupName,
+            "time": "2018-06-10 12:00:00",
+            "admin_id": newGroup.adminID,
+            "location_latitude": "51.498899999999999",
+            "location_longitude": "-0.178999999999999992",
+            "duration": "01:00:00",
+            "has_dogs": newGroup.hasDog,
+            "has_kids": newGroup.hasKid
         ]
-        
-        
+
+
         //POST the JSON to the server
         Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .post, parameters: groupParams, encoding: JSONEncoding.default)
             .response {response in
                 print(response.response?.statusCode ?? "no response!")
-//                if let optStatusCode = response.response?.statusCode{
-//                    switch optStatusCode {
-//                        print()
-//                    case 200...300:
-//                        self.performSegue(withIdentifier: "continueToNext", sender: nil)
-//                    default:
-//                        print("error")
-//                        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-//                        self.phoneNumber.text = ""
-//                        self.phoneNumber.placeholder = "Please Enter a Valid Number!"
-                    }
-                }
+                print(groupParams)
         }
+    }
+}
 
-
-//class CreateGroupTVC: UITableViewController {
-//
-//    enum ProfileSections: Int {
-//        case Profile = 0,
-//        Bio, // new section
-//        Info,
-//        Friends
-//    }
-//
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//
-//        // Uncomment the following line to preserve selection between presentations
-//        // self.clearsSelectionOnViewWillAppear = false
-//
-//        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-//        // self.navigationItem.rightBarButtonItem = self.editButtonItem
-//    }
-//
-//    override func didReceiveMemoryWarning() {
-//        super.didReceiveMemoryWarning()
-//        // Dispose of any resources that can be recreated.
-//    }
-//
-//    // MARK: - Table view data source
-//
-//    override func numberOfSections(in tableView: UITableView) -> Int {
-//        return 1
-//    }
-//
-//    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return 2
-//    }
-//
-//    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-//
-//        cell.textLabel?.text = "Test"
-//
-//        return cell
-//    }
-//
-//
-//}
