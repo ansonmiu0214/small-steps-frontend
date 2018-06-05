@@ -12,7 +12,12 @@ import MapKit
 import Alamofire
 import SwiftyJSON
 
+protocol HandleMapSearch {
+    func dropPinZoomIn(placemark:MKPlacemark)
+}
+
 class ViewController: UIViewController, CLLocationManagerDelegate {
+    var selectedPin:MKPlacemark? = nil
     @IBOutlet var map: MKMapView!
     @IBOutlet var menuButton: UIButton!
     
@@ -30,6 +35,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         map.setRegion(region, animated: true)
         
         self.map.showsUserLocation = true
+        
     }
 
     
@@ -45,7 +51,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let locationSearchTable = storyboard!.instantiateViewController(withIdentifier: "LocationSearchTable") as! LocationSearchTable
         resultSearchController = UISearchController(searchResultsController: locationSearchTable)
         resultSearchController?.searchResultsUpdater = locationSearchTable
-       
+        
+        locationSearchTable.handleMapSearchDelegate = self
+        
         //Search Bar Setup
         let searchBar = resultSearchController!.searchBar
         searchBar.sizeToFit()
@@ -80,8 +88,24 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
-
+}
+extension ViewController: HandleMapSearch {
+    func dropPinZoomIn(placemark:MKPlacemark){
+        // save the pin
+        selectedPin = placemark
+        // clear other pins
+        //map.removeAnnotations(map.annotations)
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = placemark.coordinate
+        annotation.title = placemark.name
+        if let city = placemark.locality,
+            let state = placemark.administrativeArea {
+            annotation.subtitle = "\(city) \(state)"
+        }
+        map.addAnnotation(annotation)
+        let span = MKCoordinateSpanMake(0.05, 0.05)
+        let region = MKCoordinateRegionMake(placemark.coordinate, span)
+        map.setRegion(region, animated: true)
+    }
 }
 
