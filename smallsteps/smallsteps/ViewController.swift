@@ -15,7 +15,8 @@ import SwiftyJSON
 class ViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet var map: MKMapView!
     @IBOutlet var menuButton: UIButton!
-    @IBOutlet weak var searchBar: UISearchBar!
+    
+    var resultSearchController:UISearchController? = nil
     
     var userId: Int = 0
     
@@ -34,66 +35,25 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        //MapKit Setup
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
         manager.requestWhenInUseAuthorization()
         manager.startUpdatingLocation()
-    
         
-//        Alamofire.request("http://146.169.45.120:8080/smallsteps/startingWalk").responseJSON { (responseData) -> Void in
-//            if((responseData.result.value) != nil) {
-//                let swiftyJsonVar = JSON(responseData.result.value!)
-//                print(swiftyJsonVar)
-//                let resData = swiftyJsonVar["content"].stringValue
-//                self.searchBar.text = resData
-//                print(resData)
-//
-//            }
-//        }
-    }
-    
-    @IBAction func findFriends(_ sender: Any) {
-
-        let name = searchBar.text
-        Alamofire.request("http://146.169.45.120:8080/smallsteps/startingWalk?name=" + name!).responseJSON { (responseData) -> Void in
-            if((responseData.result.value) != nil) {
-                let swiftyJsonVar = JSON(responseData.result.value!)
-                print(swiftyJsonVar)
-                let resData = swiftyJsonVar["numberOfWalkers"].stringValue
-                //self.userId = swiftyJsonVar["id"].int!
-                self.searchBar.text = "Currently there are: " + resData + " walkers"
-                print(resData)
-
-            }
-        }
-     //   let name = searchBar.text
-//        Alamofire.request("http://146.169.45.120:8080/smallsteps/startingWalk?name=" + name!).responseJSON { (responseData) -> Void in
-//            if((responseData.result.value) != nil) {
-//                let swiftyJsonVar = JSON(responseData.result.value!)
-//                print(swiftyJsonVar)
-//                let resData = swiftyJsonVar["numberOfWalkers"].stringValue
-//                self.userId = swiftyJsonVar["id"].int!
-//                self.searchBar.text = "Currently there are: " + resData + " walkers"
-//                print(resData)
-//
-//            }
-//        }
-
-    }
-    
-    @IBAction func stopWalking(_ sender: Any) {
-        let name = searchBar.text
-        Alamofire.request("http://146.169.45.120:8080/smallsteps/stoppingWalk?id=\(userId)").responseJSON { (responseData) -> Void in
-            if((responseData.result.value) != nil) {
-                let swiftyJsonVar = JSON(responseData.result.value!)
-                print(swiftyJsonVar)
-                let resData = swiftyJsonVar["numberOfWalkers"].stringValue
-                self.searchBar.text = "Currently there are: " + resData + "Walkers"
-                print(resData)
-                
-            }
-        }
+        //Location Search Table Setup
+        let locationSearchTable = storyboard!.instantiateViewController(withIdentifier: "LocationSearchTable") as! LocationSearchTable
+        resultSearchController = UISearchController(searchResultsController: locationSearchTable)
+        resultSearchController?.searchResultsUpdater = locationSearchTable
+       
+        //Search Bar Setup
+        let searchBar = resultSearchController!.searchBar
+        searchBar.sizeToFit()
+        searchBar.placeholder = "Search for places"
+        navigationItem.titleView = resultSearchController?.searchBar
+        resultSearchController?.hidesNavigationBarDuringPresentation = false
+        resultSearchController?.dimsBackgroundDuringPresentation = true
+        definesPresentationContext = true
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) { self.view.endEditing(true) }
@@ -102,9 +62,5 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
-
-
 }
 
