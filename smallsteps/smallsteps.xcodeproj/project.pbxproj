@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6E01D6D220C69C9F004ABE58 /* CreateGroupTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E01D6D120C69C9F004ABE58 /* CreateGroupTVC.swift */; };
+		6E01D6D420C6A355004ABE58 /* AllGroupsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E01D6D320C6A355004ABE58 /* AllGroupsTVC.swift */; };
+		6E01D6D620C6A386004ABE58 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E01D6D520C6A386004ABE58 /* Group.swift */; };
 		6E03485020BEBC77008EFC5D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E03484F20BEBC77008EFC5D /* AppDelegate.swift */; };
 		6E03485220BEBC77008EFC5D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E03485120BEBC77008EFC5D /* ViewController.swift */; };
 		6E03485520BEBC77008EFC5D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6E03485320BEBC77008EFC5D /* Main.storyboard */; };
@@ -42,6 +45,9 @@
 
 /* Begin PBXFileReference section */
 		31BE804FD74B4010CC95E798 /* Pods_smallsteps.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_smallsteps.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6E01D6D120C69C9F004ABE58 /* CreateGroupTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateGroupTVC.swift; sourceTree = "<group>"; };
+		6E01D6D320C6A355004ABE58 /* AllGroupsTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllGroupsTVC.swift; sourceTree = "<group>"; };
+		6E01D6D520C6A386004ABE58 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		6E03484C20BEBC77008EFC5D /* smallsteps.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = smallsteps.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E03484F20BEBC77008EFC5D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6E03485120BEBC77008EFC5D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -128,6 +134,9 @@
 				6E03485620BEBC77008EFC5D /* smallsteps.xcdatamodeld */,
 				6ECB805220C59486006B955B /* GroupMenuViewController.swift */,
 				6EAD1FBE20C5AD4500E5DF61 /* CreateUserViewController.swift */,
+				6E01D6D120C69C9F004ABE58 /* CreateGroupTVC.swift */,
+				6E01D6D320C6A355004ABE58 /* AllGroupsTVC.swift */,
+				6E01D6D520C6A386004ABE58 /* Group.swift */,
 			);
 			path = smallsteps;
 			sourceTree = "<group>";
@@ -347,6 +356,9 @@
 				6EAD1FBF20C5AD4500E5DF61 /* CreateUserViewController.swift in Sources */,
 				6E03485820BEBC77008EFC5D /* smallsteps.xcdatamodeld in Sources */,
 				6E03485220BEBC77008EFC5D /* ViewController.swift in Sources */,
+				6E01D6D620C6A386004ABE58 /* Group.swift in Sources */,
+				6E01D6D420C6A355004ABE58 /* AllGroupsTVC.swift in Sources */,
+				6E01D6D220C69C9F004ABE58 /* CreateGroupTVC.swift in Sources */,
 				6E03485020BEBC77008EFC5D /* AppDelegate.swift in Sources */,
 				6ECB805320C59486006B955B /* GroupMenuViewController.swift in Sources */,
 			);
