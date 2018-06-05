@@ -16,15 +16,14 @@ protocol HandleMapSearch {
     func dropPinZoomIn(placemark:MKPlacemark)
 }
 
-class ViewController: UIViewController, CLLocationManagerDelegate {
+class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleMapSearch {
     var selectedPin:MKPlacemark? = nil
+    
     @IBOutlet var map: MKMapView!
     @IBOutlet var menuButton: UIButton!
     
     var resultSearchController:UISearchController? = nil
-    
     var userId: Int = 0
-    
     let manager = CLLocationManager()
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -35,6 +34,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         map.setRegion(region, animated: true)
         
         self.map.showsUserLocation = true
+        map.delegate = self
         
     }
     
@@ -67,7 +67,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         
         //Map Annotations
         map.register(ArtworkMarkerView.self,
-                         forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
+                     forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
         let artwork = Artwork(title: "9AMers",
                               locationName: "Huxley Building",
                               discipline: "Just Finished",
@@ -75,64 +75,95 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         map.addAnnotation(artwork)
         
         let artwork2 = Artwork(title: "Mumsnetters",
-                              locationName: "Royal College of Art",
-                              discipline: "Not Started",
-                              coordinate: CLLocationCoordinate2D(latitude: 51.5011441, longitude: -0.1814734))
+                               locationName: "Royal College of Art",
+                               discipline: "Not Started",
+                               coordinate: CLLocationCoordinate2D(latitude: 51.5011441, longitude: -0.1814734))
         map.addAnnotation(artwork2)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) { self.view.endEditing(true) }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    func getDirections(){
-        if let selectedPin = selectedPin {
-            let mapItem = MKMapItem(placemark: selectedPin)
-            let launchOptions = [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeWalking]
-            mapItem.openInMaps(launchOptions: launchOptions)
+    @objc func getDirections(){
+//        if let selectedPin = selectedPin {
+//            let mapItem = MKMapItem(placemark: selectedPin)
+//            let launchOptions = [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeWalking]
+//            mapItem.openInMaps(launchOptions: launchOptions)
+//        }
+        let request = MKDirectionsRequest()
+        request.source = MKMapItem.forCurrentLocation()
+        request.destination = MKMapItem(placemark: selectedPin!)
+        request.requestsAlternateRoutes = false
+        
+        let directions = MKDirections(request: request)
+        
+        directions.calculate(completionHandler: {(response, error) in
+            
+            if error != nil {
+                print("Error getting directions")
+            } else {
+                self.showRoute(response!)
+            }
+        })
+    }
+    
+    func showRoute(_ response: MKDirectionsResponse) {
+        print("showing route!")
+        for route in response.routes {
+            map.add(route.polyline,
+                         level: MKOverlayLevel.aboveRoads)
+//            for step in route.steps {
+//                print(step.instructions)
+//            }
         }
     }
-}
-extension ViewController: HandleMapSearch {
-    func dropPinZoomIn(placemark:MKPlacemark){
-        // save the pin
-        selectedPin = placemark
-        // clear other pins
-        //map.removeAnnotations(map.annotations)
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = placemark.coordinate
-        annotation.title = placemark.name
-        if let city = placemark.locality,
-            let state = placemark.administrativeArea {
-            annotation.subtitle = "\(city) \(state)"
-        }
-        map.addAnnotation(annotation)
-        let span = MKCoordinateSpanMake(0.05, 0.05)
-        let region = MKCoordinateRegionMake(placemark.coordinate, span)
-        map.setRegion(region, animated: true)
+    func mapView(_ mapView: MKMapView, rendererFor
+        overlay: MKOverlay) -> MKOverlayRenderer {
+        
+        let renderer = MKPolylineRenderer(overlay: overlay)
+        renderer.strokeColor = UIColor.blue
+        renderer.lineWidth = 5.0
+        return renderer
     }
-}
-
-extension ViewController : MKMapViewDelegate {
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView?{
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView?{
         if annotation is MKUserLocation {
-            //return nil so map view draws "blue dot" for standard user location
+            //so we don't modify the standard user location
             return nil
         }
-        let reuseId = "pin"
+        let reuseId = "Pin"
         var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
         pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-        pinView?.pinTintColor = UIColor.orange
+        pinView?.pinTintColor = UIColor.blue
         pinView?.canShowCallout = true
         let smallSquare = CGSize(width: 30, height: 30)
         let button = UIButton(frame: CGRect(origin: CGPoint.zero, size: smallSquare))
-        button.setBackgroundImage(UIImage(named: "walking"), for: .normal)
-        button.addTarget(self, action: "getDirections", for: .touchUpInside)
+        button.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
+        button.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
         pinView?.leftCalloutAccessoryView = button
         return pinView
     }
+    
+    func dropPinZoomIn(placemark:MKPlacemark){
+        // save the pin so we can find directions to it later
+        selectedPin = placemark
+
+        var subtitle = ""
+        if let city = placemark.locality,
+            let state = placemark.administrativeArea {
+            subtitle = "\(city), \(state)"
+        }
+        let annotation = AnnotationPin(title: placemark.name!, subtitle: subtitle, coordinate: placemark.coordinate)
+        map.addAnnotation(annotation)
+        
+        let span = MKCoordinateSpanMake(0.05, 0.05)
+        let region = MKCoordinateRegionMake(placemark.coordinate, span)
+        map.setRegion(region, animated: true)
+        }
+    
 }
 
