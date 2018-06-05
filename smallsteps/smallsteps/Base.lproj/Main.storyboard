@@ -160,11 +160,9 @@
                                             <constraints>
                                                 <constraint firstItem="r1U-cZ-Dxc" firstAttribute="top" secondItem="wqe-oG-G5b" secondAttribute="topMargin" id="314-Ia-hud"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="r1U-cZ-Dxc" secondAttribute="bottom" constant="-8" id="OHT-r9-Qs8"/>
-                                                <constraint firstItem="r1U-cZ-Dxc" firstAttribute="leading" secondItem="wqe-oG-G5b" secondAttribute="leadingMargin" constant="63" id="i6l-DN-gl9"/>
                                                 <constraint firstItem="r1U-cZ-Dxc" firstAttribute="leading" secondItem="wqe-oG-G5b" secondAttribute="leading" id="jKl-UC-u78"/>
                                                 <constraint firstAttribute="bottom" secondItem="r1U-cZ-Dxc" secondAttribute="bottom" id="skF-zP-F8f"/>
                                                 <constraint firstAttribute="trailing" secondItem="r1U-cZ-Dxc" secondAttribute="trailing" id="uEA-VA-5qD"/>
-                                                <constraint firstItem="r1U-cZ-Dxc" firstAttribute="top" secondItem="wqe-oG-G5b" secondAttribute="top" id="yIf-Xl-fph"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -413,6 +411,6 @@
         <image name="menuIcon" width="193" height="193"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="kcQ-Fd-o8f"/>
+        <segue reference="VrZ-Mg-rk6"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -55,6 +55,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         resultSearchController?.dimsBackgroundDuringPresentation = true
         definesPresentationContext = true
         
+        //Set the map view in locationSearchTable
+        locationSearchTable.map = map
+        
         //Map Annotations
         map.register(ArtworkMarkerView.self,
                          forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
