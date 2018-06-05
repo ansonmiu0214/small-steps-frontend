@@ -61,7 +61,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 let swiftyJsonVar = JSON(responseData.result.value!)
                 print(swiftyJsonVar)
                 let resData = swiftyJsonVar["numberOfWalkers"].stringValue
-                self.userId = swiftyJsonVar["id"].int!
+                //self.userId = swiftyJsonVar["id"].int!
                 self.searchBar.text = "Currently there are: " + resData + " walkers"
                 print(resData)
 
