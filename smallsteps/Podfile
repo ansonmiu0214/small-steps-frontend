@@ -5,4 +5,5 @@ use_frameworks!
 target 'smallsteps' do
     pod 'Alamofire', '~> 4.7'
     pod 'SwiftyJSON'
+    pod 'Eureka'
 end

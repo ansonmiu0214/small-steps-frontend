@@ -169,7 +169,7 @@
                                                     </constraints>
                                                     <state key="normal" title="Create A New Group"/>
                                                     <connections>
-                                                        <segue destination="nBR-8y-PIY" kind="show" id="RYW-5U-xti"/>
+                                                        <segue destination="bvz-MG-L6K" kind="show" id="Vzv-Hp-DDj"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
@@ -209,6 +209,21 @@
             </objects>
             <point key="canvasLocation" x="1871.2" y="-43.628185907046479"/>
         </scene>
+        <!--Create GroupVC-->
+        <scene sceneID="Km3-Jp-EdV">
+            <objects>
+                <viewController id="bvz-MG-L6K" customClass="CreateGroupVC" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="N5b-HR-zQX">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="jew-Ca-jMQ"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MTx-q0-JDY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2824" y="342"/>
+        </scene>
         <!--All Walking Groups-->
         <scene sceneID="3uM-8f-U1J">
             <objects>
@@ -236,43 +251,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Obh-3d-WEW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2809" y="-481"/>
-        </scene>
-        <!--Create GroupTVC-->
-        <scene sceneID="Q15-FY-zIL">
-            <objects>
-                <tableViewController id="nBR-8y-PIY" customClass="CreateGroupTVC" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="hlW-eW-tku">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" textLabel="fjk-co-3R8" style="IBUITableViewCellStyleDefault" id="HId-LC-AOd">
-                                <rect key="frame" x="0.0" y="28" width="414" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="HId-LC-AOd" id="5BO-UL-ubK">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fjk-co-3R8">
-                                            <rect key="frame" x="20" y="0.0" width="374" height="43.666666666666664"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="nBR-8y-PIY" id="ydb-oM-M1U"/>
-                            <outlet property="delegate" destination="nBR-8y-PIY" id="GGC-hG-yFm"/>
-                        </connections>
-                    </tableView>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="OQ0-ft-pTW" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2779" y="370"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="b41-Uf-n7W">
@@ -406,6 +384,6 @@
         <image name="menuIcon" width="193" height="193"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="kcQ-Fd-o8f"/>
+        <segue reference="VrZ-Mg-rk6"/>
     </inferredMetricsTieBreakers>
 </document>
