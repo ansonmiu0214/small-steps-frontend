@@ -12,6 +12,8 @@ import Eureka
 
 class CreateGroupVC: FormViewController {
     
+    var group: Group? = nil
+    
     override func viewDidLoad() {
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(tapButton))
         self.navigationItem.rightBarButtonItem = doneButton
@@ -60,14 +62,17 @@ class CreateGroupVC: FormViewController {
             }
             +++ Section("Details")
             <<< SwitchRow() { row in
+                row.tag = "hasDog"
                 row.title = "Dogs"
             }
             <<< SwitchRow() { row in
+                row.ta
                 row.title = "Kids"
             }
     }
     
     @objc func tapButton() {
+        var newGroup: Group = Group(
         print("You tap!")
     }
 }

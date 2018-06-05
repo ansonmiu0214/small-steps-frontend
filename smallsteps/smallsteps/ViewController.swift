@@ -37,7 +37,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         self.map.showsUserLocation = true
         
     }
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,6 +87,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    func getDirections(){
+        if let selectedPin = selectedPin {
+            let mapItem = MKMapItem(placemark: selectedPin)
+            let launchOptions = [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeWalking]
+            mapItem.openInMaps(launchOptions: launchOptions)
+        }
+    }
 }
 extension ViewController: HandleMapSearch {
     func dropPinZoomIn(placemark:MKPlacemark){
@@ -106,6 +113,26 @@ extension ViewController: HandleMapSearch {
         let span = MKCoordinateSpanMake(0.05, 0.05)
         let region = MKCoordinateRegionMake(placemark.coordinate, span)
         map.setRegion(region, animated: true)
+    }
+}
+
+extension ViewController : MKMapViewDelegate {
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView?{
+        if annotation is MKUserLocation {
+            //return nil so map view draws "blue dot" for standard user location
+            return nil
+        }
+        let reuseId = "pin"
+        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
+        pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+        pinView?.pinTintColor = UIColor.orange
+        pinView?.canShowCallout = true
+        let smallSquare = CGSize(width: 30, height: 30)
+        let button = UIButton(frame: CGRect(origin: CGPoint.zero, size: smallSquare))
+        button.setBackgroundImage(UIImage(named: "walking"), for: .normal)
+        button.addTarget(self, action: "getDirections", for: .touchUpInside)
+        pinView?.leftCalloutAccessoryView = button
+        return pinView
     }
 }
 
