@@ -9,10 +9,10 @@
 import UIKit
 
 import Eureka
-
+import Alamofire
 class CreateGroupVC: FormViewController {
     
-    var group: Group? = nil
+    var group: Group
     
     override func viewDidLoad() {
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(tapButton))
@@ -72,10 +72,38 @@ class CreateGroupVC: FormViewController {
     }
     
     @objc func tapButton() {
-        var newGroup: Group = Group(
-        print("You tap!")
-    }
-}
+        
+        //Create the walker parameters
+        let groupParams: Parameters = [
+            "name": group.groupName,
+            "time": "\(group.date) \(group.time)",
+            "admin_id": group.adminID,
+            "location_latitude": group.location.coordinate.latitude,
+            "location_longitude": group.location.coordinate.longitude,
+            "duration": group.duration,
+            "has_dogs": group.hasDogs,
+            "has_kids": group.hasKids
+        ]
+        
+        
+        //POST the JSON to the server
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .post, parameters: groupParams, encoding: JSONEncoding.default)
+            .response {response in
+                print(response.response?.statusCode ?? "no response!")
+//                if let optStatusCode = response.response?.statusCode{
+//                    switch optStatusCode {
+//                        print()
+//                    case 200...300:
+//                        self.performSegue(withIdentifier: "continueToNext", sender: nil)
+//                    default:
+//                        print("error")
+//                        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+//                        self.phoneNumber.text = ""
+//                        self.phoneNumber.placeholder = "Please Enter a Valid Number!"
+                    }
+                }
+        }
+
 
 //class CreateGroupTVC: UITableViewController {
 //
