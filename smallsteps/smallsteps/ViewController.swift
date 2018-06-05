@@ -54,6 +54,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         resultSearchController?.hidesNavigationBarDuringPresentation = false
         resultSearchController?.dimsBackgroundDuringPresentation = true
         definesPresentationContext = true
+        
+        //Set the map view in locationSearchTable
+        locationSearchTable.map = map
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) { self.view.endEditing(true) }
