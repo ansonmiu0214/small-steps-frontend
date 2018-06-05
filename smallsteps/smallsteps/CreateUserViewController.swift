@@ -8,6 +8,7 @@
 
 import UIKit
 import Alamofire
+import AVFoundation
 
 class CreateUserViewController: UIViewController {
    
@@ -44,13 +45,20 @@ class CreateUserViewController: UIViewController {
 
         
         //POST the JSON to the server
-        Alamofire.request("http://146.169.45.120:8080/smallsteps/walker", method: .post, parameters: walkerParams, encoding: JSONEncoding.default).response {response in
-            print(response)
-            if let optStatusCode = response.response?.statusCode{
-                print(optStatusCode)
-            }
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/walker", method: .post, parameters: walkerParams, encoding: JSONEncoding.default)
+            .response {response in
+                print(response.response?.statusCode ?? "no response!")
+                if let optStatusCode = response.response?.statusCode{
+                    switch optStatusCode {
+                        case 200...300:
+                            self.performSegue(withIdentifier: "continueToNext", sender: nil)
+                        default:
+                            print("error")
+                            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+                            self.phoneNumber.text = ""
+                    }
+                }
         }
-        performSegue(withIdentifier: "continueToNext", sender: self)
     }
     
     /*
