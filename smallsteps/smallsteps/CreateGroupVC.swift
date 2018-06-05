@@ -80,11 +80,11 @@ class CreateGroupVC: FormViewController {
         print(type(of: valuesDict))
         
         let newGroup: Group = Group(groupName: valuesDict["groupName"] as! String,
-                                    date: "", //valuesDict["date"] as! Int,
-                                    time: "", //valuesDict["time"] as! Int,
+                                    date: valuesDict["date"] as! Date,
+                                    time: valuesDict["time"] as! Date,
                                     repeats: valuesDict["repeat"] as! String ,
                                     duration: valuesDict["duration"] as! String,
-                                    location: "", //valuesDict["location"] as! String,
+                                    location: "",
                                     hasDog: (valuesDict["hasDog"] != nil),
                                     hasKid: (valuesDict["hasKid"] != nil),
                                     adminID: UIDevice.current.identifierForVendor!.uuidString)
@@ -93,13 +93,13 @@ class CreateGroupVC: FormViewController {
         
         //Create the walker parameters
         let groupParams: Parameters = [
-            "id": "3",
+            //"id": "3",
             "name": newGroup.groupName,
-            "time": "2018-06-10 12:00:00",
+            "time": "\(newGroup.date) \(newGroup.time)",
             "admin_id": newGroup.adminID,
             "location_latitude": "51.498899999999999",
             "location_longitude": "-0.178999999999999992",
-            "duration": "01:00:00",
+            "duration": newGroup.duration, //TODO: fix format
             "has_dogs": newGroup.hasDog,
             "has_kids": newGroup.hasKid
         ]
