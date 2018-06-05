@@ -10,7 +10,7 @@ class ArtworkMarkerView: MKMarkerAnnotationView {
             rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
             // 2
             markerTintColor = artwork.markerTintColor
-            glyphText = String(artwork.discipline.first!)
+            //glyphText = String(artwork.discipline)
         }
     }
 }

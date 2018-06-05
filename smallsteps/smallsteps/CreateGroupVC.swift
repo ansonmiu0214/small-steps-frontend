@@ -13,6 +13,9 @@ import Eureka
 class CreateGroupVC: FormViewController {
     
     override func viewDidLoad() {
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(tapButton))
+        self.navigationItem.rightBarButtonItem = doneButton
+        
         super.viewDidLoad()
         form +++ Section("Group Details")
             <<< TextRow(){ row in
@@ -28,11 +31,44 @@ class CreateGroupVC: FormViewController {
                 $0.title = "Time"
                 $0.value = Date()
             }
+            <<< ActionSheetRow<String>() {
+                $0.title = "Repeat"
+                $0.selectorTitle = "Pick a Day"
+                $0.options = ["Every Day",
+                              "Every Monday",
+                              "Every Tuesday",
+                              "Every Wednesday",
+                              "Every Thursday",
+                              "Every Friday",
+                              "Every Saturday",
+                              "Every Sunday"]
+                $0.value = "Every Day"    // initially selected
+            }
+            <<< ActionSheetRow<String>() {
+                $0.title = "Estimated Duration"
+                $0.selectorTitle = "Pick a Duration"
+                $0.options = ["15 mins",
+                              "30 mins",
+                              "45 mins",
+                              "1 hour"]
+                $0.value = "15 mins"    // initially selected
+            }
             +++ Section("Meeting Point")
             <<< TextRow() { row in
                     row.title = "Location"
                     //TODO!!!!!
-            }        
+            }
+            +++ Section("Details")
+            <<< SwitchRow() { row in
+                row.title = "Dogs"
+            }
+            <<< SwitchRow() { row in
+                row.title = "Kids"
+            }
+    }
+    
+    @objc func tapButton() {
+        print("You tap!")
     }
 }
 
