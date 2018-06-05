@@ -37,15 +37,15 @@ class CreateUserViewController: UIViewController {
         
         let walkerParams: Parameters = [
             "device_id": deviceID,
-            "name": self.name,
+            "name": self.name.text ?? "John Doe",
             "picture": defaultImg,
-            "phone_number": self.phoneNumber
+            "phone_number": self.phoneNumber.text ?? "00000000000"
         ]
 
         
         //POST the JSON to the server
-        Alamofire.request("http://146.169.45.120:8080/smallsteps/walker", method: .post, parameters: walkerParams).response {response in
-            print(walkerParams)
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/walker", method: .post, parameters: walkerParams, encoding: JSONEncoding.default).response {response in
+            print(response)
             if let optStatusCode = response.response?.statusCode{
                 print(optStatusCode)
             }
