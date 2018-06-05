@@ -50,6 +50,7 @@ class CreateUserViewController: UIViewController {
                 print(optStatusCode)
             }
         }
+        performSegue(withIdentifier: "continueToNext", sender: self)
     }
     
     /*
