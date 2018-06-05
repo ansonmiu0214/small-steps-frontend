@@ -94,7 +94,7 @@ extension ViewController: HandleMapSearch {
         // save the pin
         selectedPin = placemark
         // clear other pins
-        map.removeAnnotations(map.annotations)
+        //map.removeAnnotations(map.annotations)
         let annotation = MKPointAnnotation()
         annotation.coordinate = placemark.coordinate
         annotation.title = placemark.name
