@@ -14,20 +14,25 @@ class CreateGroupVC: FormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        form +++ Section("Section1")
+        form +++ Section("Group Details")
             <<< TextRow(){ row in
-                row.title = "Text Row"
-                row.placeholder = "Enter text here"
+                row.title = "Name"
+                row.placeholder = "Enter group name here"
             }
-            <<< PhoneRow(){
-                $0.title = "Phone Row"
-                $0.placeholder = "And numbers here"
-            }
-            +++ Section("Section2")
+            +++ Section("Meeting Date and Time")
             <<< DateRow(){
                 $0.title = "Date Row"
-                $0.value = Date(timeIntervalSinceReferenceDate: 0)
-        }
+                $0.value = Date()
+            }
+            <<< TimeRow(){
+                $0.title = "Time"
+                $0.value = Date()
+            }
+            +++ Section("Meeting Point")
+            <<< TextRow() { row in
+                    row.title = "Location"
+                    //TODO!!!!!
+            }        
     }
 }
 
