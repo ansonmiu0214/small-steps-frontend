@@ -10,8 +10,9 @@ import UIKit
 import Alamofire
 
 class CreateUserViewController: UIViewController {
-    @IBOutlet weak var lastName: UITextField!
-    @IBOutlet weak var firstName: UITextField!
+   
+    @IBOutlet weak var name: UITextField!
+    @IBOutlet weak var phoneNumber: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,23 +31,21 @@ class CreateUserViewController: UIViewController {
     @IBAction func continueToMain(_ sender: Any) {
         //Set the data fields
         let deviceID: String = UIDevice.current.identifierForVendor!.uuidString
-        let name: String = firstName.text! + " " + lastName.text!
         let defaultImg: String = "default.png"
-        let phoneNumber: String  = "123456"
-        
-        print("deviceID is \(deviceID), name = \(name)")
         
         //Create the walker parameters
         
         let walkerParams: Parameters = [
             "device_id": deviceID,
-            "name": name,
+            "name": self.name,
             "picture": defaultImg,
-            "phone_number": phoneNumber
+            "phone_number": self.phoneNumber
         ]
 
+        
         //POST the JSON to the server
         Alamofire.request("http://146.169.45.120:8080/smallsteps/walker", method: .post, parameters: walkerParams).response {response in
+            print(walkerParams)
             if let optStatusCode = response.response?.statusCode{
                 print(optStatusCode)
             }
