@@ -4,11 +4,11 @@ class Artwork: NSObject, MKAnnotation {
     var markerTintColor: UIColor  {
         switch discipline {
         case "Not Started":
-            return .red
+            return .green
         case "In Progress":
             return .orange
         case "Just Finished":
-            return .green
+            return .red
         default:
             return .blue
         }
