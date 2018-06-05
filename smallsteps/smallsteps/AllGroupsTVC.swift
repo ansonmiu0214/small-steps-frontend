@@ -10,7 +10,7 @@ import UIKit
 
 class AllGroupsTVC: UITableViewController {
     
-    let groups: [Group] = [Group(groupName: "9AMers"), Group(groupName: "Mumsnet")]
+    //let groups: [Group] = [Group(groupName: "9AMers"), Group(groupName: "Mumsnet")]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,12 +35,13 @@ class AllGroupsTVC: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return groups.count
+        return 1
+        //return groups.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "GroupCell", for: indexPath)
-        cell.textLabel?.text = groups[indexPath.row].groupName
+        //cell.textLabel?.text = groups[indexPath.row].groupName
         return cell
     }
 

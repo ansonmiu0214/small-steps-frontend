@@ -21,19 +21,23 @@ class CreateGroupVC: FormViewController {
         super.viewDidLoad()
         form +++ Section("Group Details")
             <<< TextRow(){ row in
+                row.tag = "groupName"
                 row.title = "Name"
                 row.placeholder = "Enter group name here"
             }
             +++ Section("Meeting Date and Time")
             <<< DateRow(){
-                $0.title = "Date Row"
+                $0.tag = "date"
+                $0.title = "Date"
                 $0.value = Date()
             }
             <<< TimeRow(){
+                $0.tag = "time"
                 $0.title = "Time"
                 $0.value = Date()
             }
             <<< ActionSheetRow<String>() {
+                 $0.tag = "repeat"
                 $0.title = "Repeat"
                 $0.selectorTitle = "Pick a Day"
                 $0.options = ["Every Day",
@@ -47,6 +51,7 @@ class CreateGroupVC: FormViewController {
                 $0.value = "Every Day"    // initially selected
             }
             <<< ActionSheetRow<String>() {
+                 $0.tag = "duration"
                 $0.title = "Estimated Duration"
                 $0.selectorTitle = "Pick a Duration"
                 $0.options = ["15 mins",
@@ -57,6 +62,7 @@ class CreateGroupVC: FormViewController {
             }
             +++ Section("Meeting Point")
             <<< TextRow() { row in
+                    row.tag = "location"
                     row.title = "Location"
                     //TODO!!!!!
             }
@@ -66,14 +72,24 @@ class CreateGroupVC: FormViewController {
                 row.title = "Dogs"
             }
             <<< SwitchRow() { row in
-                row.ta
+                row.tag = "hasKids"
                 row.title = "Kids"
             }
     }
     
     @objc func tapButton() {
-        var newGroup: Group = Group(
-        print("You tap!")
+        let valuesDict = form.values()
+        
+        var newGroup: Group = Group(groupName: valuesDict["groupName"] as! String,
+                                    date: valuesDict["date"] as! Int,
+                                    time: valuesDict["time"] as! Int,
+                                    repeats: valuesDict["repeat"] as! String as! String,
+                                    duration: valuesDict["duration"] as! String,
+                                    location: valuesDict["location"] as! String,
+                                    hasDog: (valuesDict["hasDog"] != nil),
+                                    hasKid: (valuesDict["hasKid"] != nil),
+                                    adminID: UIDevice.current.identifierForVendor!.uuidString)
+        print("Group created \(newGroup.groupName)")
     }
 }
 
