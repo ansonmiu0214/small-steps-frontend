@@ -36,24 +36,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         //Setting the appropriate initial view controller
-        let navigationController = window!.rootViewController! as! UINavigationController
         let deviceID: String = UIDevice.current.identifierForVendor!.uuidString
 
         recognisedDevice(deviceID: deviceID){ response in
-            var identifier: String
-            if response {
-                identifier = "isRegistered"
-            } else{
-                identifier = "isNotRegistered"
+
+            if !response {
+                //Set window and open the correct view controller
+                self.window = UIWindow(frame: UIScreen.main.bounds)
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let identifier = "isNotRegistered"
+                self.window?.rootViewController = storyboard.instantiateViewController(withIdentifier: identifier)
+                //self.window?.rootViewController = initialViewController
+                self.window?.makeKeyAndVisible()
             }
-            navigationController.performSegue(withIdentifier: identifier, sender: self)
-        
-            //Set window and open the correct view controller
-            self.window = UIWindow(frame: UIScreen.main.bounds)
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let initialViewController = storyboard.instantiateViewController(withIdentifier: identifier)
-            self.window?.rootViewController = initialViewController
-            self.window?.makeKeyAndVisible()
         }
         return true
     }
