@@ -54,6 +54,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         resultSearchController?.hidesNavigationBarDuringPresentation = false
         resultSearchController?.dimsBackgroundDuringPresentation = true
         definesPresentationContext = true
+        
+        //Map Annotations
+        map.register(ArtworkMarkerView.self,
+                         forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
+        let artwork = Artwork(title: "9AMers",
+                              locationName: "Huxley Building",
+                              discipline: "Just Finished",
+                              coordinate: CLLocationCoordinate2D(latitude: 51.4989034, longitude: -0.1811814))
+        map.addAnnotation(artwork)
+        
+        let artwork2 = Artwork(title: "Mumsnetters",
+                              locationName: "Royal College of Art",
+                              discipline: "Not Started",
+                              coordinate: CLLocationCoordinate2D(latitude: 51.5011441, longitude: -0.1814734))
+        map.addAnnotation(artwork2)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) { self.view.endEditing(true) }
@@ -62,6 +77,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
 
 }
 
