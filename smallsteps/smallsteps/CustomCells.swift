@@ -27,6 +27,7 @@ import UIKit
 import MapKit
 import Eureka
 
+
 //MARK: LocationRow
 
 public final class LocationRow: OptionsRow<PushSelectorCell<CLLocation>>, PresenterRowType, RowType {
