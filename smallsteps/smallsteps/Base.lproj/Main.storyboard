@@ -197,7 +197,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r1U-cZ-Dxc">
+                                                <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r1U-cZ-Dxc">
                                                     <rect key="frame" x="0.0" y="-7" width="320" height="50.5"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="50" id="RJ2-4g-4tI"/>
@@ -260,7 +260,7 @@
                                                     </constraints>
                                                     <state key="normal" title="See All Groups"/>
                                                     <connections>
-                                                        <segue destination="PvA-uf-Gcn" kind="show" id="i82-db-kQZ"/>
+                                                        <segue destination="PvA-uf-Gcn" kind="show" id="mfV-Mi-Bol"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
@@ -516,6 +516,7 @@
                 <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="Ger-RH-lUx" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="ZR4-D4-2dV">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <userDefinedRuntimeAttributes>
