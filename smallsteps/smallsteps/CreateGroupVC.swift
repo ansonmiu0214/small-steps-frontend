@@ -10,20 +10,33 @@ import UIKit
 
 import Eureka
 import Alamofire
+import CoreLocation
+
 class CreateGroupVC: FormViewController {
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         //let doneButton = UIBarButtonItem(barButtonSystemItem: nil, target: self, action: #selector(tapButton))
         let nextButton = UIBarButtonItem(image: UIImage(named: "walking"), style: .plain, target: self, action: #selector(CreateGroupVC.createGroup))
+        nextButton.isEnabled = false
         self.navigationItem.rightBarButtonItem = nextButton
         
-        super.viewDidLoad()
         form +++ Section("Group Details")
             <<< TextRow(){ row in
                 row.tag = "groupName"
                 row.title = "Name"
                 row.placeholder = "Enter group name here"
-            }
+                row.add(rule: RuleRequired(msg: "This field is required"))
+                row.validationOptions = .validatesOnDemand
+                }.cellUpdate { cell, row in
+                    self.form.validate()
+                    if !row.isValid {
+                        cell.titleLabel?.textColor = .red
+                        nextButton.isEnabled = false
+                    } else {
+                        nextButton.isEnabled = true
+                    }
+                }
             +++ Section("Meeting Date and Time")
             <<< DateTimeRow(){
                 $0.tag = "datetime"
@@ -44,12 +57,6 @@ class CreateGroupVC: FormViewController {
                 $0.value = date
 
             }
-//            +++ Section("Meeting Point")
-//            <<< TextRow() { row in
-//                row.tag = "location"
-//                row.title = "Location"
-//                //TODO!!!!!
-//            }
             +++ Section("Details")
             <<< SwitchRow() { row in
                 row.tag = "hasDogs"
@@ -62,6 +69,8 @@ class CreateGroupVC: FormViewController {
             <<< LocationRow("location") {
                 $0.title = "Location"
                 $0.tag = "location"
+                var locManager = CLLocationManager()
+                $0.value = CLLocation(latitude: (locManager.location?.coordinate.latitude)!, longitude: (locManager.location?.coordinate.longitude)!)
                 }.onChange { [weak self] row in
                     self!.tableView!.reloadData()
             }
@@ -118,6 +127,7 @@ class CreateGroupVC: FormViewController {
         print("THE NEW DATE IS: \(newDate)")
         return newDate
     }
+    
     
     func getHoursMinutesSeconds(time: Date) -> String {
         let dateFormatter: DateFormatter = DateFormatter()
