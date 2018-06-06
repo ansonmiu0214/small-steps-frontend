@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Alamofire
+import SwiftyJSON
 
 class AllGroupsTVC: UITableViewController {
     
@@ -14,6 +16,29 @@ class AllGroupsTVC: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?latitude=51.4989&longitude=-0.1790", method: .get, parameters: nil, encoding: JSONEncoding.default)
+            .responseJSON { (responseData) -> Void in
+                if((responseData.result.value) != nil) {
+                    if let swiftyJsonVar = try? JSON(responseData.result.value!) {
+                        for (_, item) in swiftyJsonVar{
+                            
+                            for (label, value) in item {
+                                print("\(label) : \(value)")
+                            }
+//                            print(item)
+                             //print(item["name"].stringValue)
+                        }
+//                      for jsonVar in swiftyJsonVar{
+//                          let resData = jsonVar["name"].stringValue
+//                          print(resData)
+//                    }
+                    }
+
+                }
+        }
+        
+        
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false

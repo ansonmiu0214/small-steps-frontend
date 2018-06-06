@@ -28,7 +28,4 @@ class LocationPointer: NSObject, MKAnnotation {
         super.init()
     }
     
-//    var subtitle: String? {
-//        return subtitle
-//    }
 }

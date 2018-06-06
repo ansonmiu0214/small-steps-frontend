@@ -10,7 +10,6 @@ import UIKit
 import CoreLocation
 import MapKit
 import Alamofire
-import SwiftyJSON
 
 protocol HandleMapSearch {
     func dropPinZoomIn(placemark:MKPlacemark)
