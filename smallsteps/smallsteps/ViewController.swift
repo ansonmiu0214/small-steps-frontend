@@ -19,7 +19,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     var selectedPin:MKPlacemark? = nil
     
     @IBOutlet var map: MKMapView!
-    @IBOutlet var menuButton: UIButton!
     
     var resultSearchController:UISearchController? = nil
     var userId: Int = 0
@@ -34,6 +33,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         
         self.map.showsUserLocation = true
         map.delegate = self
+        
+        for group in groups{
+            createPinFromGroup(group: group)
+        }
         
     }
     
@@ -89,7 +92,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
     
     @objc func getDirections(){
-        
         let request = MKDirectionsRequest()
         request.source = MKMapItem.forCurrentLocation()
         request.destination = MKMapItem(placemark: selectedPin!)
@@ -116,7 +118,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
 //                print(step.instructions)
 //            }
         }
-        self.fitAll(showGroups: true)
+        self.fitAll(showGroups: false)
     }
     func mapView(_ mapView: MKMapView, rendererFor
         overlay: MKOverlay) -> MKOverlayRenderer {
@@ -136,20 +138,43 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? LocationPointerView
         pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
         pinView?.canShowCallout = true
-        
-        let smallSquare = CGSize(width: 30, height: 30)
-        let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: smallSquare))
+        print(annotation.coordinate)
+        let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 30, height: 30)))
         directionButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
         directionButton.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
         pinView?.leftCalloutAccessoryView = directionButton
  
-        let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero,
-                                                size: CGSize(width: 30, height: 30)))
-        infoButton.setBackgroundImage(UIImage(named: "info"), for: UIControlState())
-        infoButton.addTarget(self, action: #selector(ViewController.displayInfo), for: .touchUpInside)
+        let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 50, height: 50)))
+        //infoButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
+        infoButton.setTitle("Join", for: .normal)
+        infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
+        infoButton.addTarget(self, action: #selector(self.joinGroup), for: .touchUpInside)
         pinView?.rightCalloutAccessoryView = infoButton
         
+        let subtitleView = UILabel()
+        subtitleView.font = subtitleView.font.withSize(12)
+        subtitleView.numberOfLines = 4
+        subtitleView.text = annotation.subtitle!
+        pinView!.detailCalloutAccessoryView = subtitleView
+        
         return pinView
+    }
+    
+    func createPinFromGroup(group: Group){
+        print("created a group")
+        var subtitle = "Meeting Time: \(dateToString(datetime: group.datetime))"
+        subtitle += "\nDuration ~ \(getHoursMinutes(time: group.duration))"
+        if(group.hasDog){
+            subtitle += "\nHas Dogs"
+        }
+        if(group.hasKid){
+            subtitle += "\nHas Kids"
+        }
+        
+        let discipline = group.isWalking ? "In Progress" : "Not Started"
+        
+        let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate:  CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!))
+        map.addAnnotation(annotation)
     }
     
     func dropPinZoomIn(placemark:MKPlacemark){
@@ -157,9 +182,9 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         map.removeOverlays(map.overlays)
 
         if(selectedPin != nil){
-            for annotation in map.annotations {
-                if (annotation.coordinate.latitude == selectedPin!.coordinate.latitude &&
-                    annotation.coordinate.longitude == selectedPin!.coordinate.longitude){
+            for annotation in map.annotations as! [LocationPointer]{
+                if (annotation.discipline != "In Progress" ||
+                    annotation.discipline != "Not Started"){
                     map.removeAnnotation(annotation)
                 }
             }
@@ -194,8 +219,35 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         map.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(40, 40, 40, 40), animated: true)
     }
     
-    @objc func displayInfo(){
-        performSegue(withIdentifier: "displayGroupInfo", sender: self)
+    @objc func joinGroup(){
+        print("joining group!!!")
     }
+    
+    func dateToString(datetime: Date) -> String {
+        let timeFormatter: DateFormatter = DateFormatter()
+        timeFormatter.dateFormat = "H:mm"
+        let newTime: String = timeFormatter.string(for: datetime)!
+        
+        let dateFormatter: DateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .long
+        let newDate: String = dateFormatter.string(for: datetime)!
+        return "\(newTime) \(newDate)"
+    }
+    
+    func getHoursMinutes(time: Date) -> String {
+        let dateFormatter: DateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "H"
+        let newHour: String = dateFormatter.string(for: time)!
+        dateFormatter.dateFormat = "m"
+        let newMinute: String = dateFormatter.string(from: time)
+        if newHour == "0"{
+            return "\(newMinute) minute(s)"
+        }
+        if(newMinute == "0"){
+            return "\(newHour) hour(s)"
+        }
+        return "\(newHour) hour(s) and \(newMinute) minute(s)"
+    }
+    
 }
 
