@@ -14,17 +14,19 @@ class Group {
     var datetime: Date
     var repeats: String
     var duration: Date
-    var location: String
+    var latitude: String
+    var longitude: String
     var hasDog: Bool
     var hasKid: Bool
     var adminID: String
     
-    init(groupName: String, datetime:Date, repeats:String, duration:Date, location:String, hasDog: Bool, hasKid: Bool, adminID: String) {
+    init(groupName: String, datetime: Date, repeats: String, duration: Date, latitude: String, longitude: String, hasDog: Bool, hasKid: Bool, adminID: String) {
         self.groupName = groupName
         self.datetime = datetime
         self.repeats = repeats
         self.duration = duration
-        self.location = location
+        self.latitude = latitude
+        self.longitude = longitude
         self.hasDog = hasDog
         self.hasKid = hasKid
         self.adminID = adminID

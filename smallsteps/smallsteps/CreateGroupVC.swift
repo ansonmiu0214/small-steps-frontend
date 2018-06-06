@@ -58,7 +58,14 @@ class CreateGroupVC: FormViewController {
             <<< SwitchRow() { row in
                 row.tag = "hasKids"
                 row.title = "Kids"
-        }
+            }
+            <<< LocationRow("location") {
+                $0.title = "Location"
+                $0.tag = "location"
+                }.onChange { [weak self] row in
+                    self!.tableView!.reloadData()
+            }
+        
     }
     
     @objc func setLocation() {
@@ -74,7 +81,8 @@ class CreateGroupVC: FormViewController {
                                     datetime: valuesDict["datetime"] as! Date,
                                     repeats: valuesDict["repeat"] as! String ,
                                     duration: valuesDict["duration"] as! Date,
-                                    location: "",
+                                    latitude: "\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.latitude)!)",
+                                    longitude: "\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.longitude)!)",
                                     hasDog: ((form.rowBy(tag: "hasDogs") as? SwitchRow)?.cell.switchControl.isOn)!,
                                     hasKid: ((form.rowBy(tag: "hasKids") as? SwitchRow)?.cell.switchControl.isOn)!,
                                     adminID: UIDevice.current.identifierForVendor!.uuidString)
@@ -86,8 +94,8 @@ class CreateGroupVC: FormViewController {
             "name": newGroup.groupName,
             "time": removeTimezone(datetime: newGroup.datetime),
             "admin_id": newGroup.adminID,
-            "location_latitude": "51.498899999999999",
-            "location_longitude": "-0.178999999999999992",
+            "location_latitude": newGroup.latitude,
+            "location_longitude": newGroup.longitude,
             "duration": getHoursMinutesSeconds(time: newGroup.duration),
             "has_dogs": newGroup.hasDog,
             "has_kids": newGroup.hasKid
