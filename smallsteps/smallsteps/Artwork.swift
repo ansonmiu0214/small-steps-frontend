@@ -15,20 +15,20 @@ class Artwork: NSObject, MKAnnotation {
     }
     
     let title: String?
-    let locationName: String
+    let subtitle: String?
     let discipline: String
     let coordinate: CLLocationCoordinate2D
     
-    init(title: String, locationName: String, discipline: String, coordinate: CLLocationCoordinate2D) {
+    init(title: String, subtitle: String, discipline: String, coordinate: CLLocationCoordinate2D) {
         self.title = title
-        self.locationName = locationName
+        self.subtitle = subtitle
         self.discipline = discipline
         self.coordinate = coordinate
         
         super.init()
     }
     
-    var subtitle: String? {
-        return locationName
-    }
+//    var subtitle: String? {
+//        return subtitle
+//    }
 }

@@ -69,13 +69,13 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         map.register(ArtworkMarkerView.self,
                      forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
         let artwork = Artwork(title: "9AMers",
-                              locationName: "Huxley Building",
+                              subtitle: "Huxley Building",
                               discipline: "Just Finished",
                               coordinate: CLLocationCoordinate2D(latitude: 51.4989034, longitude: -0.1811814))
         map.addAnnotation(artwork)
         
         let artwork2 = Artwork(title: "Mumsnetters",
-                               locationName: "Royal College of Art",
+                               subtitle: "Royal College of Art",
                                discipline: "Not Started",
                                coordinate: CLLocationCoordinate2D(latitude: 51.5011441, longitude: -0.1814734))
         map.addAnnotation(artwork2)
@@ -89,11 +89,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
     
     @objc func getDirections(){
-//        if let selectedPin = selectedPin {
-//            let mapItem = MKMapItem(placemark: selectedPin)
-//            let launchOptions = [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeWalking]
-//            mapItem.openInMaps(launchOptions: launchOptions)
-//        }
         let request = MKDirectionsRequest()
         request.source = MKMapItem.forCurrentLocation()
         request.destination = MKMapItem(placemark: selectedPin!)
@@ -136,9 +131,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             return nil
         }
         let reuseId = "Pin"
-        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
-        pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-        pinView?.pinTintColor = UIColor.blue
+        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? ArtworkMarkerView
+        pinView = ArtworkMarkerView(annotation: annotation, reuseIdentifier: reuseId)
         pinView?.canShowCallout = true
         let smallSquare = CGSize(width: 30, height: 30)
         let button = UIButton(frame: CGRect(origin: CGPoint.zero, size: smallSquare))
@@ -157,10 +151,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             let state = placemark.administrativeArea {
             subtitle = "\(city), \(state)"
         }
-        let annotation = AnnotationPin(title: placemark.name!, subtitle: subtitle, coordinate: placemark.coordinate)
+        let annotation = Artwork(title: placemark.name!, subtitle: subtitle, discipline: "", coordinate: placemark.coordinate)
         map.addAnnotation(annotation)
         
-        let span = MKCoordinateSpanMake(0.05, 0.05)
+        let span = MKCoordinateSpanMake(0.01, 0.01)
         let region = MKCoordinateRegionMake(placemark.coordinate, span)
         map.setRegion(region, animated: true)
         }
