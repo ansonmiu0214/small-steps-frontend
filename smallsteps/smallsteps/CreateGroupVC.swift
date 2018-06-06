@@ -14,7 +14,7 @@ class CreateGroupVC: FormViewController {
     
     override func viewDidLoad() {
         //let doneButton = UIBarButtonItem(barButtonSystemItem: nil, target: self, action: #selector(tapButton))
-        let nextButton = UIBarButtonItem(image: UIImage(named: "walking"), style: .plain, target: self, action: #selector(CreateGroupVC.setLocation))
+        let nextButton = UIBarButtonItem(image: UIImage(named: "walking"), style: .plain, target: self, action: #selector(CreateGroupVC.createGroup))
         self.navigationItem.rightBarButtonItem = nextButton
         
         super.viewDidLoad()
@@ -37,17 +37,19 @@ class CreateGroupVC: FormViewController {
                 $0.options = ["Daily"]
                 $0.value = "Daily"    // initially selected
             }
-            <<< IntRow() {
+            <<< TimeRow() {
                 $0.tag = "duration"
-                $0.title = "Estimated Duration (mins)"
-                $0.value = 15    // initially selected
+                $0.title = "Estimated Duration"
+                let date = Calendar.current.date(bySettingHour: 0, minute: 30, second: 0, of: Date())! //initial value
+                $0.value = date
+
             }
-            +++ Section("Meeting Point")
-            <<< TextRow() { row in
-                row.tag = "location"
-                row.title = "Location"
-                //TODO!!!!!
-            }
+//            +++ Section("Meeting Point")
+//            <<< TextRow() { row in
+//                row.tag = "location"
+//                row.title = "Location"
+//                //TODO!!!!!
+//            }
             +++ Section("Details")
             <<< SwitchRow() { row in
                 row.tag = "hasDog"
@@ -71,7 +73,7 @@ class CreateGroupVC: FormViewController {
         let newGroup: Group = Group(groupName: valuesDict["groupName"] as! String,
                                     datetime: valuesDict["datetime"] as! Date,
                                     repeats: valuesDict["repeat"] as! String ,
-                                    duration: valuesDict["duration"] as! Int,
+                                    duration: valuesDict["duration"] as! Date,
                                     location: "",
                                     hasDog: form.rowBy(tag: "hasDog")!.value!,
                                     hasKid: form.rowBy(tag: "hasKid")!.value!,
@@ -81,13 +83,12 @@ class CreateGroupVC: FormViewController {
         
         //Create the walker parameters
         let groupParams: Parameters = [
-            //"id": "3",
             "name": newGroup.groupName,
-            "datetime": removeTimezone(datetime: newGroup.datetime),
+            "time": removeTimezone(datetime: newGroup.datetime),
             "admin_id": newGroup.adminID,
             "location_latitude": "51.498899999999999",
             "location_longitude": "-0.178999999999999992",
-            "duration": newGroup.duration, //TODO: fix format
+            "duration": getHoursMinutesSeconds(time: newGroup.duration),
             "has_dogs": newGroup.hasDog,
             "has_kids": newGroup.hasKid
         ]
@@ -108,6 +109,15 @@ class CreateGroupVC: FormViewController {
         let newDate: String = dateFormatter.string(for: datetime)!
         print("THE NEW DATE IS: \(newDate)")
         return newDate
+    }
+    
+    func getHoursMinutesSeconds(time: Date) -> String {
+        let dateFormatter: DateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "hh:mm:ss"
+        let newTime: String = dateFormatter.string(for: time)!
+        print("THE NEW TIME IS: \(newTime)")
+
+        return newTime
     }
 }
 

@@ -13,13 +13,13 @@ class Group {
     var groupName: String
     var datetime: Date
     var repeats: String
-    var duration: Int
+    var duration: Date
     var location: String
     var hasDog: Bool
     var hasKid: Bool
     var adminID: String
     
-    init(groupName: String, datetime:Date, repeats:String, duration:Int, location:String, hasDog: Bool, hasKid: Bool, adminID: String) {
+    init(groupName: String, datetime:Date, repeats:String, duration:Date, location:String, hasDog: Bool, hasKid: Bool, adminID: String) {
         self.groupName = groupName
         self.datetime = datetime
         self.repeats = repeats
