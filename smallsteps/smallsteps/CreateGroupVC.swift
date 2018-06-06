@@ -50,7 +50,7 @@ class CreateGroupVC: FormViewController {
                 $0.options = ["Daily"]
                 $0.value = "Daily"    // initially selected
             }
-            <<< TimeRow() {
+            <<< CountDownRow() {
                 $0.tag = "duration"
                 $0.title = "Estimated Duration"
                 let date = Calendar.current.date(bySettingHour: 0, minute: 30, second: 0, of: Date())! //initial value
