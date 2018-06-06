@@ -66,15 +66,15 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         locationSearchTable.map = map
         
         //Map Annotations
-        map.register(ArtworkMarkerView.self,
+        map.register(LocationPointerView.self,
                      forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
-        let artwork = Artwork(title: "9AMers",
+        let artwork = LocationPointer(title: "9AMers",
                               subtitle: "Huxley Building",
                               discipline: "Just Finished",
                               coordinate: CLLocationCoordinate2D(latitude: 51.4989034, longitude: -0.1811814))
         map.addAnnotation(artwork)
         
-        let artwork2 = Artwork(title: "Mumsnetters",
+        let artwork2 = LocationPointer(title: "Mumsnetters",
                                subtitle: "Royal College of Art",
                                discipline: "Not Started",
                                coordinate: CLLocationCoordinate2D(latitude: 51.5011441, longitude: -0.1814734))
@@ -134,14 +134,22 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             return nil
         }
         let reuseId = "Pin"
-        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? ArtworkMarkerView
-        pinView = ArtworkMarkerView(annotation: annotation, reuseIdentifier: reuseId)
+        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? LocationPointerView
+        pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
         pinView?.canShowCallout = true
+        
         let smallSquare = CGSize(width: 30, height: 30)
-        let button = UIButton(frame: CGRect(origin: CGPoint.zero, size: smallSquare))
-        button.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
-        button.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
-        pinView?.leftCalloutAccessoryView = button
+        let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: smallSquare))
+        directionButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
+        directionButton.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
+        pinView?.leftCalloutAccessoryView = directionButton
+ 
+        let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero,
+                                                size: CGSize(width: 30, height: 30)))
+        infoButton.setBackgroundImage(UIImage(named: "info"), for: UIControlState())
+        infoButton.addTarget(self, action: #selector(ViewController.displayInfo), for: .touchUpInside)
+        pinView?.rightCalloutAccessoryView = infoButton
+        
         return pinView
     }
     
@@ -166,7 +174,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             let state = placemark.administrativeArea {
             subtitle = "\(city), \(state)"
         }
-        let annotation = Artwork(title: placemark.name!, subtitle: subtitle, discipline: "", coordinate: placemark.coordinate)
+        let annotation = LocationPointer(title: placemark.name!, subtitle: subtitle, discipline: "", coordinate: placemark.coordinate)
         map.addAnnotation(annotation)
         
         let span = MKCoordinateSpanMake(0.01, 0.01)
@@ -178,13 +186,17 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     func fitAll(showGroups: Bool) {
         var zoomRect = MKMapRectNull;
         for annotation in map.annotations {
-            if showGroups || (annotation as? Artwork)?.discipline == "" {
+            if showGroups || (annotation as? LocationPointer)?.discipline == "" {
                 let annotationPoint = MKMapPointForCoordinate(annotation.coordinate)
                 let pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.01, 0.01);
                 zoomRect = MKMapRectUnion(zoomRect, pointRect);
             }
         }
         map.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(40, 40, 40, 40), animated: true)
+    }
+    
+    @objc func displayInfo(){
+        performSegue(withIdentifier: "displayGroupInfo", sender: self)
     }
 }
 
