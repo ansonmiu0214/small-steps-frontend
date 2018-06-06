@@ -25,39 +25,22 @@ class CreateGroupVC: FormViewController {
                 row.placeholder = "Enter group name here"
             }
             +++ Section("Meeting Date and Time")
-            <<< DateRow(){
-                $0.tag = "date"
-                $0.title = "Date"
-                $0.value = Date()
-            }
-            <<< TimeRow(){
-                $0.tag = "time"
-                $0.title = "Time"
+            <<< DateTimeRow(){
+                $0.tag = "datetime"
+                $0.title = "Date and Time"
                 $0.value = Date()
             }
             <<< ActionSheetRow<String>() {
                 $0.tag = "repeat"
                 $0.title = "Repeat"
                 $0.selectorTitle = "Pick a Day"
-                $0.options = ["Every Day",
-                              "Every Monday",
-                              "Every Tuesday",
-                              "Every Wednesday",
-                              "Every Thursday",
-                              "Every Friday",
-                              "Every Saturday",
-                              "Every Sunday"]
-                $0.value = "Every Day"    // initially selected
+                $0.options = ["Daily"]
+                $0.value = "Daily"    // initially selected
             }
-            <<< ActionSheetRow<String>() {
+            <<< IntRow() {
                 $0.tag = "duration"
-                $0.title = "Estimated Duration"
-                $0.selectorTitle = "Pick a Duration"
-                $0.options = ["15 mins",
-                              "30 mins",
-                              "45 mins",
-                              "1 hour"]
-                $0.value = "15 mins"    // initially selected
+                $0.title = "Estimated Duration (mins)"
+                $0.value = 15    // initially selected
             }
             +++ Section("Meeting Point")
             <<< TextRow() { row in
@@ -81,13 +64,12 @@ class CreateGroupVC: FormViewController {
         print(type(of: valuesDict))
         
         let newGroup: Group = Group(groupName: valuesDict["groupName"] as! String,
-                                    date: valuesDict["date"] as! Date,
-                                    time: valuesDict["time"] as! Date,
+                                    datetime: valuesDict["datetime"] as! Date,
                                     repeats: valuesDict["repeat"] as! String ,
-                                    duration: valuesDict["duration"] as! String,
+                                    duration: valuesDict["duration"] as! Int,
                                     location: "",
-                                    hasDog: (valuesDict["hasDog"] != nil),
-                                    hasKid: (valuesDict["hasKid"] != nil),
+                                    hasDog: form.rowBy(tag: "hasDog")!.value!,
+                                    hasKid: form.rowBy(tag: "hasKid")!.value!,
                                     adminID: UIDevice.current.identifierForVendor!.uuidString)
         print("Group created \(newGroup.groupName)")
 
@@ -96,7 +78,7 @@ class CreateGroupVC: FormViewController {
         let groupParams: Parameters = [
             //"id": "3",
             "name": newGroup.groupName,
-            "time": "\(newGroup.date) \(newGroup.time)",
+            "datetime": removeTimezone(datetime: newGroup.datetime),
             "admin_id": newGroup.adminID,
             "location_latitude": "51.498899999999999",
             "location_longitude": "-0.178999999999999992",
@@ -104,7 +86,8 @@ class CreateGroupVC: FormViewController {
             "has_dogs": newGroup.hasDog,
             "has_kids": newGroup.hasKid
         ]
-
+        
+        
 
         //POST the JSON to the server
         Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .post, parameters: groupParams, encoding: JSONEncoding.default)
@@ -112,6 +95,14 @@ class CreateGroupVC: FormViewController {
                 print(response.response?.statusCode ?? "no response!")
                 print(groupParams)
         }
+    }
+    
+    func removeTimezone(datetime: Date) -> String {
+        let dateFormatter: DateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd hh:mm:ss"
+        let newDate: String = dateFormatter.string(for: datetime)!
+        print("THE NEW DATE IS: \(newDate)")
+        return newDate
     }
 }
 

@@ -11,19 +11,17 @@ import CoreLocation
 
 class Group {
     var groupName: String
-    var date: Date
-    var time: Date
+    var datetime: Date
     var repeats: String
-    var duration: String
+    var duration: Int
     var location: String
     var hasDog: Bool
     var hasKid: Bool
     var adminID: String
     
-    init(groupName: String, date:Date, time:Date, repeats:String, duration:String, location:String, hasDog: Bool, hasKid: Bool, adminID: String) {
+    init(groupName: String, datetime:Date, repeats:String, duration:Int, location:String, hasDog: Bool, hasKid: Bool, adminID: String) {
         self.groupName = groupName
-        self.date = date
-        self.time = time
+        self.datetime = datetime
         self.repeats = repeats
         self.duration = duration
         self.location = location
@@ -31,4 +29,5 @@ class Group {
         self.hasKid = hasKid
         self.adminID = adminID
     }
+
 }
