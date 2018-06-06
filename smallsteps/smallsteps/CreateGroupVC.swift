@@ -52,7 +52,7 @@ class CreateGroupVC: FormViewController {
 //            }
             +++ Section("Details")
             <<< SwitchRow() { row in
-                row.tag = "hasDog"
+                row.tag = "hasDogs"
                 row.title = "Dogs"
             }
             <<< SwitchRow() { row in
@@ -75,8 +75,8 @@ class CreateGroupVC: FormViewController {
                                     repeats: valuesDict["repeat"] as! String ,
                                     duration: valuesDict["duration"] as! Date,
                                     location: "",
-                                    hasDog: form.rowBy(tag: "hasDog")!.value!,
-                                    hasKid: form.rowBy(tag: "hasKid")!.value!,
+                                    hasDog: ((form.rowBy(tag: "hasDogs") as? SwitchRow)?.cell.switchControl.isOn)!,
+                                    hasKid: ((form.rowBy(tag: "hasKids") as? SwitchRow)?.cell.switchControl.isOn)!,
                                     adminID: UIDevice.current.identifierForVendor!.uuidString)
         print("Group created \(newGroup.groupName)")
 
