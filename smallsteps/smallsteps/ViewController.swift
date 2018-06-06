@@ -16,7 +16,7 @@ protocol HandleMapSearch {
     func dropPinZoomIn(placemark:MKPlacemark)
 }
 
-class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleMapSearch {
+class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleMapSearch{
     var selectedPin:MKPlacemark? = nil
     
     @IBOutlet var map: MKMapView!
@@ -79,6 +79,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
                                discipline: "Not Started",
                                coordinate: CLLocationCoordinate2D(latitude: 51.5011441, longitude: -0.1814734))
         map.addAnnotation(artwork2)
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) { self.view.endEditing(true) }
@@ -89,6 +90,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
     
     @objc func getDirections(){
+        
         let request = MKDirectionsRequest()
         request.source = MKMapItem.forCurrentLocation()
         request.destination = MKMapItem(placemark: selectedPin!)
@@ -99,7 +101,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         directions.calculate(completionHandler: {(response, error) in
             
             if error != nil {
-                print("Error getting directions")
+                print("Could not obtain directions!")
             } else {
                 self.showRoute(response!)
             }
@@ -115,6 +117,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
 //                print(step.instructions)
 //            }
         }
+        self.fitAll(showGroups: true)
     }
     func mapView(_ mapView: MKMapView, rendererFor
         overlay: MKOverlay) -> MKOverlayRenderer {
@@ -143,9 +146,21 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
     
     func dropPinZoomIn(placemark:MKPlacemark){
+        //Clear previous pin and overlay
+        map.removeOverlays(map.overlays)
+
+        if(selectedPin != nil){
+            for annotation in map.annotations {
+                if (annotation.coordinate.latitude == selectedPin!.coordinate.latitude &&
+                    annotation.coordinate.longitude == selectedPin!.coordinate.longitude){
+                    map.removeAnnotation(annotation)
+                }
+            }
+        }
+        
         // save the pin so we can find directions to it later
         selectedPin = placemark
-
+        
         var subtitle = ""
         if let city = placemark.locality,
             let state = placemark.administrativeArea {
@@ -159,5 +174,17 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         map.setRegion(region, animated: true)
         }
     
+    //Fits all pins on the map to the map view
+    func fitAll(showGroups: Bool) {
+        var zoomRect = MKMapRectNull;
+        for annotation in map.annotations {
+            if showGroups || (annotation as? Artwork)?.discipline == "" {
+                let annotationPoint = MKMapPointForCoordinate(annotation.coordinate)
+                let pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.01, 0.01);
+                zoomRect = MKMapRectUnion(zoomRect, pointRect);
+            }
+        }
+        map.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(40, 40, 40, 40), animated: true)
+    }
 }
 
