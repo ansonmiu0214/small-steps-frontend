@@ -27,8 +27,11 @@ import UIKit
 import MapKit
 import Eureka
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> bcfd3c3aa32d3eca3bac0580a7f1e534c9c304e8
 //MARK: LocationRow
 
 public final class LocationRow: OptionsRow<PushSelectorCell<CLLocation>>, PresenterRowType, RowType {
