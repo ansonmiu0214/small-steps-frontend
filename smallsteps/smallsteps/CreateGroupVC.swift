@@ -14,7 +14,7 @@ class CreateGroupVC: FormViewController {
     
     override func viewDidLoad() {
         //let doneButton = UIBarButtonItem(barButtonSystemItem: nil, target: self, action: #selector(tapButton))
-        let nextButton = UIBarButtonItem(image: UIImage(named: "walking"), style: .plain, target: self, action: #selector(CreateGroupVC.createGroup))
+        let nextButton = UIBarButtonItem(image: UIImage(named: "walking"), style: .plain, target: self, action: #selector(CreateGroupVC.setLocation))
         self.navigationItem.rightBarButtonItem = nextButton
         
         super.viewDidLoad()
@@ -75,6 +75,11 @@ class CreateGroupVC: FormViewController {
                 row.title = "Kids"
         }
     }
+    
+    @objc func setLocation() {
+        performSegue(withIdentifier: "setLocation", sender: self)
+    }
+
     
     @objc func createGroup() {
         let valuesDict = form.values()
