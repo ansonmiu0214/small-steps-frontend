@@ -34,7 +34,7 @@ extension LocationSearchTable : UISearchResultsUpdating {
         let comma = (selectedItem.subThoroughfare != nil || selectedItem.thoroughfare != nil) && (selectedItem.subAdministrativeArea != nil || selectedItem.administrativeArea != nil) ? ", " : ""
         // put space between subAdministrativeArea and administrativeArea
         let secondSpace = (selectedItem.subAdministrativeArea != nil && selectedItem.administrativeArea != nil) ? " " : ""
-       
+        
         let addressLine = String(
             format:"%@%@%@%@%@%@%@",
             // street number
