@@ -13,8 +13,9 @@ import Alamofire
 class CreateGroupVC: FormViewController {
     
     override func viewDidLoad() {
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(tapButton))
-        self.navigationItem.rightBarButtonItem = doneButton
+        //let doneButton = UIBarButtonItem(barButtonSystemItem: nil, target: self, action: #selector(tapButton))
+        let nextButton = UIBarButtonItem(image: UIImage(named: "walking"), style: .plain, target: self, action: #selector(CreateGroupVC.createGroup))
+        self.navigationItem.rightBarButtonItem = nextButton
         
         super.viewDidLoad()
         form +++ Section("Group Details")
@@ -75,7 +76,7 @@ class CreateGroupVC: FormViewController {
         }
     }
     
-    @objc func tapButton() {
+    @objc func createGroup() {
         let valuesDict = form.values()
         print(type(of: valuesDict))
         

@@ -25,6 +25,7 @@ extension LocationSearchTable : UISearchResultsUpdating {
         }
     }
     
+    //just formatting the address for extra prettiness
     func parseAddress(selectedItem:MKPlacemark) -> String {
         //Formatting the Address Line
         // put space between address number and address location
