@@ -7,7 +7,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -53,104 +52,24 @@
         <!--Groups-->
         <scene sceneID="bOO-7g-o7J">
             <objects>
-                <tableViewController id="7dE-FI-JJw" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="W1I-Ql-EOk">
+                <tableViewController id="7dE-FI-JJw" customClass="GroupMenuTVC" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="99T-5A-cIh">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                        <sections>
-                            <tableViewSection id="hOo-Ox-bkZ">
-                                <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="ekV-7H-lF8">
-                                        <rect key="frame" x="0.0" y="35" width="320" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ekV-7H-lF8" id="wqe-oG-G5b">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r1U-cZ-Dxc">
-                                                    <rect key="frame" x="0.0" y="-7" width="320" height="50.5"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="50" id="RJ2-4g-4tI"/>
-                                                    </constraints>
-                                                    <state key="normal" title="Create A New Group">
-                                                        <color key="titleColor" red="0.76862745099999996" green="0.36470588240000001" blue="0.49803921569999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    </state>
-                                                    <connections>
-                                                        <segue destination="bvz-MG-L6K" kind="show" id="Vzv-Hp-DDj"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="r1U-cZ-Dxc" firstAttribute="top" secondItem="wqe-oG-G5b" secondAttribute="topMargin" id="314-Ia-hud"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="r1U-cZ-Dxc" secondAttribute="bottom" constant="-8" id="OHT-r9-Qs8"/>
-                                                <constraint firstItem="r1U-cZ-Dxc" firstAttribute="leading" secondItem="wqe-oG-G5b" secondAttribute="leading" id="jKl-UC-u78"/>
-                                                <constraint firstAttribute="bottom" secondItem="r1U-cZ-Dxc" secondAttribute="bottom" id="skF-zP-F8f"/>
-                                                <constraint firstAttribute="trailing" secondItem="r1U-cZ-Dxc" secondAttribute="trailing" id="uEA-VA-5qD"/>
-                                                <constraint firstItem="r1U-cZ-Dxc" firstAttribute="centerY" secondItem="wqe-oG-G5b" secondAttribute="centerY" id="z3o-Ko-fLc"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </cells>
-                            </tableViewSection>
-                            <tableViewSection headerTitle="Your Groups" id="F4j-pe-sFe">
-                                <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="WHj-Vr-UYt">
-                                        <rect key="frame" x="0.0" y="135" width="320" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="WHj-Vr-UYt" id="KKg-ao-1Fx">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </cells>
-                            </tableViewSection>
-                            <tableViewSection headerTitle="Active Groups" id="dTm-qn-o39">
-                                <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="Rzz-OA-3W7">
-                                        <rect key="frame" x="0.0" y="235" width="320" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Rzz-OA-3W7" id="sHY-Sj-Hf9">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </cells>
-                            </tableViewSection>
-                            <tableViewSection id="vjZ-10-IQM">
-                                <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="KC9-8f-Upr">
-                                        <rect key="frame" x="0.0" y="315" width="320" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="KC9-8f-Upr" id="8dO-lA-ISU">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VYB-TZ-0Dr">
-                                                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="50" id="ayN-sD-2Y5"/>
-                                                    </constraints>
-                                                    <state key="normal" title="See All Groups"/>
-                                                    <connections>
-                                                        <segue destination="PvA-uf-Gcn" kind="show" id="ewA-Cu-poj"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="VYB-TZ-0Dr" secondAttribute="trailing" id="1aK-FB-hCX"/>
-                                                <constraint firstItem="VYB-TZ-0Dr" firstAttribute="top" secondItem="8dO-lA-ISU" secondAttribute="top" id="jCt-8y-AAb"/>
-                                                <constraint firstItem="VYB-TZ-0Dr" firstAttribute="leading" secondItem="8dO-lA-ISU" secondAttribute="leading" id="rOq-5q-JTM"/>
-                                                <constraint firstAttribute="bottom" secondItem="VYB-TZ-0Dr" secondAttribute="bottom" id="wKU-YA-yPO"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </cells>
-                            </tableViewSection>
-                        </sections>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="groupMenuCell" id="Sqd-Ur-MsL">
+                                <rect key="frame" x="0.0" y="55.5" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Sqd-Ur-MsL" id="cb0-8I-MLq">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
                         <connections>
-                            <outlet property="dataSource" destination="7dE-FI-JJw" id="Ie6-NB-ij7"/>
-                            <outlet property="delegate" destination="7dE-FI-JJw" id="aSi-Sd-fSb"/>
+                            <outlet property="dataSource" destination="7dE-FI-JJw" id="YcG-ks-icT"/>
+                            <outlet property="delegate" destination="7dE-FI-JJw" id="m32-5W-UwT"/>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Groups" id="8WD-S2-RM3">
@@ -159,11 +78,16 @@
                                 <segue destination="Ger-RH-lUx" kind="presentation" id="Mik-Eo-aM5"/>
                             </connections>
                         </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Create" id="hOK-bX-h2K">
+                            <connections>
+                                <segue destination="bvz-MG-L6K" kind="show" id="yi2-mM-xgw"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kTM-47-zf6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1726" y="900"/>
+            <point key="canvasLocation" x="1725" y="900"/>
         </scene>
         <!--Create GroupVC-->
         <scene sceneID="Km3-Jp-EdV">
@@ -353,12 +277,12 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="7dE-FI-JJw" kind="relationship" relationship="rootViewController" id="bt8-ab-r1B"/>
+                        <segue destination="7dE-FI-JJw" kind="relationship" relationship="rootViewController" id="tsC-qO-yNp"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x55-Fb-Cwc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="880" y="667"/>
+            <point key="canvasLocation" x="803" y="795"/>
         </scene>
         <!--Home-->
         <scene sceneID="Kt9-Hv-WSy">

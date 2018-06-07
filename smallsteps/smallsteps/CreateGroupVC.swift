@@ -12,7 +12,7 @@ import Alamofire
 import CoreLocation
 
 class CreateGroupVC: FormViewController {
-    
+    var tryout: String?
     override func viewDidLoad() {
         super.viewDidLoad()
         //let doneButton = UIBarButtonItem(barButtonSystemItem: nil, target: self, action: #selector(tapButton))
