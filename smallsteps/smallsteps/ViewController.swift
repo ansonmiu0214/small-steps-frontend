@@ -36,8 +36,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         map.delegate = self
     }
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -246,6 +244,14 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         map.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(70, 70, 70, 70), animated: true)
     }
     
+    func callPopUp(identifier: String){
+        let popOverVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: identifier) as! JoinGroupPopupViewController
+        self.addChildViewController(popOverVC)
+        popOverVC.view.frame = self.view.frame
+        self.view.addSubview(popOverVC.view)
+        popOverVC.didMove(toParentViewController: self)
+    }
+    
     @objc func joinGroup(){
         print("joining group with id: \(currGroupId)")
         
@@ -261,6 +267,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         //PUT request JSON to the server
         Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .put, parameters: joinGroupParams, encoding: URLEncoding.default)
             .response {response in
+                
                 print(response.request)
                 print(response.response)
                 print(response.response?.statusCode ?? "no response!")
@@ -268,11 +275,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
                     switch optStatusCode {
                     case 200...300:
                         print("successfully joined the group!!")
-                        let storyboard = UIStoryboard(name: "main", bundle: nil)
-                        let vc = storyboard.instantiateViewController(withIdentifier: "popup") as! JoinGroupPopupViewController
-                        vc.modalPresentationStyle = .overFullScreen
-                        vc.modalTransitionStyle = .crossDissolve
-                        self.present(vc, animated: true, completion: nil)
+                        self.callPopUp(identifier: "popup")
                     default:
                         print("error")
                         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
