@@ -97,12 +97,9 @@ class AllGroupsTVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "GroupCell", for: indexPath)
-//        cell.textLabel?.text = groups[indexPath.row].groupName
-//        return cell
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "groupCell", for: indexPath)
-        cell.textLabel?.text = "HI"
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: "groupCell", for: indexPath)
+        cell.textLabel?.text = groups[indexPath.row].groupName
         return cell
     }
 
