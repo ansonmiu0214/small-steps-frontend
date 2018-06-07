@@ -11,6 +11,7 @@ import CoreLocation
 import MapKit
 import Alamofire
 import AVFoundation
+import SwiftyJSON
 
 protocol HandleMapSearch {
     func dropPinZoomIn(placemark:MKPlacemark)
@@ -135,23 +136,30 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             //so we don't modify the standard user location
             return nil
         }
+        
         let reuseId = "Pin"
-        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? LocationPointerView
-        pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
-        pinView?.canShowCallout = true
+        var pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
+        pinView.canShowCallout = true
         print(annotation.title ?? "no title!!")
         let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 30, height: 30)))
         directionButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
         directionButton.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
-        pinView?.leftCalloutAccessoryView = directionButton
+        pinView.leftCalloutAccessoryView = directionButton
  
         if let locPointAnnotation = annotation as? LocationPointer{
             if(locPointAnnotation.discipline != ""){
-                let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 50, height: 50)))
-                infoButton.setTitle("Join", for: .normal)
+                let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
+
+                if myGroups.contains(locPointAnnotation.group!) {
+                    infoButton.setTitle("Joined", for: .normal)
+                    infoButton.isEnabled = false
+                } else {
+                    infoButton.setTitle("Join", for: .normal)
+                }
+            
                 infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
                 infoButton.addTarget(self, action: #selector(self.joinGroup), for: .touchUpInside)
-                pinView?.rightCalloutAccessoryView = infoButton
+                pinView.rightCalloutAccessoryView = infoButton
             }
         }
         
@@ -159,7 +167,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         subtitleView.font = subtitleView.font.withSize(12)
         subtitleView.numberOfLines = 4
         subtitleView.text = annotation.subtitle!
-        pinView?.detailCalloutAccessoryView = subtitleView
+        pinView.detailCalloutAccessoryView = subtitleView
         
         return pinView
     }
@@ -178,6 +186,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         if let annotationTitle = view.annotation?.title
         {
             print("User tapped on annotation with title: \(annotationTitle!)")
+            
         }
     }
     
@@ -250,7 +259,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         map.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(70, 70, 70, 70), animated: true)
     }
     
-    @objc func joinGroup(){
+    @IBAction func joinGroup(btn: UIButton){
         print("joining group with id: \(currGroupId)")
         
         let joinGroupParams: Parameters = [
@@ -277,6 +286,26 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
                         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
                      
                     }
+                    
+                    // TODO delete later
+                    let uuid = UIDevice.current.identifierForVendor!
+                    Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?device_id=\(uuid)", method: .get, encoding: JSONEncoding.default).responseJSON { (responseData) -> Void in
+                        if((responseData.result.value) != nil) {
+                            if let swiftyJsonVar = try? JSON(responseData.result.value!) {
+                                myGroups = []
+                                for (_, item) in swiftyJsonVar{
+                                    myGroups.append(createGroupFromJSON(item: item))
+                                }
+                            }
+                        }
+                        
+                        // reset map annotations and add them again
+                        self.map.removeAnnotations(self.map.annotations)
+                        
+                        groups.forEach { group in self.createPinFromGroup(group: group)}
+                    }
+                    // END (TODO)
+                    
                 }
         }
     }
@@ -330,7 +359,7 @@ extension ViewController: addGroupPin {
                 let discipline = group.isWalking ? "In Progress" : "Not Started"
         
                 let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
-                let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate:  coordinate, groupId: group.groupId)
+        let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate:  coordinate, groupId: group.groupId, group: group)
                 map.addAnnotation(annotation)
             }
 }

@@ -12,6 +12,34 @@ import SwiftyJSON
 
 
  var groups: [Group] = []
+var myGroups: [Group] = []
+
+func createGroupFromJSON(item: JSON) -> Group{
+    //Convert JSON to string to datetime
+    let dateFormatterDT: DateFormatter = DateFormatter()
+    dateFormatterDT.dateFormat = "yyyy-MM-dd hh:mm:ss"
+    let newDate: Date = dateFormatterDT.date(from: item["time"].string!)!
+    
+    //Convert JSON to string to duration
+    let dateFormatterDur: DateFormatter = DateFormatter()
+    dateFormatterDur.dateFormat = "hh:mm"
+    //print("THE DURATION IS :" + item["duration"].string!)
+    //let newDuration: Date = dateFormatterDur.date(from: item["duration"].string!)!
+    
+    //Add new group to group array
+    let newGroup: Group = Group(groupName: item["name"].string!,
+                                datetime: newDate,
+                                repeats: "yes",
+                                duration: Date(),
+                                latitude: item["location_latitude"].string!,
+                                longitude: item["location_longitude"].string!,
+                                hasDog: item["has_dogs"].bool!,
+                                hasKid: item["has_kids"].bool!,
+                                adminID: item["admin_id"].string!,
+                                isWalking: item["is_walking"].bool!,
+                                groupId: item["id"].string!)
+    return newGroup
+}
 
 class AllGroupsTVC: UITableViewController {
     override func viewDidLoad() {
@@ -24,58 +52,61 @@ class AllGroupsTVC: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
     
-    static func createGroupFromJSON(item: JSON) -> Group{
-        //Convert JSON to string to datetime
-        let dateFormatterDT: DateFormatter = DateFormatter()
-        dateFormatterDT.dateFormat = "yyyy-MM-dd hh:mm:ss"
-        let newDate: Date = dateFormatterDT.date(from: item["time"].string!)!
-        
-        //Convert JSON to string to duration
-        let dateFormatterDur: DateFormatter = DateFormatter()
-        dateFormatterDur.dateFormat = "hh:mm"
-        //print("THE DURATION IS :" + item["duration"].string!)
-        //let newDuration: Date = dateFormatterDur.date(from: item["duration"].string!)!
-        
-        //Add new group to group array
-        let newGroup: Group = Group(groupName: item["name"].string!,
-                                    datetime: newDate,
-                                    repeats: "yes",
-                                    duration: Date(),
-                                    latitude: item["location_latitude"].string!,
-                                    longitude: item["location_longitude"].string!,
-                                    hasDog: item["has_dogs"].bool!,
-                                    hasKid: item["has_kids"].bool!,
-                                    adminID: item["admin_id"].string!,
-                                    isWalking: item["is_walking"].bool!,
-                                    groupId: item["id"].string!)
-        return newGroup
-    }
+//    static func createGroupFromJSON(item: JSON) -> Group{
+//        //Convert JSON to string to datetime
+//        let dateFormatterDT: DateFormatter = DateFormatter()
+//        dateFormatterDT.dateFormat = "yyyy-MM-dd hh:mm:ss"
+//        let newDate: Date = dateFormatterDT.date(from: item["time"].string!)!
+//
+//        //Convert JSON to string to duration
+//        let dateFormatterDur: DateFormatter = DateFormatter()
+//        dateFormatterDur.dateFormat = "hh:mm"
+//        //print("THE DURATION IS :" + item["duration"].string!)
+//        //let newDuration: Date = dateFormatterDur.date(from: item["duration"].string!)!
+//
+//        //Add new group to group array
+//        let newGroup: Group = Group(groupName: item["name"].string!,
+//                                    datetime: newDate,
+//                                    repeats: "yes",
+//                                    duration: Date(),
+//                                    latitude: item["location_latitude"].string!,
+//                                    longitude: item["location_longitude"].string!,
+//                                    hasDog: item["has_dogs"].bool!,
+//                                    hasKid: item["has_kids"].bool!,
+//                                    adminID: item["admin_id"].string!,
+//                                    isWalking: item["is_walking"].bool!,
+//                                    groupId: item["id"].string!)
+//        return newGroup
+//    }
     
     static func loadGroups(completion: @escaping () -> Void){
+        let uuid = UIDevice.current.identifierForVendor!
+        print(uuid)
         Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?latitude=51.4989&longitude=-0.1790", method: .get, parameters: nil, encoding: JSONEncoding.default)
             .responseJSON { (responseData) -> Void in
                 if((responseData.result.value) != nil) {
                     if let swiftyJsonVar = try? JSON(responseData.result.value!) {
                         for (_, item) in swiftyJsonVar{
                             groups.append(createGroupFromJSON(item: item))
-//                                                        for (label, value) in item {
-//                                                            print("\(label) : \(value)")
-//                                                        }
-//                                                        print(item)
-                            //print(item["name"].stringValue)
                         }
-                        //                      for jsonVar in swiftyJsonVar{
-                        //                          let resData = jsonVar["name"].stringValue
-                        //                          print(resData)
-                        //                    }
+                    }
+                    
+                    Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?device_id=\(uuid)", method: .get, encoding: JSONEncoding.default).responseJSON { response -> Void in
+                        if let val = response.result.value {
+                            if let jsonVal = try? JSON(val) {
+                                myGroups =  []
+                                for (_, item) in jsonVal {
+                                    myGroups.append(createGroupFromJSON(item: item))
+                                }
+                            }
+                        }
+                        
+                        completion()
                     }
                     
                 }
                 
-//                for item in groups {
-//                    print("THE GROUP NAMES: " + item.groupName)
-//                }
-                completion()
+//                completion()
         }
     }
 

@@ -9,7 +9,11 @@
 import Foundation
 import CoreLocation
 
-class Group {
+class Group: Equatable {
+    static func == (lhs: Group, rhs: Group) -> Bool {
+        return lhs.groupId == rhs.groupId
+    }
+    
     var groupName: String
     var datetime: Date
     var repeats: String
