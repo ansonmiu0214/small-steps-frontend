@@ -11,6 +11,9 @@ import CoreLocation
 import MapKit
 import Alamofire
 import AVFoundation
+import SwiftyJSON
+
+var yourGroups: [Group] = []
 
 protocol HandleMapSearch {
     func dropPinZoomIn(placemark:MKPlacemark)
@@ -25,6 +28,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     var userId: Int = 0
     let manager = CLLocationManager()
     
+    
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 //        let location = locations[0]
 //        let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
@@ -33,7 +38,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
 //        map.setRegion(region, animated: true)
         self.map.showsUserLocation = true
         map.delegate = self
-
     }
     
     override func viewDidLoad() {
@@ -79,7 +83,78 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             self.fitAll(showGroups: true)
             
         }
+        
+        //Used in AllGroupsTVC
+        loadYourGroups()
+        print("THERE ARE CURRENTLY: \(yourGroups.count)")
+        print(UIDevice.current.identifierForVendor!.uuidString)
     }
+    
+    func loadYourGroups(){
+        print("LOAAADING GROUPS!!!!!!!!!!!!")
+        let yourGroupParams: Parameters = [
+            "device_id": UIDevice.current.identifierForVendor!.uuidString,
+        ]
+        
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .get, parameters: yourGroupParams, encoding: URLEncoding.default)
+            .responseJSON { (responseData) -> Void in
+            if((responseData.result.value) != nil) {
+                if let swiftyJsonVar = try? JSON(responseData.result.value!) {
+                    for (_, item) in swiftyJsonVar{
+                        yourGroups.append(self.createGroupFromJSON(item: item))
+                        print("THE GROUP NAME IS: \(item["name"].string)")
+                    }
+                }
+                
+            }
+            //completion()
+        }
+//        Alamofire.request("146.169.45.120:8080/smallsteps/groups?device_id=\(UIDevice.current.identifierForVendor!.uuidString)", method: .get, parameters: nil, encoding: JSONEncoding.default)
+//            .responseJSON { (responseData) -> Void in
+//                if((responseData.result.value) != nil) {
+//                    if let swiftyJsonVar = try? JSON(responseData.result.value!) {
+//                        for (_, item) in swiftyJsonVar{
+//                            yourGroups.append(self.createGroupFromJSON(item: item))
+//                            print("THE GROUP NAME IS: \(item["name"].string)")
+//                        }
+//                    }
+//
+//                }
+//                //completion()
+//        }
+        print("LOADED GROUPS")
+    }
+    
+    func createGroupFromJSON(item: JSON) -> Group{
+        
+        print("item: \(item)")
+        
+        //Convert JSON to string to datetime
+        let dateFormatterDT: DateFormatter = DateFormatter()
+        dateFormatterDT.dateFormat = "yyyy-MM-dd hh:mm:ss"
+        //let newDate: Date = dateFormatterDT.date(from: item["time"].string!)!
+        
+        //Convert JSON to string to duration
+        let dateFormatterDur: DateFormatter = DateFormatter()
+        dateFormatterDur.dateFormat = "hh:mm"
+        //print("THE DURATION IS :" + item["duration"].string!)
+        //let newDuration: Date = dateFormatterDur.date(from: item["duration"].string!)!
+        
+        //Add new group to group array
+        let newGroup: Group = Group(groupName: item["name"].string!,
+                                    datetime: Date(),
+                                    repeats: "yes",
+                                    duration: Date(),
+                                    latitude: item["location_latitude"].string!,
+                                    longitude: item["location_longitude"].string!,
+                                    hasDog: item["has_dogs"].bool!,
+                                    hasKid: item["has_kids"].bool!,
+                                    adminID: item["admin_id"].string!,
+                                    isWalking: item["is_walking"].bool!,
+                                    groupId: item["id"].string!)
+        return newGroup
+    }
+    
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) { self.view.endEditing(true) }
     

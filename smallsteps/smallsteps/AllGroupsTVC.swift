@@ -11,7 +11,7 @@ import Alamofire
 import SwiftyJSON
 import CoreLocation
 
- var groups: [Group] = []
+var groups: [Group] = []
 
 class AllGroupsTVC: UITableViewController {
     override func viewDidLoad() {
@@ -54,36 +54,39 @@ class AllGroupsTVC: UITableViewController {
     static func loadGroups(completion: @escaping () -> Void){
         let location = CLLocationManager().location?.coordinate
         
-        let loadGroupParams: Parameters = [
+        let localGroupsParams: Parameters = [
             "latitude": String(location!.latitude),
             "longitude": String(location!.longitude)
         ]
         
-        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .get, parameters: loadGroupParams, encoding: URLEncoding.default)
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .get, parameters: localGroupsParams, encoding: URLEncoding.default)
             .responseJSON { (responseData) -> Void in
                 if((responseData.result.value) != nil) {
                     if let swiftyJsonVar = try? JSON(responseData.result.value!) {
                         for (_, item) in swiftyJsonVar{
                             groups.append(createGroupFromJSON(item: item))
-//                                                        for (label, value) in item {
-//                                                            print("\(label) : \(value)")
-//                                                        }
-//                                                        print(item)
-                            //print(item["name"].stringValue)
                         }
-                        //                      for jsonVar in swiftyJsonVar{
-                        //                          let resData = jsonVar["name"].stringValue
-                        //                          print(resData)
-                        //                    }
                     }
                     
                 }
-                
-//                for item in groups {
-//                    print("THE GROUP NAMES: " + item.groupName)
-//                }
-                completion()
         }
+        let deviceGroupsParams: Parameters = [
+            "device_id":UIDevice.current.identifierForVendor!.uuidString
+        ]
+        
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .get, parameters: deviceGroupsParams, encoding: URLEncoding.default)
+            .responseJSON { (responseData) -> Void in
+                if((responseData.result.value) != nil) {
+                    if let swiftyJsonVar = try? JSON(responseData.result.value!) {
+                        for (_, item) in swiftyJsonVar{
+                            groups.append(createGroupFromJSON(item: item))
+                        }
+                    }
+                    
+                }
+        }
+        completion()
+
     }
 
     override func didReceiveMemoryWarning() {
