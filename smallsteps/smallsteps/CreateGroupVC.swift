@@ -11,17 +11,12 @@ import Eureka
 import Alamofire
 import CoreLocation
 
-protocol addGroupPin {
-    func createPinFromGroup(group: Group)
-}
 class CreateGroupVC: FormViewController {
-    var delegate: addGroupPin?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        //let doneButton = UIBarButtonItem(barButtonSystemItem: nil, target: self, action: #selector(tapButton))
+    
         let nextButton = UIBarButtonItem(title: "Create", style: .plain, target: self, action: #selector(CreateGroupVC.createGroup))
         nextButton.isEnabled = false
         self.navigationItem.rightBarButtonItem = nextButton
@@ -101,9 +96,7 @@ class CreateGroupVC: FormViewController {
                                     adminID: UIDevice.current.identifierForVendor!.uuidString)
         print("Group created \(newGroup.groupName)")
         
-        //createPinFromGroup(group: newGroup)
-        self.delegate?.createPinFromGroup(group: newGroup)
-        
+      
         //Create the walker parameters
         let groupParams: Parameters = [
             "name": newGroup.groupName,

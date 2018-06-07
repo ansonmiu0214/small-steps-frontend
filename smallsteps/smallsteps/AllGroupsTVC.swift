@@ -67,9 +67,11 @@ class AllGroupsTVC: UITableViewController {
                             groups.append(createGroupFromJSON(item: item))
                         }
                     }
-                    
                 }
+                completion()
         }
+    }
+    static func loadUserGroups(completion: @escaping () -> Void){
         let deviceGroupsParams: Parameters = [
             "device_id":UIDevice.current.identifierForVendor!.uuidString
         ]
@@ -82,11 +84,9 @@ class AllGroupsTVC: UITableViewController {
                             groups.append(createGroupFromJSON(item: item))
                         }
                     }
-                    
                 }
+                completion()
         }
-        completion()
-
     }
 
     override func didReceiveMemoryWarning() {

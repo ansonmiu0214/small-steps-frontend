@@ -17,6 +17,34 @@ class GroupMenuTVC: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        ////Used in GroupMenuTVC
+        loadYourGroups()
+        print("THERE ARE CURRENTLY: \(yourGroups.count)")
+        print(UIDevice.current.identifierForVendor!.uuidString)
+        
+    }
+    
+    func loadYourGroups(){
+        print("LOAAADING GROUPS!!!!!!!!!!!!")
+        let yourGroupParams: Parameters = [
+            "device_id": UIDevice.current.identifierForVendor!.uuidString,
+            ]
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .get, parameters: yourGroupParams, encoding: URLEncoding.default)
+            .responseJSON { (responseData) -> Void in
+                if((responseData.result.value) != nil) {
+                    if let swiftyJsonVar = try? JSON(responseData.result.value!) {
+                        for (_, item) in swiftyJsonVar{
+                            yourGroups.append(ViewController.createGroupFromJSON(item: item))
+                            print("THE GROUP NAME IS: \(item["name"].string)")
+                        }
+                    }
+                    
+                }
+                //completion()
+        }
+        
+        print("LOADED GROUPS")
     }
     
     
