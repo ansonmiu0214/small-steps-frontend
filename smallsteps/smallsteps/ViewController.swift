@@ -45,8 +45,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
+    
         //
         //MapKit Setup
         manager.delegate = self
@@ -189,13 +188,23 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
          if let locPointAnnotation = annotation as? LocationPointer{
             if(locPointAnnotation.discipline != ""){
                 let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
-
-                if myGroups.contains(locPointAnnotation.group!) {
-                    infoButton.setTitle("Joined", for: .normal)
-                    infoButton.isEnabled = false
-                } else {
                     infoButton.setTitle("Join", for: .normal)
+                print("locpointannotgroup: \(locPointAnnotation)")
+                if let grp = locPointAnnotation.group {
+                    print("group is: \(grp)")
+                    if myGroups.contains(grp) {
+                        infoButton.setTitle("Joined", for: .normal)
+                        infoButton.isEnabled = false
+                    }
                 }
+//
+//
+//                if myGroups.contains(locPointAnnotation.group!) {
+//                    infoButton.setTitle("Joined", for: .normal)
+//                    infoButton.isEnabled = false
+//                } else {
+//                    infoButton.setTitle("Join", for: .normal)
+//                }
             
                 infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
                 infoButton.addTarget(self, action: #selector(self.joinGroup), for: .touchUpInside)
@@ -244,7 +253,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         let discipline = group.isWalking ? "In Progress" : "Not Started"
         
         let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
-        let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate:  coordinate, groupId: group.groupId)
+        let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate:  coordinate, groupId: group.groupId, group: group)
         map.addAnnotation(annotation)
     }
     
@@ -345,6 +354,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
                                 myGroups = []
                                 for (_, item) in swiftyJsonVar{
                                     myGroups.append(ViewController.createGroupFromJSON(item: item))
+                                    print(item)
                                 }
                             }
                         }
