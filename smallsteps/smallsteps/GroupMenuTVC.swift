@@ -8,16 +8,22 @@
 
 import UIKit
 
+import Alamofire
+import SwiftyJSON
+
+
 
 class GroupMenuTVC: UITableViewController {
 
     //let sections = ["Create A New Group", "Your Groups", "See All Groups"]
-    let yourGroups = ["Huxley Walkers", "abc123"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        for item in yourGroups {
+            print("THE GROUP NAME IS \(item.groupName)")
+        }
     }
+    
     
     // MARK: UITableViewDataSource
     
@@ -48,7 +54,7 @@ class GroupMenuTVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Create an object of the dynamic cell "PlainCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: "groupMenuCell", for: indexPath)
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: "groupMenuCell", for: indexPath)
         // Depending on the section, fill the textLabel with the relevant text
 //        switch indexPath.section {
 //            case 0:
@@ -62,7 +68,7 @@ class GroupMenuTVC: UITableViewController {
 //            default:
 //                print("hi")
 //        }
-        cell.textLabel?.text = yourGroups[indexPath.row]
+        cell.textLabel?.text = yourGroups[indexPath.row].groupName
         // Return the configured cell
         return cell
     }

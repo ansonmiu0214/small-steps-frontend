@@ -11,7 +11,7 @@ import Alamofire
 import SwiftyJSON
 
 
- var groups: [Group] = []
+var groups: [Group] = []
 
 class AllGroupsTVC: UITableViewController {
     override func viewDidLoad() {
