@@ -11,6 +11,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
+var yourGroupNames: [String] = []
 
 
 class GroupMenuTVC: UITableViewController {
@@ -18,14 +19,9 @@ class GroupMenuTVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        ////Used in GroupMenuTVC
-        loadYourGroups()
-        print("THERE ARE CURRENTLY: \(yourGroups.count)")
-        print(UIDevice.current.identifierForVendor!.uuidString)
-        
     }
     
-    func loadYourGroups(){
+    static func loadYourGroups(){
         print("LOAAADING GROUPS!!!!!!!!!!!!")
         let yourGroupParams: Parameters = [
             "device_id": UIDevice.current.identifierForVendor!.uuidString,
@@ -36,15 +32,15 @@ class GroupMenuTVC: UITableViewController {
                     if let swiftyJsonVar = try? JSON(responseData.result.value!) {
                         for (_, item) in swiftyJsonVar{
                             yourGroups.append(ViewController.createGroupFromJSON(item: item))
+                            yourGroupNames.append(item["name"].string!)
+                            yourGroupNames = Array(Set(yourGroupNames))
                             print("THE GROUP NAME IS: \(item["name"].string)")
                         }
                     }
                     
                 }
-                //completion()
         }
         
-        print("LOADED GROUPS")
     }
     
     
@@ -72,7 +68,7 @@ class GroupMenuTVC: UITableViewController {
 //            default:
 //                return 0
 //        }
-        return yourGroups.count
+        return yourGroupNames.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -93,7 +89,7 @@ class GroupMenuTVC: UITableViewController {
 //                print("hi")
 //        }
 
-        cell.textLabel?.text = yourGroups[indexPath.row].groupName
+        cell.textLabel?.text = yourGroupNames[indexPath.row]
         // Return the configured cell
         return cell
     }

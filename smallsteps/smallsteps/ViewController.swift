@@ -89,6 +89,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             }
         }
         
+        ////Used in GroupMenuTVC
+        GroupMenuTVC.loadYourGroups()
  
     }
     
@@ -99,7 +101,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         //Convert JSON to string to datetime
         let dateFormatterDT: DateFormatter = DateFormatter()
         dateFormatterDT.dateFormat = "yyyy-MM-dd hh:mm:ss"
-        //let newDate: Date = dateFormatterDT.date(from: item["time"].string!)!
+        let newDate: Date = dateFormatterDT.date(from: item["time"].string!)!
         
         //Convert JSON to string to duration
         let dateFormatterDur: DateFormatter = DateFormatter()
@@ -109,7 +111,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         
         //Add new group to group array
         let newGroup: Group = Group(groupName: item["name"].string!,
-                                    datetime: Date(),
+                                    datetime: newDate,
                                     repeats: "yes",
                                     duration: Date(),
                                     latitude: item["location_latitude"].string!,
