@@ -20,8 +20,9 @@ class Group {
     var hasKid: Bool
     var adminID: String
     var isWalking: Bool
+    var groupId: String
     
-    init(groupName: String, datetime: Date, repeats: String, duration: Date, latitude: String, longitude: String, hasDog: Bool, hasKid: Bool, adminID: String, isWalking: Bool = false) {
+    init(groupName: String, datetime: Date, repeats: String, duration: Date, latitude: String, longitude: String, hasDog: Bool, hasKid: Bool, adminID: String, isWalking: Bool = false, groupId: String = "-1") {
         self.groupName = groupName
         self.datetime = datetime
         self.repeats = repeats
@@ -32,6 +33,7 @@ class Group {
         self.hasKid = hasKid
         self.adminID = adminID
         self.isWalking = isWalking
+        self.groupId = groupId
     }
 
 }

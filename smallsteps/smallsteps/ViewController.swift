@@ -10,6 +10,7 @@ import UIKit
 import CoreLocation
 import MapKit
 import Alamofire
+import AVFoundation
 
 protocol HandleMapSearch {
     func dropPinZoomIn(placemark:MKPlacemark)
@@ -17,7 +18,7 @@ protocol HandleMapSearch {
 
 class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleMapSearch{
     var selectedPin:MKPlacemark? = nil
-    
+    var currGroupId: String = "-1"
     @IBOutlet var map: MKMapView!
     
     var resultSearchController:UISearchController? = nil
@@ -25,19 +26,14 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     let manager = CLLocationManager()
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let location = locations[0]
-        let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
-        let myLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
-        let region: MKCoordinateRegion = MKCoordinateRegionMake(myLocation, span)
-        map.setRegion(region, animated: true)
-        
+//        let location = locations[0]
+//        let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
+//        let myLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
+//        let region: MKCoordinateRegion = MKCoordinateRegionMake(myLocation, span)
+//        map.setRegion(region, animated: true)
+        fitAll(showGroups: true)
         self.map.showsUserLocation = true
         map.delegate = self
-        
-        for group in groups{
-            createPinFromGroup(group: group)
-        }
-        
     }
     
     override func viewDidLoad() {
@@ -67,20 +63,28 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         //Set the map view in locationSearchTable
         locationSearchTable.map = map
         
-        //Map Annotations
-        map.register(LocationPointerView.self,
-                     forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
-        let artwork = LocationPointer(title: "9AMers",
-                              subtitle: "Huxley Building",
-                              discipline: "Just Finished",
-                              coordinate: CLLocationCoordinate2D(latitude: 51.4989034, longitude: -0.1811814))
-        map.addAnnotation(artwork)
+//        //Map Annotations
+//        map.register(LocationPointerView.self,
+//                     forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
+//        let artwork = LocationPointer(title: "9AMers",
+//                              subtitle: "Huxley Building",
+//                              discipline: "Just Finished",
+//                              coordinate: CLLocationCoordinate2D(latitude: 51.4989034, longitude: -0.1811814))
+//        map.addAnnotation(artwork)
+//
+//        let artwork2 = LocationPointer(title: "Mumsnetters",
+//                               subtitle: "Royal College of Art",
+//                               discipline: "Not Started",
+//                               coordinate: CLLocationCoordinate2D(latitude: 51.5011441, longitude: -0.1814734))
+//        map.addAnnotation(artwork2)
+//
+        AllGroupsTVC.loadGroups()
         
-        let artwork2 = LocationPointer(title: "Mumsnetters",
-                               subtitle: "Royal College of Art",
-                               discipline: "Not Started",
-                               coordinate: CLLocationCoordinate2D(latitude: 51.5011441, longitude: -0.1814734))
-        map.addAnnotation(artwork2)
+        //Create pins from groups
+        print("groups is: \(groups)")
+        for group in groups{
+            createPinFromGroup(group: group)
+        }
         
     }
     
@@ -96,7 +100,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         request.source = MKMapItem.forCurrentLocation()
         request.destination = MKMapItem(placemark: selectedPin!)
         request.requestsAlternateRoutes = false
-        
+        request.transportType = .walking
         let directions = MKDirections(request: request)
         
         directions.calculate(completionHandler: {(response, error) in
@@ -110,6 +114,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
     
     func showRoute(_ response: MKDirectionsResponse) {
+        map.removeOverlays(map.overlays)
         print("showing route!")
         for route in response.routes {
             map.add(route.polyline,
@@ -118,13 +123,13 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
 //                print(step.instructions)
 //            }
         }
-        self.fitAll(showGroups: false)
+       self.fitAll(showGroups: false)
     }
+    
     func mapView(_ mapView: MKMapView, rendererFor
         overlay: MKOverlay) -> MKOverlayRenderer {
-        
         let renderer = MKPolylineRenderer(overlay: overlay)
-        renderer.strokeColor = UIColor.blue
+        renderer.strokeColor = UIColor.red
         renderer.lineWidth = 5.0
         return renderer
     }
@@ -138,26 +143,46 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? LocationPointerView
         pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
         pinView?.canShowCallout = true
-        print(annotation.coordinate)
+        print(annotation.title ?? "no title!!")
         let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 30, height: 30)))
         directionButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
         directionButton.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
         pinView?.leftCalloutAccessoryView = directionButton
  
-        let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 50, height: 50)))
-        //infoButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
-        infoButton.setTitle("Join", for: .normal)
-        infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
-        infoButton.addTarget(self, action: #selector(self.joinGroup), for: .touchUpInside)
-        pinView?.rightCalloutAccessoryView = infoButton
+        if let locPointAnnotation = annotation as? LocationPointer{
+            if(locPointAnnotation.discipline != ""){
+                let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 50, height: 50)))
+                infoButton.setTitle("Join", for: .normal)
+                infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
+                infoButton.addTarget(self, action: #selector(self.joinGroup), for: .touchUpInside)
+                pinView?.rightCalloutAccessoryView = infoButton
+            }
+        }
         
         let subtitleView = UILabel()
         subtitleView.font = subtitleView.font.withSize(12)
         subtitleView.numberOfLines = 4
         subtitleView.text = annotation.subtitle!
-        pinView!.detailCalloutAccessoryView = subtitleView
+        pinView?.detailCalloutAccessoryView = subtitleView
         
         return pinView
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)
+    {
+        selectedPin = MKPlacemark(coordinate: (view.annotation?.coordinate)!)
+        print("currently selected pin at: \(selectedPin)")
+        if let locPointAnnotation = view.annotation as? LocationPointer{
+            if locPointAnnotation.discipline != ""{
+                currGroupId = (locPointAnnotation.groupId)
+                print("groupId = \(currGroupId)")
+            }
+        }
+
+        if let annotationTitle = view.annotation?.title
+        {
+            print("User tapped on annotation with title: \(annotationTitle!)")
+        }
     }
     
     func createPinFromGroup(group: Group){
@@ -173,7 +198,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         
         let discipline = group.isWalking ? "In Progress" : "Not Started"
         
-        let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate:  CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!))
+        let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
+        let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate:  coordinate, groupId: group.groupId)
         map.addAnnotation(annotation)
     }
     
@@ -182,14 +208,19 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         map.removeOverlays(map.overlays)
 
         if(selectedPin != nil){
-            for annotation in map.annotations as! [LocationPointer]{
-                if (annotation.discipline != "In Progress" ||
-                    annotation.discipline != "Not Started"){
+            for annotation in map.annotations {
+                if let pointAnnotation = annotation as? LocationPointer{
+                    if (pointAnnotation.discipline != "In Progress" ||
+                        pointAnnotation.discipline != "Not Started"){
+                        map.removeAnnotation(pointAnnotation)
+                    }
+                } else{
                     map.removeAnnotation(annotation)
                 }
+                
+                
             }
         }
-        
         // save the pin so we can find directions to it later
         selectedPin = placemark
         
@@ -201,7 +232,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         let annotation = LocationPointer(title: placemark.name!, subtitle: subtitle, discipline: "", coordinate: placemark.coordinate)
         map.addAnnotation(annotation)
         
-        let span = MKCoordinateSpanMake(0.01, 0.01)
+        let span = MKCoordinateSpanMake(0.03, 0.03)
         let region = MKCoordinateRegionMake(placemark.coordinate, span)
         map.setRegion(region, animated: true)
         }
@@ -210,17 +241,43 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     func fitAll(showGroups: Bool) {
         var zoomRect = MKMapRectNull;
         for annotation in map.annotations {
-            if showGroups || (annotation as? LocationPointer)?.discipline == "" {
+            if showGroups
+                || annotation is MKUserLocation
+                || (annotation.coordinate.latitude == selectedPin?.coordinate.latitude
+                    && annotation.coordinate.longitude == selectedPin?.coordinate.longitude) {
                 let annotationPoint = MKMapPointForCoordinate(annotation.coordinate)
-                let pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.01, 0.01);
+                let pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.05, 0.05);
                 zoomRect = MKMapRectUnion(zoomRect, pointRect);
             }
         }
-        map.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(40, 40, 40, 40), animated: true)
+        map.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(70, 70, 70, 70), animated: true)
     }
     
     @objc func joinGroup(){
-        print("joining group!!!")
+        print("joining group with id: \(currGroupId)")
+        
+        let joinGroupParams: Parameters = [
+            "walker_id": UIDevice.current.identifierForVendor!.uuidString,
+            "group_id": currGroupId
+        ]
+        
+        print(UIDevice.current.identifierForVendor!.uuidString)
+        
+        //PUT request JSON to the server
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .put, parameters: joinGroupParams, encoding: URLEncoding.default)
+            .response {response in
+                print(response.response?.statusCode ?? "no response!")
+                if let optStatusCode = response.response?.statusCode{
+                    switch optStatusCode {
+                    case 200...300:
+                        print("successfully joined the group!!")
+                    default:
+                        print("error")
+                        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+                     
+                    }
+                }
+        }
     }
     
     func dateToString(datetime: Date) -> String {
@@ -241,12 +298,18 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         dateFormatter.dateFormat = "m"
         let newMinute: String = dateFormatter.string(from: time)
         if newHour == "0"{
-            return "\(newMinute) minute(s)"
+            return "\(newMinute) minutes"
         }
+        var hour: String
+        if(newHour == "1"){
+            hour = "\(newHour) hour"
+        }
+        hour = "\(newHour) hours"
         if(newMinute == "0"){
-            return "\(newHour) hour(s)"
+            return hour
         }
-        return "\(newHour) hour(s) and \(newMinute) minute(s)"
+        
+        return "\(hour) and \(newMinute) minutes"
     }
     
 }

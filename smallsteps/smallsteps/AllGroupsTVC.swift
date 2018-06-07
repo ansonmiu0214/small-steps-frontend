@@ -10,17 +10,26 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-//var groups: [Group] = [Group(groupName: "BOBOBO", datetime: Date(), repeats: "yes", duration: Date(), latitude: "51.5101", longitude: "-0.1342", hasDog: true, hasKid: false, adminID: "123456789009876543211234567890098765")]
+
  var groups: [Group] = []
+//var groups: [Group] = [Group(groupName: "BOBOBO", datetime: Date(), repeats: "yes", duration: Date(), latitude: "51.4989", longitude: "-0.1790", hasDog: true, hasKid: false, adminID: "123456789009876543211234567890098765", isWalking: true, groupId: "19"), Group(groupName: "BOBOBOsasdfsdf", datetime: Date(), repeats: "yes", duration: Date(), latitude: "51.5110", longitude: "-0.1318", hasDog: true, hasKid: false, adminID: "123456789009876543211234517890098765", isWalking: false, groupId: "20")]
 
 class AllGroupsTVC: UITableViewController {
-    
-
-   
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
+        
+        
+
+        // Uncomment the following line to preserve selection between presentations
+        // self.clearsSelectionOnViewWillAppear = false
+
+        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+    }
+    
+    static func loadGroups(){
         Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?latitude=51.4989&longitude=-0.1790", method: .get, parameters: nil, encoding: JSONEncoding.default)
             .responseJSON { (responseData) -> Void in
                 if((responseData.result.value) != nil) {
@@ -38,42 +47,34 @@ class AllGroupsTVC: UITableViewController {
                             //let newDuration: Date = dateFormatterDur.date(from: item["duration"].string!)!
                             
                             //Add new group to group array
-                            self.groups.append(Group(groupName: item["name"].string!,
-                                                           datetime: newDate,
-                                                           repeats: "yes",
-                                                           duration: Date(),
-                                                           latitude: item["location_latitude"].string!,
-                                                           longitude: item["location_longitude"].string!,
-                                                           hasDog: item["has_dogs"].bool!,
-                                                           hasKid: item["has_kids"].bool!,
-                                                           adminID: item["admin_id"].string!,
-                                                           isWalking: item["is_walking"].bool!))
-//                            for (label, value) in item {
-//                                print("\(label) : \(value)")
-//                            }
-//                            print(item)
-                             //print(item["name"].stringValue)
+                            groups.append(Group(groupName: item["name"].string!,
+                                                datetime: newDate,
+                                                repeats: "yes",
+                                                duration: Date(),
+                                                latitude: item["location_latitude"].string!,
+                                                longitude: item["location_longitude"].string!,
+                                                hasDog: item["has_dogs"].bool!,
+                                                hasKid: item["has_kids"].bool!,
+                                                adminID: item["admin_id"].string!,
+                                                isWalking: item["is_walking"].bool!))
+                            //                            for (label, value) in item {
+                            //                                print("\(label) : \(value)")
+                            //                            }
+                            //                            print(item)
+                            //print(item["name"].stringValue)
                         }
-//                      for jsonVar in swiftyJsonVar{
-//                          let resData = jsonVar["name"].stringValue
-//                          print(resData)
-//                    }
+                        //                      for jsonVar in swiftyJsonVar{
+                        //                          let resData = jsonVar["name"].stringValue
+                        //                          print(resData)
+                        //                    }
                     }
-
+                    
                 }
                 
-                for item in self.groups {
+                for item in groups {
                     print("THE GROUP NAMES: " + item.groupName)
                 }
         }
-        
-        
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
     override func didReceiveMemoryWarning() {
