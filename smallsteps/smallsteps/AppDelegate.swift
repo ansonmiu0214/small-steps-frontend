@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import MapKit
 import Alamofire
 
 @UIApplicationMain
@@ -36,6 +37,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         //Setting the appropriate initial view controller
         let deviceID: String = UIDevice.current.identifierForVendor!.uuidString
+        
+        CLLocationManager().requestAlwaysAuthorization()
 
         recognisedDevice(deviceID: deviceID){ response in
 

@@ -80,11 +80,19 @@ class AllGroupsTVC: UITableViewController {
 //    }
 
     static func loadGroups(completion: @escaping () -> Void){
-        let location = CLLocationManager().location?.coordinate
+        var latitude: String
+        var longitude: String
+        if let location = CLLocationManager().location?.coordinate{
+            latitude = String(location.latitude)
+            longitude = String(location.longitude)
+        } else{
+            latitude = "51.4989"
+            longitude = "-0.1790"
+        }
         
         let localGroupsParams: Parameters = [
-            "latitude": String(location!.latitude),
-            "longitude": String(location!.longitude)
+            "latitude": latitude,
+            "longitude": longitude
         ]
         
         Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .get, parameters: localGroupsParams, encoding: URLEncoding.default)
