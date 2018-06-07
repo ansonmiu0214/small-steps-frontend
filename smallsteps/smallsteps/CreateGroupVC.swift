@@ -78,7 +78,6 @@ class CreateGroupVC: FormViewController {
     @objc func setLocation() {
         performSegue(withIdentifier: "setLocation", sender: self)
     }
-
     
     @objc func createGroup() {
         let valuesDict = form.values()
@@ -108,8 +107,6 @@ class CreateGroupVC: FormViewController {
             "has_kids": newGroup.hasKid
         ]
         
-        
-
         //POST the JSON to the server
         Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .post, parameters: groupParams, encoding: JSONEncoding.default)
             .response {response in

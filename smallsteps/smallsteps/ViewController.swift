@@ -78,13 +78,14 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
 //                               coordinate: CLLocationCoordinate2D(latitude: 51.5011441, longitude: -0.1814734))
 //        map.addAnnotation(artwork2)
 //
-        AllGroupsTVC.loadGroups()
-        
-        //Create pins from groups
-        print("groups is: \(groups)")
-        for group in groups{
-            createPinFromGroup(group: group)
+        AllGroupsTVC.loadGroups(){
+            //Create pins from groups
+            print("groups is: \(groups)")
+            for group in groups{
+                self.createPinFromGroup(group: group)
+            }
         }
+        
         
     }
     

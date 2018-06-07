@@ -17,10 +17,6 @@ import SwiftyJSON
 class AllGroupsTVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        
-        
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -29,7 +25,7 @@ class AllGroupsTVC: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
     
-    static func loadGroups(){
+    static func loadGroups(completion: @escaping () -> Void){
         Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?latitude=51.4989&longitude=-0.1790", method: .get, parameters: nil, encoding: JSONEncoding.default)
             .responseJSON { (responseData) -> Void in
                 if((responseData.result.value) != nil) {
@@ -74,6 +70,7 @@ class AllGroupsTVC: UITableViewController {
                 for item in groups {
                     print("THE GROUP NAMES: " + item.groupName)
                 }
+                completion()
         }
     }
 
