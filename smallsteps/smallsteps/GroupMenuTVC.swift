@@ -22,7 +22,10 @@ class GroupMenuTVC: UITableViewController {
         for item in yourGroups {
             print("THE GROUP NAME IS \(item.groupName)")
         }
+        
     }
+    
+    
     
     
     // MARK: UITableViewDataSource

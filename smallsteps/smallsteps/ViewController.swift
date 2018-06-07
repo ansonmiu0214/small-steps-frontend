@@ -96,7 +96,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             }
         }
         
-        //Used in AllGroupsTVC
+        //Used in GroupMenuTVC
         loadYourGroups()
         print("THERE ARE CURRENTLY: \(yourGroups.count)")
         print(UIDevice.current.identifierForVendor!.uuidString)
@@ -121,19 +121,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             }
             //completion()
         }
-//        Alamofire.request("146.169.45.120:8080/smallsteps/groups?device_id=\(UIDevice.current.identifierForVendor!.uuidString)", method: .get, parameters: nil, encoding: JSONEncoding.default)
-//            .responseJSON { (responseData) -> Void in
-//                if((responseData.result.value) != nil) {
-//                    if let swiftyJsonVar = try? JSON(responseData.result.value!) {
-//                        for (_, item) in swiftyJsonVar{
-//                            yourGroups.append(self.createGroupFromJSON(item: item))
-//                            print("THE GROUP NAME IS: \(item["name"].string)")
-//                        }
-//                    }
-//
-//                }
-//                //completion()
-//        }
+
         print("LOADED GROUPS")
     }
     
