@@ -10,7 +10,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-var groups: [Group] = [Group(groupName: "BOBOBO", datetime: Date(), repeats: "yes", duration: Date(), latitude: "51.5101", longitude: "-0.1342", hasDog: true, hasKid: false, adminID: "123456789009876543211234567890098765")]
+var groups: [Group] = [Group(groupName: "BOBOBO", datetime: Date(), repeats: "yes", duration: Date(), latitude: "51.4989", longitude: "-0.1790", hasDog: true, hasKid: false, adminID: "123456789009876543211234567890098765", isWalking: true, groupId: "19"), Group(groupName: "BOBOBOsasdfsdf", datetime: Date(), repeats: "yes", duration: Date(), latitude: "51.5110", longitude: "-0.1318", hasDog: true, hasKid: false, adminID: "123456789009876543211234517890098765", isWalking: false, groupId: "20")]
 
 class AllGroupsTVC: UITableViewController {
     

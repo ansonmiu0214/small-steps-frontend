@@ -7,8 +7,6 @@ class LocationPointer: NSObject, MKAnnotation {
             return .green
         case "In Progress":
             return .orange
-        case "Just Finished":
-            return .red
         default:
             return .blue
         }
@@ -18,12 +16,14 @@ class LocationPointer: NSObject, MKAnnotation {
     let subtitle: String?
     let discipline: String
     let coordinate: CLLocationCoordinate2D
+    let groupId: String
     
-    init(title: String, subtitle: String, discipline: String, coordinate: CLLocationCoordinate2D) {
+    init(title: String, subtitle: String, discipline: String, coordinate: CLLocationCoordinate2D, groupId: String = "-1") {
         self.title = title
         self.subtitle = subtitle
         self.discipline = discipline
         self.coordinate = coordinate
+        self.groupId = groupId
         
         super.init()
     }

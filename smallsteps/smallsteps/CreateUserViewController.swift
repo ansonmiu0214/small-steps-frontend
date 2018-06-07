@@ -51,7 +51,6 @@ class CreateUserViewController: UIViewController {
         let defaultImg: String = "default.png"
         
         //Create the walker parameters
-        
         let walkerParams: Parameters = [
             "device_id": deviceID,
             "name": self.name.text ?? "John Doe",
