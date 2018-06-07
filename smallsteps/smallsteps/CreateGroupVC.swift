@@ -53,8 +53,7 @@ class CreateGroupVC: FormViewController {
             <<< CountDownRow() {
                 $0.tag = "duration"
                 $0.title = "Estimated Duration"
-                let date = Calendar.current.date(bySettingHour: 0, minute: 30, second: 0, of: Date())! //initial value
-                $0.value = date
+                $0.value = Date()
 
             }
             +++ Section("Details")
@@ -124,7 +123,7 @@ class CreateGroupVC: FormViewController {
         let dateFormatter: DateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd hh:mm:ss"
         let newDate: String = dateFormatter.string(for: datetime)!
-        print("THE NEW DATE IS: \(newDate)")
+        //print("THE NEW DATE IS: \(newDate)")
         return newDate
     }
     

@@ -12,7 +12,7 @@ import SwiftyJSON
 
 class AllGroupsTVC: UITableViewController {
     
-    //let groups: [Group] = [Group(groupName: "9AMers"), Group(groupName: "Mumsnet")]
+    var groups: [Group] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,10 +22,31 @@ class AllGroupsTVC: UITableViewController {
                 if((responseData.result.value) != nil) {
                     if let swiftyJsonVar = try? JSON(responseData.result.value!) {
                         for (_, item) in swiftyJsonVar{
+                            //Convert JSON to string to datetime
+                            let dateFormatterDT: DateFormatter = DateFormatter()
+                            dateFormatterDT.dateFormat = "yyyy-MM-dd hh:mm:ss"
+                            let newDate: Date = dateFormatterDT.date(from: item["time"].string!)!
                             
-                            for (label, value) in item {
-                                print("\(label) : \(value)")
-                            }
+                            //Convert JSON to string to duration
+                            let dateFormatterDur: DateFormatter = DateFormatter()
+                            dateFormatterDur.dateFormat = "hh:mm"
+                            print("THE DURATION IS :" + item["duration"].string!)
+                            //let newDuration: Date = dateFormatterDur.date(from: item["duration"].string!)!
+                            
+                            //Add new group to group array
+                            self.groups.append(Group(groupName: item["name"].string!,
+                                                           datetime: newDate,
+                                                           repeats: "yes",
+                                                           duration: Date(),
+                                                           latitude: item["location_latitude"].string!,
+                                                           longitude: item["location_longitude"].string!,
+                                                           hasDog: item["has_dogs"].bool!,
+                                                           hasKid: item["has_kids"].bool!,
+                                                           adminID: item["admin_id"].string!,
+                                                           isWalking: item["is_walking"].bool!))
+//                            for (label, value) in item {
+//                                print("\(label) : \(value)")
+//                            }
 //                            print(item)
                              //print(item["name"].stringValue)
                         }
@@ -35,6 +56,10 @@ class AllGroupsTVC: UITableViewController {
 //                    }
                     }
 
+                }
+                
+                for item in self.groups {
+                    print("THE GROUP NAMES: " + item.groupName)
                 }
         }
         
@@ -60,13 +85,16 @@ class AllGroupsTVC: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
-        //return groups.count
+        return groups.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "GroupCell", for: indexPath)
-        //cell.textLabel?.text = groups[indexPath.row].groupName
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "GroupCell", for: indexPath)
+//        cell.textLabel?.text = groups[indexPath.row].groupName
+//        return cell
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "groupCell", for: indexPath)
+        cell.textLabel?.text = "HI"
         return cell
     }
 
