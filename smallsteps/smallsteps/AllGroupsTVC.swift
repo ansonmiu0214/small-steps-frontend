@@ -10,9 +10,13 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
+//var groups: [Group] = [Group(groupName: "BOBOBO", datetime: Date(), repeats: "yes", duration: Date(), latitude: "51.5101", longitude: "-0.1342", hasDog: true, hasKid: false, adminID: "123456789009876543211234567890098765")]
+ var groups: [Group] = []
+
 class AllGroupsTVC: UITableViewController {
     
-    var groups: [Group] = []
+
+   
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,6 +89,7 @@ class AllGroupsTVC: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+
         return groups.count
     }
     
