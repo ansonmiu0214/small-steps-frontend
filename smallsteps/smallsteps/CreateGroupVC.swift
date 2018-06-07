@@ -123,7 +123,8 @@ class CreateGroupVC: FormViewController {
                 print(groupParams)
         }
         //self.tabBarController?.selectedIndex = 0
-        performSegue(withIdentifier: "returnHome", sender: nil)
+        
+        performSegue(withIdentifier: "returnHome", sender: self)
     }
     
     func removeTimezone(datetime: Date) -> String {

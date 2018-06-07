@@ -176,7 +176,7 @@
                         <viewLayoutGuide key="safeArea" id="jew-Ca-jMQ"/>
                     </view>
                     <connections>
-                        <segue destination="Ger-RH-lUx" kind="show" identifier="returnHome" id="3Oe-eP-GUe"/>
+                        <segue destination="Ger-RH-lUx" kind="showDetail" identifier="returnHome" id="3Oe-eP-GUe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MTx-q0-JDY" userLabel="First Responder" sceneMemberID="firstResponder"/>
