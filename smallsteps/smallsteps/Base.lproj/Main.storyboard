@@ -50,6 +50,21 @@
             </objects>
             <point key="canvasLocation" x="1631" y="-301"/>
         </scene>
+        <!--Join Group Popup View Controller-->
+        <scene sceneID="9Ro-VN-ITk">
+            <objects>
+                <viewController storyboardIdentifier="popup" id="uPu-3E-u4H" customClass="JoinGroupPopupViewController" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="PQS-lW-HSy" customClass="popup">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="Xji-fZ-bTj"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="YR3-eZ-CW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2499" y="-714"/>
+        </scene>
         <!--Groups-->
         <scene sceneID="bOO-7g-o7J">
             <objects>

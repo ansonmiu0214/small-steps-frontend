@@ -268,6 +268,11 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
                     switch optStatusCode {
                     case 200...300:
                         print("successfully joined the group!!")
+                        let storyboard = UIStoryboard(name: "main", bundle: nil)
+                        let vc = storyboard.instantiateViewController(withIdentifier: "popup") as! JoinGroupPopupViewController
+                        vc.modalPresentationStyle = .overFullScreen
+                        vc.modalTransitionStyle = .crossDissolve
+                        self.present(vc, animated: true, completion: nil)
                     default:
                         print("error")
                         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
