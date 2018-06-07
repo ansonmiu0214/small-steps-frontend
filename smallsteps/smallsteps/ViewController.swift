@@ -98,32 +98,53 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         
         //Used in AllGroupsTVC
         loadYourGroups()
+        print("THERE ARE CURRENTLY: \(yourGroups.count)")
         print(UIDevice.current.identifierForVendor!.uuidString)
     }
     
     func loadYourGroups(){
         print("LOAAADING GROUPS!!!!!!!!!!!!")
-        Alamofire.request("146.169.45.120:8080/smallsteps/groups?device_id=\(UIDevice.current.identifierForVendor!.uuidString)", method: .get, parameters: nil, encoding: JSONEncoding.default)
+        let yourGroupParams: Parameters = [
+            "device_id": UIDevice.current.identifierForVendor!.uuidString,
+        ]
+        
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .get, parameters: yourGroupParams, encoding: URLEncoding.default)
             .responseJSON { (responseData) -> Void in
-                if((responseData.result.value) != nil) {
-                    if let swiftyJsonVar = try? JSON(responseData.result.value!) {
-                        for (_, item) in swiftyJsonVar{
-                            yourGroups.append(self.createGroupFromJSON(item: item))
-                            print("THE GROUP NAME IS: \(item["name"].string)")
-                        }
+            if((responseData.result.value) != nil) {
+                if let swiftyJsonVar = try? JSON(responseData.result.value!) {
+                    for (_, item) in swiftyJsonVar{
+                        yourGroups.append(self.createGroupFromJSON(item: item))
+                        print("THE GROUP NAME IS: \(item["name"].string)")
                     }
-                    
                 }
-                //completion()
+                
+            }
+            //completion()
         }
+//        Alamofire.request("146.169.45.120:8080/smallsteps/groups?device_id=\(UIDevice.current.identifierForVendor!.uuidString)", method: .get, parameters: nil, encoding: JSONEncoding.default)
+//            .responseJSON { (responseData) -> Void in
+//                if((responseData.result.value) != nil) {
+//                    if let swiftyJsonVar = try? JSON(responseData.result.value!) {
+//                        for (_, item) in swiftyJsonVar{
+//                            yourGroups.append(self.createGroupFromJSON(item: item))
+//                            print("THE GROUP NAME IS: \(item["name"].string)")
+//                        }
+//                    }
+//
+//                }
+//                //completion()
+//        }
         print("LOADED GROUPS")
     }
     
     func createGroupFromJSON(item: JSON) -> Group{
+        
+        print("item: \(item)")
+        
         //Convert JSON to string to datetime
         let dateFormatterDT: DateFormatter = DateFormatter()
         dateFormatterDT.dateFormat = "yyyy-MM-dd hh:mm:ss"
-        let newDate: Date = dateFormatterDT.date(from: item["time"].string!)!
+        //let newDate: Date = dateFormatterDT.date(from: item["time"].string!)!
         
         //Convert JSON to string to duration
         let dateFormatterDur: DateFormatter = DateFormatter()
@@ -133,7 +154,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         
         //Add new group to group array
         let newGroup: Group = Group(groupName: item["name"].string!,
-                                    datetime: newDate,
+                                    datetime: Date(),
                                     repeats: "yes",
                                     duration: Date(),
                                     latitude: item["location_latitude"].string!,
