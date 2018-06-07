@@ -31,9 +31,9 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
 //        let myLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
 //        let region: MKCoordinateRegion = MKCoordinateRegionMake(myLocation, span)
 //        map.setRegion(region, animated: true)
-        fitAll(showGroups: true)
         self.map.showsUserLocation = true
         map.delegate = self
+
     }
     
     override func viewDidLoad() {
@@ -64,18 +64,20 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         resultSearchController?.dimsBackgroundDuringPresentation = true
         definesPresentationContext = true
         
-        fitAll(showGroups: true)
+        //fitAll(showGroups: true)
         
         //Set the map view in locationSearchTable
         locationSearchTable.map = map
-        map.removeAnnotations(map.annotations)
-        
+       
         AllGroupsTVC.loadGroups(){
             //Create pins from groups
+            self.map.removeAnnotations(self.map.annotations)
             print("groups is: \(groups)")
             for group in groups{
                 self.createPinFromGroup(group: group)
             }
+            self.fitAll(showGroups: true)
+            
         }
     }
     
@@ -231,6 +233,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     //Fits all pins on the map to the map view
     func fitAll(showGroups: Bool) {
         var zoomRect = MKMapRectNull;
+        print(map.annotations)
         for annotation in map.annotations {
             if showGroups
                 || annotation is MKUserLocation
@@ -279,7 +282,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
                     default:
                         print("error")
                         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-                     
                     }
                 }
         }

@@ -9,7 +9,7 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
-
+import CoreLocation
 
  var groups: [Group] = []
 
@@ -52,7 +52,14 @@ class AllGroupsTVC: UITableViewController {
     }
     
     static func loadGroups(completion: @escaping () -> Void){
-        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?latitude=51.4989&longitude=-0.1790", method: .get, parameters: nil, encoding: JSONEncoding.default)
+        let location = CLLocationManager().location?.coordinate
+        
+        let loadGroupParams: Parameters = [
+            "latitude": String(location!.latitude),
+            "longitude": String(location!.longitude)
+        ]
+        
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .get, parameters: loadGroupParams, encoding: URLEncoding.default)
             .responseJSON { (responseData) -> Void in
                 if((responseData.result.value) != nil) {
                     if let swiftyJsonVar = try? JSON(responseData.result.value!) {
