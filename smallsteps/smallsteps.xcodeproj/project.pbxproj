@@ -10,7 +10,6 @@
 		0461EBF820C6BB150014EB34 /* LocationSearchTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0461EBF720C6BB150014EB34 /* LocationSearchTable.swift */; };
 		0461EBFA20C6E20D0014EB34 /* LocationPointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0461EBF920C6E20C0014EB34 /* LocationPointer.swift */; };
 		0461EBFC20C6E2580014EB34 /* LocationPointerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0461EBFB20C6E2570014EB34 /* LocationPointerView.swift */; };
-		04AB145F20C83477007419F0 /* GroupInfoTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB145E20C83477007419F0 /* GroupInfoTableViewController.swift */; };
 		04AB146320C841AF007419F0 /* CustomCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB146220C841AF007419F0 /* CustomCells.swift */; };
 		6E01D6D220C69C9F004ABE58 /* CreateGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E01D6D120C69C9F004ABE58 /* CreateGroupVC.swift */; };
 		6E01D6D420C6A355004ABE58 /* AllGroupsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E01D6D320C6A355004ABE58 /* AllGroupsTVC.swift */; };
@@ -52,7 +51,6 @@
 		0461EBF720C6BB150014EB34 /* LocationSearchTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearchTable.swift; sourceTree = "<group>"; };
 		0461EBF920C6E20C0014EB34 /* LocationPointer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationPointer.swift; sourceTree = "<group>"; };
 		0461EBFB20C6E2570014EB34 /* LocationPointerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationPointerView.swift; sourceTree = "<group>"; };
-		04AB145E20C83477007419F0 /* GroupInfoTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupInfoTableViewController.swift; sourceTree = "<group>"; };
 		04AB146220C841AF007419F0 /* CustomCells.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCells.swift; sourceTree = "<group>"; };
 		31BE804FD74B4010CC95E798 /* Pods_smallsteps.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_smallsteps.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E01D6D120C69C9F004ABE58 /* CreateGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateGroupVC.swift; sourceTree = "<group>"; };
@@ -151,7 +149,6 @@
 				6E01D6D520C6A386004ABE58 /* Group.swift */,
 				0461EBF720C6BB150014EB34 /* LocationSearchTable.swift */,
 				04AB146220C841AF007419F0 /* CustomCells.swift */,
-				04AB145E20C83477007419F0 /* GroupInfoTableViewController.swift */,
 			);
 			path = smallsteps;
 			sourceTree = "<group>";
@@ -379,7 +376,6 @@
 				6E01D6D420C6A355004ABE58 /* AllGroupsTVC.swift in Sources */,
 				6E01D6D220C69C9F004ABE58 /* CreateGroupVC.swift in Sources */,
 				0461EBFC20C6E2580014EB34 /* LocationPointerView.swift in Sources */,
-				04AB145F20C83477007419F0 /* GroupInfoTableViewController.swift in Sources */,
 				6E03485020BEBC77008EFC5D /* AppDelegate.swift in Sources */,
 				04AB146320C841AF007419F0 /* CustomCells.swift in Sources */,
 				6ECB805320C59486006B955B /* GroupMenuViewController.swift in Sources */,

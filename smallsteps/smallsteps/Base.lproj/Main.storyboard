@@ -88,7 +88,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kTM-47-zf6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1725" y="900"/>
-        </scene>
+	           </scene>
         <!--Create GroupVC-->
         <scene sceneID="Km3-Jp-EdV">
             <objects>
@@ -100,7 +100,7 @@
                         <viewLayoutGuide key="safeArea" id="jew-Ca-jMQ"/>
                     </view>
                     <connections>
-                        <segue destination="qec-s5-bDu" kind="show" identifier="setLocation" id="FjJ-vY-SNG"/>
+                        <segue destination="Ger-RH-lUx" kind="show" identifier="returnHome" id="3Oe-eP-GUe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MTx-q0-JDY" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -453,8 +453,7 @@
         <image name="walking" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Mik-Eo-aM5"/>
-        <segue reference="FjJ-vY-SNG"/>
+        <segue reference="3Oe-eP-GUe"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.72156862749999995" green="0.38823529410000002" blue="0.49803921569999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

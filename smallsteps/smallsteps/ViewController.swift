@@ -36,8 +36,14 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         map.delegate = self
     }
     
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+//        let viewController = ViewController()
+//        viewController.delegate = self
+//        
         //MapKit Setup
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
@@ -60,24 +66,12 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         resultSearchController?.dimsBackgroundDuringPresentation = true
         definesPresentationContext = true
         
+        fitAll(showGroups: true)
+        
         //Set the map view in locationSearchTable
         locationSearchTable.map = map
+        map.removeAnnotations(map.annotations)
         
-//        //Map Annotations
-//        map.register(LocationPointerView.self,
-//                     forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
-//        let artwork = LocationPointer(title: "9AMers",
-//                              subtitle: "Huxley Building",
-//                              discipline: "Just Finished",
-//                              coordinate: CLLocationCoordinate2D(latitude: 51.4989034, longitude: -0.1811814))
-//        map.addAnnotation(artwork)
-//
-//        let artwork2 = LocationPointer(title: "Mumsnetters",
-//                               subtitle: "Royal College of Art",
-//                               discipline: "Not Started",
-//                               coordinate: CLLocationCoordinate2D(latitude: 51.5011441, longitude: -0.1814734))
-//        map.addAnnotation(artwork2)
-//
         AllGroupsTVC.loadGroups(){
             //Create pins from groups
             print("groups is: \(groups)")
@@ -85,8 +79,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
                 self.createPinFromGroup(group: group)
             }
         }
-        
-        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) { self.view.endEditing(true) }
@@ -186,23 +178,23 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         }
     }
     
-    func createPinFromGroup(group: Group){
-        print("created a group")
-        var subtitle = "Meeting Time: \(dateToString(datetime: group.datetime))"
-        subtitle += "\nDuration ~ \(getHoursMinutes(time: group.duration))"
-        if(group.hasDog){
-            subtitle += "\nHas Dogs"
-        }
-        if(group.hasKid){
-            subtitle += "\nHas Kids"
-        }
-        
-        let discipline = group.isWalking ? "In Progress" : "Not Started"
-        
-        let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
-        let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate:  coordinate, groupId: group.groupId)
-        map.addAnnotation(annotation)
-    }
+//    func createPinFromGroup(group: Group){
+//        print("created a group")
+//        var subtitle = "Meeting Time: \(dateToString(datetime: group.datetime))"
+//        subtitle += "\nDuration ~ \(getHoursMinutes(time: group.duration))"
+//        if(group.hasDog){
+//            subtitle += "\nHas Dogs"
+//        }
+//        if(group.hasKid){
+//            subtitle += "\nHas Kids"
+//        }
+//
+//        let discipline = group.isWalking ? "In Progress" : "Not Started"
+//
+//        let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
+//        let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate:  coordinate, groupId: group.groupId)
+//        map.addAnnotation(annotation)
+//    }
     
     func dropPinZoomIn(placemark:MKPlacemark){
         //Clear previous pin and overlay
@@ -264,9 +256,13 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         
         print(UIDevice.current.identifierForVendor!.uuidString)
         
+        print(joinGroupParams)
+        
         //PUT request JSON to the server
         Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .put, parameters: joinGroupParams, encoding: URLEncoding.default)
             .response {response in
+                print(response.request)
+                print(response.response)
                 print(response.response?.statusCode ?? "no response!")
                 if let optStatusCode = response.response?.statusCode{
                     switch optStatusCode {
@@ -315,3 +311,22 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
 }
 
+extension ViewController: addGroupPin {
+    func createPinFromGroup(group: Group){
+                print("created a group")
+                var subtitle = "Meeting Time: \(dateToString(datetime: group.datetime))"
+                subtitle += "\nDuration ~ \(getHoursMinutes(time: group.duration))"
+                if(group.hasDog){
+                    subtitle += "\nHas Dogs"
+                }
+                if(group.hasKid){
+                    subtitle += "\nHas Kids"
+                }
+        
+                let discipline = group.isWalking ? "In Progress" : "Not Started"
+        
+                let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
+                let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate:  coordinate, groupId: group.groupId)
+                map.addAnnotation(annotation)
+            }
+}

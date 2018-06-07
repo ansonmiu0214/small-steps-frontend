@@ -11,12 +11,18 @@ import Eureka
 import Alamofire
 import CoreLocation
 
+protocol addGroupPin {
+    func createPinFromGroup(group: Group)
+}
 class CreateGroupVC: FormViewController {
-    var tryout: String?
+    var delegate: addGroupPin?
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
         //let doneButton = UIBarButtonItem(barButtonSystemItem: nil, target: self, action: #selector(tapButton))
-        let nextButton = UIBarButtonItem(image: UIImage(named: "walking"), style: .plain, target: self, action: #selector(CreateGroupVC.createGroup))
+        let nextButton = UIBarButtonItem(title: "Create", style: .plain, target: self, action: #selector(CreateGroupVC.createGroup))
         nextButton.isEnabled = false
         self.navigationItem.rightBarButtonItem = nextButton
         
@@ -58,16 +64,16 @@ class CreateGroupVC: FormViewController {
             +++ Section("Details")
             <<< SwitchRow() { row in
                 row.tag = "hasDogs"
-                row.title = "Dogs"
+                row.title = "With Dogs"
             }
             <<< SwitchRow() { row in
                 row.tag = "hasKids"
-                row.title = "Kids"
+                row.title = "With Kids"
             }
             <<< LocationRow("location") {
                 $0.title = "Location"
                 $0.tag = "location"
-                var locManager = CLLocationManager()
+                let locManager = CLLocationManager()
                 $0.value = CLLocation(latitude: (locManager.location?.coordinate.latitude)!, longitude: (locManager.location?.coordinate.longitude)!)
                 }.onChange { [weak self] row in
                     self!.tableView!.reloadData()
@@ -80,6 +86,7 @@ class CreateGroupVC: FormViewController {
     }
     
     @objc func createGroup() {
+      
         let valuesDict = form.values()
         print(type(of: valuesDict))
         
@@ -93,7 +100,9 @@ class CreateGroupVC: FormViewController {
                                     hasKid: ((form.rowBy(tag: "hasKids") as? SwitchRow)?.cell.switchControl.isOn)!,
                                     adminID: UIDevice.current.identifierForVendor!.uuidString)
         print("Group created \(newGroup.groupName)")
-
+        
+        //createPinFromGroup(group: newGroup)
+        self.delegate?.createPinFromGroup(group: newGroup)
         
         //Create the walker parameters
         let groupParams: Parameters = [
@@ -113,6 +122,8 @@ class CreateGroupVC: FormViewController {
                 print(response.response?.statusCode ?? "no response!")
                 print(groupParams)
         }
+        //self.tabBarController?.selectedIndex = 0
+        performSegue(withIdentifier: "returnHome", sender: nil)
     }
     
     func removeTimezone(datetime: Date) -> String {
