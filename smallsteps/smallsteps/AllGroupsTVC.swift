@@ -11,7 +11,6 @@ import Alamofire
 import SwiftyJSON
 import CoreLocation
 
-
 var groups: [Group] = []
 var myGroups: [Group] = []
 
@@ -79,14 +78,10 @@ class AllGroupsTVC: UITableViewController {
 //                                    groupId: item["id"].string!)
 //        return newGroup
 //    }
-    
+
     static func loadGroups(completion: @escaping () -> Void){
-        let uuid = UIDevice.current.identifierForVendor!
-        print(uuid)
-//        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?latitude=51.4989&longitude=-0.1790", method: .get, parameters: nil, encoding: JSONEncoding.default)
-//
-        
         let location = CLLocationManager().location?.coordinate
+        
         let localGroupsParams: Parameters = [
             "latitude": String(location!.latitude),
             "longitude": String(location!.longitude)
@@ -104,6 +99,7 @@ class AllGroupsTVC: UITableViewController {
                 completion()
         }
     }
+
     static func loadUserGroups(completion: @escaping () -> Void){
         let deviceGroupsParams: Parameters = [
             "device_id":UIDevice.current.identifierForVendor!.uuidString

@@ -184,9 +184,9 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 30, height: 30)))
         directionButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
         directionButton.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
+
         pinView.leftCalloutAccessoryView = directionButton
- 
-        if let locPointAnnotation = annotation as? LocationPointer{
+         if let locPointAnnotation = annotation as? LocationPointer{
             if(locPointAnnotation.discipline != ""){
                 let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
 
@@ -307,8 +307,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             popOverVC.didMove(toParentViewController: self)
         }
     
-    
-    
+
     @objc func joinGroup(){
         print("joining group with id: \(currGroupId)")
         
@@ -394,24 +393,3 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
     
 }
-
-//extension ViewController: addGroupPin {
-//    func createPinFromGroup(group: Group){
-//                print("created a group")
-//                var subtitle = "Meeting Time: \(dateToString(datetime: group.datetime))"
-//                subtitle += "\nDuration ~ \(getHoursMinutes(time: group.duration))"
-//                if(group.hasDog){
-//                    subtitle += "\nHas Dogs"
-//                }
-//                if(group.hasKid){
-//                    subtitle += "\nHas Kids"
-//                }
-//
-//                let discipline = group.isWalking ? "In Progress" : "Not Started"
-//
-//                let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
-//        let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate:  coordinate, groupId: group.groupId, group: group)
-//                map.addAnnotation(annotation)
-//            }
-//}
-//
