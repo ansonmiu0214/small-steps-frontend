@@ -8,16 +8,41 @@
 
 import UIKit
 
+import Alamofire
+import SwiftyJSON
+
+var yourGroupNames: [String] = []
+
 
 class GroupMenuTVC: UITableViewController {
-
-    //let sections = ["Create A New Group", "Your Groups", "See All Groups"]
-    let yourGroups = ["Huxley Walkers", "abc123"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
     }
+    
+    static func loadYourGroups(){
+        print("LOAAADING GROUPS!!!!!!!!!!!!")
+        let yourGroupParams: Parameters = [
+            "device_id": UIDevice.current.identifierForVendor!.uuidString,
+            ]
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .get, parameters: yourGroupParams, encoding: URLEncoding.default)
+            .responseJSON { (responseData) -> Void in
+                if((responseData.result.value) != nil) {
+                    if let swiftyJsonVar = try? JSON(responseData.result.value!) {
+                        for (_, item) in swiftyJsonVar{
+                            yourGroups.append(ViewController.createGroupFromJSON(item: item))
+                            yourGroupNames.append(item["name"].string!)
+                            yourGroupNames = Array(Set(yourGroupNames))
+                            print("THE GROUP NAME IS: \(item["name"].string)")
+                        }
+                    }
+                    
+                }
+        }
+        
+    }
+    
     
     // MARK: UITableViewDataSource
     
@@ -43,12 +68,13 @@ class GroupMenuTVC: UITableViewController {
 //            default:
 //                return 0
 //        }
-        return yourGroups.count
+        return yourGroupNames.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Create an object of the dynamic cell "PlainCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: "groupMenuCell", for: indexPath)
+
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: "groupMenuCell", for: indexPath)
         // Depending on the section, fill the textLabel with the relevant text
 //        switch indexPath.section {
 //            case 0:
@@ -62,7 +88,8 @@ class GroupMenuTVC: UITableViewController {
 //            default:
 //                print("hi")
 //        }
-        cell.textLabel?.text = yourGroups[indexPath.row]
+
+        cell.textLabel?.text = yourGroupNames[indexPath.row]
         // Return the configured cell
         return cell
     }

@@ -9,9 +9,10 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
+import CoreLocation
 
 
- var groups: [Group] = []
+var groups: [Group] = []
 var myGroups: [Group] = []
 
 func createGroupFromJSON(item: JSON) -> Group{
@@ -82,7 +83,33 @@ class AllGroupsTVC: UITableViewController {
     static func loadGroups(completion: @escaping () -> Void){
         let uuid = UIDevice.current.identifierForVendor!
         print(uuid)
-        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?latitude=51.4989&longitude=-0.1790", method: .get, parameters: nil, encoding: JSONEncoding.default)
+//        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?latitude=51.4989&longitude=-0.1790", method: .get, parameters: nil, encoding: JSONEncoding.default)
+//
+        
+        let location = CLLocationManager().location?.coordinate
+        let localGroupsParams: Parameters = [
+            "latitude": String(location!.latitude),
+            "longitude": String(location!.longitude)
+        ]
+        
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .get, parameters: localGroupsParams, encoding: URLEncoding.default)
+            .responseJSON { (responseData) -> Void in
+                if((responseData.result.value) != nil) {
+                    if let swiftyJsonVar = try? JSON(responseData.result.value!) {
+                        for (_, item) in swiftyJsonVar{
+                            groups.append(createGroupFromJSON(item: item))
+                        }
+                    }
+                }
+                completion()
+        }
+    }
+    static func loadUserGroups(completion: @escaping () -> Void){
+        let deviceGroupsParams: Parameters = [
+            "device_id":UIDevice.current.identifierForVendor!.uuidString
+        ]
+        
+        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .get, parameters: deviceGroupsParams, encoding: URLEncoding.default)
             .responseJSON { (responseData) -> Void in
                 if((responseData.result.value) != nil) {
                     if let swiftyJsonVar = try? JSON(responseData.result.value!) {
@@ -91,6 +118,7 @@ class AllGroupsTVC: UITableViewController {
                         }
                     }
                     
+                    let uuid = UIDevice.current.identifierForVendor!
                     Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?device_id=\(uuid)", method: .get, encoding: JSONEncoding.default).responseJSON { response -> Void in
                         if let val = response.result.value {
                             if let jsonVal = try? JSON(val) {
@@ -100,13 +128,10 @@ class AllGroupsTVC: UITableViewController {
                                 }
                             }
                         }
-                        
+                    
                         completion()
                     }
-                    
                 }
-                
-//                completion()
         }
     }
 
