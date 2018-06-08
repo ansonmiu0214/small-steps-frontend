@@ -26,7 +26,7 @@ class Group: Equatable {
     var isWalking: Bool
     var groupId: String
     
-    init(groupName: String, datetime: Date, repeats: String, duration: Date, latitude: String, longitude: String, hasDog: Bool, hasKid: Bool, adminID: String, isWalking: Bool = false, groupId: String = "-1") {
+    init(groupName: String, datetime: Date, repeats: String, duration: Date, latitude: String, longitude: String, hasDog: Bool, hasKid: Bool = false, adminID: String, isWalking: Bool = false, groupId: String = "-1") {
         self.groupName = groupName
         self.datetime = datetime
         self.repeats = repeats

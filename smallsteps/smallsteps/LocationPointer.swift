@@ -4,9 +4,9 @@ class LocationPointer: NSObject, MKAnnotation {
     var markerTintColor: UIColor  {
         switch discipline {
         case "Not Started":
-            return .green
+            return .red
         case "In Progress":
-            return .orange
+            return .green
         default:
             return .blue
         }

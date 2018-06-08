@@ -240,7 +240,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
     
     func createPinFromGroup(group: Group){
-        print("created a group")
+        //print("created a group")
         var subtitle = "Meeting Time: \(dateToString(datetime: group.datetime))"
         subtitle += "\nDuration ~ \(getHoursMinutes(time: group.duration))"
         if(group.hasDog){
