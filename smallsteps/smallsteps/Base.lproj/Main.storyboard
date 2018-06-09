@@ -9,7 +9,6 @@
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Baseline standard spacing" minToolsVersion="9.0"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -142,7 +141,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kTM-47-zf6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1725" y="900"/>
-	           </scene>
+        </scene>
         <!--Create GroupVC-->
         <scene sceneID="Km3-Jp-EdV">
             <objects>
@@ -507,6 +506,49 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xhA-e4-Qy9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
         </scene>
+        <!--LandingVC-->
+        <scene sceneID="fpo-t0-iLU">
+            <objects>
+                <viewController storyboardIdentifier="LandingVC" id="v0v-wy-b5e" customClass="LandingVC" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Qfo-ft-uMe">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="JdT-Z1-eHf">
+                                <rect key="frame" x="110" y="221" width="100" height="126.5"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="HAG-z1-ebv">
+                                        <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="100" id="1UE-y5-cmX"/>
+                                            <constraint firstAttribute="width" constant="100" id="wpN-2P-uEu"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Small Steps" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ug6-PO-6mo">
+                                        <rect key="frame" x="0.0" y="106" width="100" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.76862745099999996" green="0.36470588240000001" blue="0.49803921569999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="JdT-Z1-eHf" firstAttribute="centerX" secondItem="Qfo-ft-uMe" secondAttribute="centerX" id="R71-Ha-RSR"/>
+                            <constraint firstItem="JdT-Z1-eHf" firstAttribute="centerY" secondItem="Qfo-ft-uMe" secondAttribute="centerY" id="XgC-M5-U0E"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="GHH-zd-NPA"/>
+                    </view>
+                    <connections>
+                        <segue destination="Ger-RH-lUx" kind="show" identifier="isRegistered" id="2X5-MF-MCy"/>
+                        <segue destination="gr2-ve-oyL" kind="presentation" identifier="notRegistered" modalPresentationStyle="fullScreen" modalTransitionStyle="crossDissolve" id="DEc-VQ-33x"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hUH-tQ-lW5" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1213" y="-143"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Logo" width="1080" height="1080"/>
@@ -514,7 +556,7 @@
         <image name="walking" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="3Oe-eP-GUe"/>
+        <segue reference="2X5-MF-MCy"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.72156862749999995" green="0.38823529410000002" blue="0.49803921569999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>
