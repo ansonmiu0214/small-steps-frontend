@@ -20,45 +20,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   
   var window: UIWindow?
   
-  func recognisedDevice(completion: @escaping (Bool) -> Void) {
-    let requestURL = queryBuilder(endpoint: "walker", params: [("device_id", UUID)])
-    
-    var statusCode: Int = 404
-    Alamofire.request(requestURL, method: .get).validate(statusCode: 200..<300).responseJSON { response in
-      completion(response.result.isSuccess)
-    }
-  }
-  
-  
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-    
     // Set window
     self.window = UIWindow(frame: UIScreen.main.bounds)
 
-    // Open correct view controller
+    // Open Main storyboard and Landing view controller
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let window = self.window!
     
     window.rootViewController = storyboard.instantiateViewController(withIdentifier: "LandingVC")
     window.makeKeyAndVisible()
-
-
-    
-    
-  
-//    recognisedDevice { isRegistered in
-//      if !isRegistered {
-//        // Set window
-//        self.window = UIWindow(frame: UIScreen.main.bounds)
-//
-//        // Open correct view controller
-//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//        if let window = self.window {
-//          window.rootViewController = storyboard.instantiateViewController(withIdentifier: "isNotRegistered")
-//          window.makeKeyAndVisible()
-//        }
-//      }
-//    }
     
     return true
   }

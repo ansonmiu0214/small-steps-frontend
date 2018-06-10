@@ -532,17 +532,24 @@
                                     </label>
                                 </subviews>
                             </stackView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="jrs-xn-1pf">
+                                <rect key="frame" x="150" y="393" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="jrs-xn-1pf" firstAttribute="top" secondItem="HAG-z1-ebv" secondAttribute="bottom" constant="72" id="JQ8-Vc-2kG"/>
                             <constraint firstItem="JdT-Z1-eHf" firstAttribute="centerX" secondItem="Qfo-ft-uMe" secondAttribute="centerX" id="R71-Ha-RSR"/>
                             <constraint firstItem="JdT-Z1-eHf" firstAttribute="centerY" secondItem="Qfo-ft-uMe" secondAttribute="centerY" id="XgC-M5-U0E"/>
+                            <constraint firstItem="jrs-xn-1pf" firstAttribute="leading" secondItem="GHH-zd-NPA" secondAttribute="leading" constant="150" id="kHD-b0-Kfs"/>
+                            <constraint firstItem="GHH-zd-NPA" firstAttribute="trailing" secondItem="jrs-xn-1pf" secondAttribute="trailing" constant="150" id="kYL-SP-Fpg"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="GHH-zd-NPA"/>
                     </view>
                     <connections>
+                        <outlet property="spinner" destination="jrs-xn-1pf" id="udw-ol-g6L"/>
                         <segue destination="Ger-RH-lUx" kind="show" identifier="isRegistered" id="2X5-MF-MCy"/>
-                        <segue destination="gr2-ve-oyL" kind="presentation" identifier="notRegistered" modalPresentationStyle="fullScreen" modalTransitionStyle="crossDissolve" id="DEc-VQ-33x"/>
+                        <segue destination="gr2-ve-oyL" kind="presentation" identifier="notRegistered" modalTransitionStyle="crossDissolve" id="DEc-VQ-33x"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hUH-tQ-lW5" userLabel="First Responder" sceneMemberID="firstResponder"/>

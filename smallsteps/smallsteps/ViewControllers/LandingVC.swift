@@ -12,22 +12,38 @@ import Alamofire
 
 class LandingVC: UIViewController {
   
+  @IBOutlet weak var spinner: UIActivityIndicatorView!
+  
   func recognisedDevice(completion: @escaping (String) -> Void) {
     let requestURL = queryBuilder(endpoint: "walker", params: [("device_id", UUID)])
-
-    Alamofire.request(requestURL, method: .get).validate(statusCode: 200..<300).responseJSON { response in
-      completion(response.result.isSuccess ? "isRegistered" : "notRegistered")
+    
+    print(requestURL)
+    Alamofire.request(requestURL, method: .get).responseJSON { response in
+      self.spinner.stopAnimating()
+      switch response.response?.statusCode {
+      case 200:
+        completion("isRegistered")
+      case 404:
+        completion("notRegistered")
+      default:
+        let alert = UIAlertController(title: "Service Unavailable", message: "Please try again later.", preferredStyle: UIAlertControllerStyle.alert)
+        
+        self.present(alert, animated: true, completion: nil)
+      }
     }
   }
   
   override func viewDidLoad() {
-    super.viewDidLoad()
+    spinner.hidesWhenStopped = true
+    spinner.startAnimating()
     
     DispatchQueue(label: "Check Walker Registration", qos: .background).async {
       self.recognisedDevice { isRegistered in
         self.performSegue(withIdentifier: isRegistered, sender: nil)
       }
     }
+    
+    super.viewDidLoad()
   }
   
 }
