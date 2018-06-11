@@ -52,7 +52,7 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
                 //Duration
                 let dateFormatter2: DateFormatter = DateFormatter()
                 dateFormatter2.dateFormat = "hh:mm"
-                detailsCell.duration.text = dateFormatter2.string(from: userGroups[myIndex].duration)
+                detailsCell.durationLabel.text = dateFormatter2.string(from: userGroups[myIndex].duration)
             case 1:
                 //Meeting location
                 locationCell = tableView.dequeueReusableCell(withIdentifier: "meetingLocationCell", for: indexPath) as! MeetingLocationTableViewCell

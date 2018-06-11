@@ -15,7 +15,7 @@ class GroupDetailTableViewCell: UITableViewCell {
     
     @IBOutlet weak var meetingTimeLabel: UILabel!
     
-    @IBOutlet weak var duration: UILabel!
+    @IBOutlet weak var durationLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()

@@ -9,6 +9,7 @@
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Baseline standard spacing" minToolsVersion="9.0"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -153,68 +154,87 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Bgg-ed-HTq">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Hq8-Bm-GET">
                                 <rect key="frame" x="0.0" y="64" width="320" height="455"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleAspectFit" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="groupDetailCell" rowHeight="206" id="VoW-JP-JRy" customClass="GroupDetailTableViewCell" customModule="smallsteps" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="320" height="206"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="groupDetailCell" rowHeight="145" id="ui0-uj-urr" customClass="GroupDetailTableViewCell" customModule="smallsteps" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="320" height="145"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" autoresizesSubviews="NO" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="VoW-JP-JRy" id="Xt1-ys-5uE">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="205.5"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ui0-uj-urr" id="AZb-mN-K2E">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="144.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label autoresizesSubviews="NO" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="MeetingTimes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gjc-Nz-olO">
-                                                    <rect key="frame" x="14" y="58" width="109" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Group Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qUR-gJ-Zgz">
+                                                    <rect key="frame" x="15" y="11" width="290" height="36"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="30"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Meeting Time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HGg-rq-WBX">
+                                                    <rect key="frame" x="15" y="55" width="290" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label autoresizesSubviews="NO" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Duration" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MMV-sb-FZ4">
-                                                    <rect key="frame" x="14" y="87" width="291" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Duration" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RUP-w7-FQu">
+                                                    <rect key="frame" x="15" y="84" width="290" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label autoresizesSubviews="NO" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3jk-FS-YB3">
-                                                    <rect key="frame" x="14" y="11" width="292" height="40"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="33"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstItem="RUP-w7-FQu" firstAttribute="trailing" secondItem="AZb-mN-K2E" secondAttribute="trailingMargin" id="1Zp-kY-lPb"/>
+                                                <constraint firstItem="HGg-rq-WBX" firstAttribute="top" secondItem="qUR-gJ-Zgz" secondAttribute="bottom" constant="8" id="2g3-0d-8bg"/>
+                                                <constraint firstItem="qUR-gJ-Zgz" firstAttribute="leading" secondItem="AZb-mN-K2E" secondAttribute="leadingMargin" id="2lv-DT-1mZ"/>
+                                                <constraint firstItem="qUR-gJ-Zgz" firstAttribute="trailing" secondItem="AZb-mN-K2E" secondAttribute="trailingMargin" id="Dw6-pr-7Pd"/>
+                                                <constraint firstItem="qUR-gJ-Zgz" firstAttribute="top" secondItem="AZb-mN-K2E" secondAttribute="topMargin" id="GIP-bR-vX2"/>
+                                                <constraint firstItem="HGg-rq-WBX" firstAttribute="top" secondItem="qUR-gJ-Zgz" secondAttribute="bottom" constant="8" id="Zee-Hh-u0U"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="RUP-w7-FQu" secondAttribute="bottom" constant="29" id="d0c-ed-Juv"/>
+                                                <constraint firstItem="RUP-w7-FQu" firstAttribute="top" secondItem="HGg-rq-WBX" secondAttribute="bottom" constant="8" id="f31-8b-FQo"/>
+                                                <constraint firstItem="HGg-rq-WBX" firstAttribute="trailing" secondItem="AZb-mN-K2E" secondAttribute="trailingMargin" id="kts-IU-oLK"/>
+                                                <constraint firstItem="RUP-w7-FQu" firstAttribute="leading" secondItem="AZb-mN-K2E" secondAttribute="leadingMargin" id="lhO-ul-vEj"/>
+                                                <constraint firstItem="RUP-w7-FQu" firstAttribute="top" secondItem="HGg-rq-WBX" secondAttribute="bottom" constant="8" id="qRH-JT-ABJ"/>
+                                                <constraint firstItem="HGg-rq-WBX" firstAttribute="leading" secondItem="AZb-mN-K2E" secondAttribute="leadingMargin" id="zr9-PC-tts"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="duration" destination="MMV-sb-FZ4" id="Jtp-Ye-vJ2"/>
-                                            <outlet property="groupNameLabel" destination="3jk-FS-YB3" id="hBd-fU-Rzg"/>
-                                            <outlet property="meetingTimeLabel" destination="Gjc-Nz-olO" id="kCh-Uv-wHy"/>
+                                            <outlet property="durationLabel" destination="RUP-w7-FQu" id="E5O-dk-rgo"/>
+                                            <outlet property="groupNameLabel" destination="qUR-gJ-Zgz" id="8j5-DU-ztb"/>
+                                            <outlet property="meetingTimeLabel" destination="HGg-rq-WBX" id="1TN-Kx-7yz"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="meetingLocationCell" rowHeight="208" id="NEr-XJ-okH" customClass="MeetingLocationTableViewCell" customModule="smallsteps" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="234" width="320" height="208"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="meetingLocationCell" rowHeight="175" id="SYw-7w-mWj" customClass="MeetingLocationTableViewCell" customModule="smallsteps" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="173" width="320" height="175"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="NEr-XJ-okH" id="PNv-ne-dh3">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="207.5"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="SYw-7w-mWj" id="vCs-15-0R1">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="174.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="9fr-bh-Dgv">
-                                                    <rect key="frame" x="102" y="47" width="66" height="75"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="on0-Xp-7yx">
+                                                    <rect key="frame" x="0.0" y="0.0" width="320" height="175"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" secondItem="on0-Xp-7yx" secondAttribute="height" multiplier="64:35" id="8bq-bL-ygS"/>
+                                                    </constraints>
                                                 </mapView>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstItem="on0-Xp-7yx" firstAttribute="top" secondItem="vCs-15-0R1" secondAttribute="top" id="Fh4-Ko-BfS"/>
+                                                <constraint firstAttribute="bottom" secondItem="on0-Xp-7yx" secondAttribute="bottom" constant="-0.5" id="MJ1-AJ-v8b"/>
+                                                <constraint firstItem="on0-Xp-7yx" firstAttribute="leading" secondItem="vCs-15-0R1" secondAttribute="leading" id="Nxj-ha-Y9h"/>
+                                                <constraint firstAttribute="trailing" secondItem="on0-Xp-7yx" secondAttribute="trailing" id="kWB-sD-abH"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="meetingMap" destination="9fr-bh-Dgv" id="YxJ-g7-7s5"/>
+                                            <outlet property="meetingMap" destination="on0-Xp-7yx" id="b5t-bp-Pd3"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
-                                    <outlet property="dataSource" destination="4Ls-TB-P1Z" id="VLx-6p-tYK"/>
-                                    <outlet property="delegate" destination="4Ls-TB-P1Z" id="Rn6-vK-6lf"/>
+                                    <outlet property="dataSource" destination="4Ls-TB-P1Z" id="4Vx-Lp-r1d"/>
+                                    <outlet property="delegate" destination="4Ls-TB-P1Z" id="Xf4-8r-LrL"/>
                                 </connections>
                             </tableView>
                         </subviews>
