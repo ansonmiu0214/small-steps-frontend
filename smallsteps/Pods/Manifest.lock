@@ -1,24 +1,32 @@
 PODS:
   - Alamofire (4.7.2)
   - Eureka (4.1.1)
+  - SocketRocket (0.5.1)
+  - StompClientLib (1.2.2):
+    - SocketRocket
   - SwiftyJSON (4.1.0)
 
 DEPENDENCIES:
   - Alamofire (~> 4.7)
   - Eureka
+  - StompClientLib
   - SwiftyJSON
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Alamofire
     - Eureka
+    - SocketRocket
+    - StompClientLib
     - SwiftyJSON
 
 SPEC CHECKSUMS:
   Alamofire: e4fa87002c137ba2d8d634d2c51fabcda0d5c223
   Eureka: b88fb930e42c79f8c03c373d0fcdc28c1d6c50ed
+  SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
+  StompClientLib: 722379c85b96423de965245d2bb9e01e931ce7ed
   SwiftyJSON: c29297daf073d2aa016295d5809cdd68045c39b3
 
-PODFILE CHECKSUM: 9f4448f496375e1c7134311a2979fdd349d1be19
+PODFILE CHECKSUM: 59278bd4fa7c34fa7b98f718487cbe15fe14966e
 
 COCOAPODS: 1.5.3

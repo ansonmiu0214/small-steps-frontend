@@ -13,7 +13,7 @@ import Alamofire
 import AVFoundation
 import SwiftyJSON
 
-var yourGroups: [Group] = []
+var userGroups: [Group] = []
 
 protocol HandleMapSearch {
     func dropPinZoomIn(placemark:MKPlacemark)

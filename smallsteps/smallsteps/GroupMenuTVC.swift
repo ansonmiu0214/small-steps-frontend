@@ -11,7 +11,6 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-var yourGroupNames: [String] = []
 var myIndex = 0
 
 class GroupMenuTVC: UITableViewController {
@@ -31,9 +30,10 @@ class GroupMenuTVC: UITableViewController {
                 if((responseData.result.value) != nil) {
                     if let swiftyJsonVar = try? JSON(responseData.result.value!) {
                         for (_, item) in swiftyJsonVar{
-                            yourGroups.append(ViewController.createGroupFromJSON(item: item))
-                            yourGroupNames.append(item["name"].string!)
-                            yourGroupNames = Array(Set(yourGroupNames))
+                            if ()
+                            userGroups.append(ViewController.createGroupFromJSON(item: item))
+//                            yourGroupNames.append(item["name"].string!)
+//                            yourGroupNames = Array(Set(yourGroupNames))
                             print("THE GROUP NAME IS: \(item["name"].string)")
                         }
                     }
@@ -68,7 +68,7 @@ class GroupMenuTVC: UITableViewController {
 //            default:
 //                return 0
 //        }
-        return yourGroupNames.count
+        return userGroups.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -89,7 +89,7 @@ class GroupMenuTVC: UITableViewController {
 //                print("hi")
 //        }
 
-        cell.textLabel?.text = yourGroupNames[indexPath.row]
+        cell.textLabel?.text = userGroups[indexPath.row].groupName
         // Return the configured cell
         return cell
     }
@@ -101,8 +101,10 @@ class GroupMenuTVC: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if (editingStyle == UITableViewCellEditingStyle.delete) {
             // handle delete (by removing the data from your array and updating the tableview)
-            yourGroupNames.remove(at: indexPath.row)
+            userGroups.remove(at: indexPath.row)
             //ADD REMOVING FROM DATABASE
+            
+            
             tableView.reloadData()
         }
     }

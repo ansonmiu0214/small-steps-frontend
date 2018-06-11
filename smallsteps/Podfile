@@ -6,4 +6,5 @@ target 'smallsteps' do
     pod 'Alamofire', '~> 4.7'
     pod 'SwiftyJSON'
     pod 'Eureka'
+    pod "StompClientLib"
 end

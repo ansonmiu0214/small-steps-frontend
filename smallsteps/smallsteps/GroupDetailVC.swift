@@ -29,8 +29,29 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "groupDetailCell", for: indexPath) as! GroupDetailTableViewCell
-        cell.groupNameLabel.text = yourGroupNames[myIndex]
-        cell.meetingTimeLabel.text = "12:30"
+        cell.groupNameLabel.text = userGroups[myIndex].groupName
+        
+        //Convert from datetime to string
+        let dateFormatter: DateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM d yyyy, h:mm a"
+        let stringDate: String = dateFormatter.string(from: userGroups[myIndex].datetime)
+        cell.meetingTimeLabel.text = stringDate
+        
+//        var groupName: String
+//        var datetime: Date
+//        var repeats: String
+//        var duration: Date
+//        var latitude: String
+//        var longitude: String
+//        var hasDog: Bool
+//        var hasKid: Bool
+//        var adminID: String
+//        var isWalking: Bool
+//        var groupId: String
+        
+        
+        
+        
         return cell
     }
 }
