@@ -7,8 +7,13 @@
 //
 
 import UIKit
+import CoreLocation
 
 class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
@@ -19,7 +24,9 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
+        
     }
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -28,14 +35,40 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "groupDetailCell", for: indexPath) as! GroupDetailTableViewCell
-        cell.groupNameLabel.text = userGroups[myIndex].groupName
+        let detailsCell = tableView.dequeueReusableCell(withIdentifier: "groupDetailCell", for: indexPath) as! GroupDetailTableViewCell
+        var locationCell = tableView.dequeueReusableCell(withIdentifier: "meetingLocationCell", for: indexPath) as! MeetingLocationTableViewCell
         
-        //Convert from datetime to string
-        let dateFormatter: DateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM d yyyy, h:mm a"
-        let stringDate: String = dateFormatter.string(from: userGroups[myIndex].datetime)
-        cell.meetingTimeLabel.text = stringDate
+        switch indexPath.section {
+            case 0:
+                //Group name
+                detailsCell.groupNameLabel.text = userGroups[myIndex].groupName
+                
+                //Convert from datetime to string
+                let dateFormatter: DateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "MMM d yyyy, h:mm a"
+                let stringDate: String = dateFormatter.string(from: userGroups[myIndex].datetime)
+                detailsCell.meetingTimeLabel.text = stringDate
+            
+                //Duration
+                let dateFormatter2: DateFormatter = DateFormatter()
+                dateFormatter2.dateFormat = "hh:mm"
+                detailsCell.duration.text = dateFormatter2.string(from: userGroups[myIndex].duration)
+            case 1:
+                //Meeting location
+                locationCell = tableView.dequeueReusableCell(withIdentifier: "meetingLocationCell", for: indexPath) as! MeetingLocationTableViewCell
+                locationCell.showLocation(location: CLLocation(latitude: Double(userGroups[myIndex].latitude)!, longitude: Double(userGroups[myIndex].longitude)!))
+        default: break
+            
+            
+        }
+        
+        if indexPath.section == 0 {
+            return detailsCell
+        } else {
+            return locationCell
+        }
+        
+        
         
 //        var groupName: String
 //        var datetime: Date
@@ -49,9 +82,5 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
 //        var isWalking: Bool
 //        var groupId: String
         
-        
-        
-        
-        return cell
     }
 }

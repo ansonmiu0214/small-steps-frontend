@@ -39,5 +39,6 @@ class Group: Equatable {
         self.isWalking = isWalking
         self.groupId = groupId
     }
-
+    
 }
+

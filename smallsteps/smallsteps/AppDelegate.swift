@@ -37,6 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         //Setting the appropriate initial view controller
         let deviceID: String = UIDevice.current.identifierForVendor!.uuidString
+        print("THE DEVICE ID: \(deviceID)")
         
         CLLocationManager().requestAlwaysAuthorization()
 
