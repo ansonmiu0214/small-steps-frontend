@@ -19,8 +19,7 @@ class LandingVC: UIViewController, CLLocationManagerDelegate {
   
   func recognisedDevice(completion: @escaping (String) -> Void) {
     let requestURL = queryBuilder(endpoint: "walker", params: [("device_id", UUID)])
-    
-    print(requestURL)
+
     Alamofire.request(requestURL, method: .get).responseJSON { [unowned self] response in
       self.spinner.stopAnimating()
       switch response.response?.statusCode {
@@ -60,7 +59,6 @@ class LandingVC: UIViewController, CLLocationManagerDelegate {
     switch CLLocationManager.authorizationStatus() {
     case .notDetermined:
       locationMgr.requestWhenInUseAuthorization()
-      return
     case .denied, .restricted:
       askForLocationPermission()
       return
@@ -71,6 +69,7 @@ class LandingVC: UIViewController, CLLocationManagerDelegate {
     DispatchQueue(label: "Check Walker Registration", qos: .background).async {
       self.recognisedDevice { [unowned self] isRegistered in
         self.spinner.stopAnimating()
+        print(isRegistered)
         self.performSegue(withIdentifier: isRegistered, sender: nil)
       }
     }
