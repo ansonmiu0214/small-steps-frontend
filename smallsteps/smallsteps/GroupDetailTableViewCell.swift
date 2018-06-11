@@ -13,6 +13,7 @@ class GroupDetailTableViewCell: UITableViewCell {
 
     @IBOutlet weak var groupNameLabel: UILabel!
     
+    @IBOutlet weak var meetingTimeLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()

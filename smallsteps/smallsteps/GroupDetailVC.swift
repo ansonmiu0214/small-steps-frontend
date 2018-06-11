@@ -11,7 +11,7 @@ import UIKit
 class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return 1
     }
     
     
@@ -30,6 +30,7 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "groupDetailCell", for: indexPath) as! GroupDetailTableViewCell
         cell.groupNameLabel.text = yourGroupNames[myIndex]
+        cell.meetingTimeLabel.text = "12:30"
         return cell
     }
 }
