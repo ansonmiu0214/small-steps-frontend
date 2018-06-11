@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ger-RH-lUx">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="v0v-wy-b5e">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -13,6 +13,35 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Loading MapsVC-->
+        <scene sceneID="yOd-e0-RDe">
+            <objects>
+                <viewController id="7L8-o7-7uf" customClass="LoadingMapsVC" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="V9e-Gn-8Yq">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="UEL-zi-Gvc">
+                                <rect key="frame" x="150" y="274" width="20" height="20"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="UEL-zi-Gvc" firstAttribute="centerY" secondItem="V9e-Gn-8Yq" secondAttribute="centerY" id="dqK-yh-hc2"/>
+                            <constraint firstItem="UEL-zi-Gvc" firstAttribute="centerX" secondItem="V9e-Gn-8Yq" secondAttribute="centerX" id="uQ8-Ej-XhB"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="GGt-Jl-MSZ"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="Swy-2m-bm1"/>
+                    <connections>
+                        <outlet property="spinner" destination="UEL-zi-Gvc" id="cDd-qZ-Me9"/>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="goToMap" id="qcN-Rh-HuP"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7hC-FM-xyh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1481" y="-144"/>
+        </scene>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
@@ -49,12 +78,12 @@
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="1631" y="-301"/>
+            <point key="canvasLocation" x="2246" y="-144"/>
         </scene>
-        <!--Join Group Popup View Controller-->
+        <!--Join Group PopupVC-->
         <scene sceneID="9Ro-VN-ITk">
             <objects>
-                <viewController storyboardIdentifier="popup" id="uPu-3E-u4H" customClass="JoinGroupPopupViewController" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="popup" id="uPu-3E-u4H" customClass="JoinGroupPopupVC" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="PQS-lW-HSy">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -100,7 +129,40 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YR3-eZ-CW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2453" y="-744"/>
+            <point key="canvasLocation" x="1856" y="-1200"/>
+        </scene>
+        <!--Loading GroupsVC-->
+        <scene sceneID="hf5-4Y-FEI">
+            <objects>
+                <viewController id="af0-v5-bUW" customClass="LoadingGroupsVC" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="hOa-IZ-ROp">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="UGP-8q-EIE">
+                                <rect key="frame" x="150" y="274" width="20" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="20" id="31M-RC-GND"/>
+                                    <constraint firstAttribute="height" constant="20" id="QFQ-C2-c6E"/>
+                                </constraints>
+                            </activityIndicatorView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="UGP-8q-EIE" firstAttribute="centerX" secondItem="hOa-IZ-ROp" secondAttribute="centerX" id="XUo-f9-54J"/>
+                            <constraint firstItem="UGP-8q-EIE" firstAttribute="centerY" secondItem="hOa-IZ-ROp" secondAttribute="centerY" id="ejZ-GO-vMC"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="8D0-PM-XXg"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="F0A-B7-ihE"/>
+                    <connections>
+                        <outlet property="spinner" destination="UGP-8q-EIE" id="K7w-bx-7ZG"/>
+                        <segue destination="7dE-FI-JJw" kind="show" identifier="showUserGroups" id="oUU-KS-FCQ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="AhC-Z9-g3m" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="833" y="1974"/>
         </scene>
         <!--Groups-->
         <scene sceneID="bOO-7g-o7J">
@@ -140,7 +202,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kTM-47-zf6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1725" y="900"/>
+            <point key="canvasLocation" x="1858" y="1975"/>
         </scene>
         <!--Create GroupVC-->
         <scene sceneID="Km3-Jp-EdV">
@@ -184,10 +246,10 @@
             </objects>
             <point key="canvasLocation" x="3227" y="144"/>
         </scene>
-        <!--Create User View Controller-->
+        <!--Create UserVC-->
         <scene sceneID="H7p-Ni-zHo">
             <objects>
-                <viewController storyboardIdentifier="isNotRegistered" id="gr2-ve-oyL" customClass="CreateUserViewController" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="isNotRegistered" id="gr2-ve-oyL" customClass="CreateUserVC" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="RfB-DF-Oni">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -316,7 +378,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8TB-Kq-SLI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="939" y="-923"/>
+            <point key="canvasLocation" x="879" y="-926"/>
         </scene>
         <!--Groups-->
         <scene sceneID="JdJ-fv-jmF">
@@ -330,12 +392,12 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="7dE-FI-JJw" kind="relationship" relationship="rootViewController" id="tsC-qO-yNp"/>
+                        <segue destination="af0-v5-bUW" kind="relationship" relationship="rootViewController" id="25s-ZE-j9x"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x55-Fb-Cwc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="803" y="795"/>
+            <point key="canvasLocation" x="833" y="799"/>
         </scene>
         <!--Home-->
         <scene sceneID="Kt9-Hv-WSy">
@@ -349,12 +411,12 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="1hl-ec-fL6"/>
+                        <segue destination="7L8-o7-7uf" kind="relationship" relationship="rootViewController" id="Z7N-9u-USN"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Kas-Gx-ByY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="880" y="-99"/>
+            <point key="canvasLocation" x="677" y="-144"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Zqy-ix-Teu">
@@ -532,7 +594,7 @@
                                     </label>
                                 </subviews>
                             </stackView>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="jrs-xn-1pf">
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="jrs-xn-1pf">
                                 <rect key="frame" x="150" y="393" width="20" height="20"/>
                             </activityIndicatorView>
                         </subviews>
@@ -563,7 +625,7 @@
         <image name="walking" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="2X5-MF-MCy"/>
+        <segue reference="Mik-Eo-aM5"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.72156862749999995" green="0.38823529410000002" blue="0.49803921569999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

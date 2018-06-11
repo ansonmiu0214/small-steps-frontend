@@ -28,8 +28,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var userId: Int = 0
   let manager = CLLocationManager()
   
-  
-  
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
     if(groups.count == 0){
       let location = locations[0]
@@ -43,10 +41,24 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     map.delegate = self
   }
   
+  fileprivate func updateMap() {
+    self.map.removeAnnotations(self.map.annotations)
+    print("groups is: \(groups)")
+    for group in groups{
+      print("showing groups")
+      
+      self.createPinFromGroup(group: group)
+    }
+    self.fitAll(showGroups: true)
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    updateMap()
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    //
     //MapKit Setup
     manager.delegate = self
     manager.desiredAccuracy = kCLLocationAccuracyBest
@@ -74,22 +86,25 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     //Set the map view in locationSearchTable
     locationSearchTable.map = map
     
-    AllGroupsTVC.loadGroups(){
-      AllGroupsTVC.loadUserGroups{
-        //Create pins from groups
-        self.map.removeAnnotations(self.map.annotations)
-        print("groups is: \(groups)")
-        for group in groups{
-          print("showing groups")
-          
-          self.createPinFromGroup(group: group)
-        }
-        self.fitAll(showGroups: true)
-      }
-    }
+    updateMap()
     
+    //update the Map
+    //    AllGroupsTVC.loadGroups(){
+    //      AllGroupsTVC.loadUserGroups{
+    //Create pins from groups
+    //    self.map.removeAnnotations(self.map.annotations)
+    //    print("groups is: \(groups)")
+    //    for group in groups{
+    //      print("showing groups")
+    //
+    //      self.createPinFromGroup(group: group)
+    //    }
+    //    self.fitAll(showGroups: true)
+    //      }
+    //    }
+    //
     ////Used in GroupMenuTVC
-    GroupMenuTVC.loadYourGroups()
+    //GroupMenuTVC.loadYourGroups()
     
   }
   
@@ -155,9 +170,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     for route in response.routes {
       map.add(route.polyline,
               level: MKOverlayLevel.aboveRoads)
-      //            for step in route.steps {
-      //                print(step.instructions)
-      //            }
     }
     self.fitAll(showGroups: false)
   }
@@ -177,7 +189,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
     
     let reuseId = "Pin"
-    var pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
+    let pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
     pinView.canShowCallout = true
     print(annotation.title ?? "no title!!")
     let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 30, height: 30)))
@@ -197,15 +209,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             infoButton.isEnabled = false
           }
         }
-        //
-        //
-        //                if myGroups.contains(locPointAnnotation.group!) {
-        //                    infoButton.setTitle("Joined", for: .normal)
-        //                    infoButton.isEnabled = false
-        //                } else {
-        //                    infoButton.setTitle("Join", for: .normal)
-        //                }
-        
         infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
         infoButton.addTarget(self, action: #selector(self.joinGroup), for: .touchUpInside)
         pinView.rightCalloutAccessoryView = infoButton
@@ -224,7 +227,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)
   {
     selectedPin = MKPlacemark(coordinate: (view.annotation?.coordinate)!)
-    print("currently selected pin at: \(selectedPin)")
+    print("currently selected pin at: \(String(describing: selectedPin))")
     if let locPointAnnotation = view.annotation as? LocationPointer{
       if locPointAnnotation.discipline != ""{
         currGroupId = (locPointAnnotation.groupId)
@@ -240,7 +243,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   func createPinFromGroup(group: Group){
-    //print("created a group")
     var subtitle = "Meeting Time: \(dateToString(datetime: group.datetime))"
     subtitle += "\nDuration ~ \(getHoursMinutes(time: group.duration))"
     if(group.hasDog){
@@ -271,8 +273,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         } else{
           map.removeAnnotation(annotation)
         }
-        
-        
       }
     }
     // save the pin so we can find directions to it later
@@ -309,7 +309,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   func callPopUp(identifier: String){
-    let popOverVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: identifier) as! JoinGroupPopupViewController
+    let popOverVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: identifier) as! JoinGroupPopupVC
     self.addChildViewController(popOverVC)
     popOverVC.view.frame = self.view.frame
     self.view.addSubview(popOverVC.view)

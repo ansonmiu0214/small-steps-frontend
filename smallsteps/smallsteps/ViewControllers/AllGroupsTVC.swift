@@ -79,34 +79,34 @@ class AllGroupsTVC: UITableViewController {
 //        return newGroup
 //    }
 
-    static func loadGroups(completion: @escaping () -> Void){
-        var latitude: String
-        var longitude: String
-        if let location = CLLocationManager().location?.coordinate{
-            latitude = String(location.latitude)
-            longitude = String(location.longitude)
-        } else{
-            latitude = "51.4989"
-            longitude = "-0.1790"
-        }
-        
-        let localGroupsParams: Parameters = [
-            "latitude": latitude,
-            "longitude": longitude
-        ]
-        
-        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .get, parameters: localGroupsParams, encoding: URLEncoding.default)
-            .responseJSON { (responseData) -> Void in
-                if((responseData.result.value) != nil) {
-                    if let swiftyJsonVar = try? JSON(responseData.result.value!) {
-                        for (_, item) in swiftyJsonVar{
-                            groups.append(createGroupFromJSON(item: item))
-                        }
-                    }
-                }
-                completion()
-        }
-    }
+//    static func loadGroups(completion: @escaping () -> Void){
+//        var latitude: String
+//        var longitude: String
+//        if let location = CLLocationManager().location?.coordinate{
+//            latitude = String(location.latitude)
+//            longitude = String(location.longitude)
+//        } else{
+//            latitude = "51.4989"
+//            longitude = "-0.1790"
+//        }
+//        
+//        let localGroupsParams: Parameters = [
+//            "latitude": latitude,
+//            "longitude": longitude
+//        ]
+//        
+//        Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .get, parameters: localGroupsParams, encoding: URLEncoding.default)
+//            .responseJSON { (responseData) -> Void in
+//                if((responseData.result.value) != nil) {
+//                    if let swiftyJsonVar = try? JSON(responseData.result.value!) {
+//                        for (_, item) in swiftyJsonVar{
+//                            groups.append(createGroupFromJSON(item: item))
+//                        }
+//                    }
+//                }
+//                completion()
+//        }
+//    }
 
     static func loadUserGroups(completion: @escaping () -> Void){
         let deviceGroupsParams: Parameters = [

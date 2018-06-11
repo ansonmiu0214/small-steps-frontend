@@ -10,15 +10,15 @@ import UIKit
 import Alamofire
 import AVFoundation
 
-class CreateUserViewController: UIViewController {
+class CreateUserVC: UIViewController {
    
     @IBOutlet weak var name: UITextField!
     @IBOutlet weak var phoneNumber: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(CreateUserViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(CreateUserViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(CreateUserVC.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(CreateUserVC.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {

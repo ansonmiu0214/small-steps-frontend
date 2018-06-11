@@ -108,7 +108,6 @@ class CreateGroupVC: FormViewController {
             "has_dogs": false,
             "has_kids": false
         ]
-//        GroupMenuTVC.loadYourGroups()
 
         //POST the JSON to the server
         Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .post, parameters: groupParams, encoding: JSONEncoding.default)
