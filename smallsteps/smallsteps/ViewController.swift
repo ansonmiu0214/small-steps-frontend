@@ -87,25 +87,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     locationSearchTable.map = map
     
     updateMap()
-    
-    //update the Map
-    //    AllGroupsTVC.loadGroups(){
-    //      AllGroupsTVC.loadUserGroups{
-    //Create pins from groups
-    //    self.map.removeAnnotations(self.map.annotations)
-    //    print("groups is: \(groups)")
-    //    for group in groups{
-    //      print("showing groups")
-    //
-    //      self.createPinFromGroup(group: group)
-    //    }
-    //    self.fitAll(showGroups: true)
-    //      }
-    //    }
-    //
-    ////Used in GroupMenuTVC
-    //GroupMenuTVC.loadYourGroups()
-    
   }
   
   static func createGroupFromJSON(item: JSON) -> Group{

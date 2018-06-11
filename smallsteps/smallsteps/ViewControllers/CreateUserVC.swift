@@ -59,20 +59,13 @@ class CreateUserVC: UIViewController {
   func serviceUnavailableHandler() {
     let alert = UIAlertController(title: "", message: "", preferredStyle: .alert)
     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+    
     present(alert, animated: true, completion: nil)
   }
   
   @IBAction func continueToMain(_ sender: Any) {
     // Render loading overlay
-    let alert = UIAlertController(title: nil, message: "Signing you up...", preferredStyle: .alert)
-    alert.view.tintColor = UIColor.black
-    
-    let indicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
-    indicator.hidesWhenStopped = true
-    indicator.activityIndicatorViewStyle = .gray
-    indicator.startAnimating()
-    
-    alert.view.addSubview(indicator)
+    let alert = buildLoadingOverlay(message: "Signing you up...")
     present(alert, animated: true, completion: nil)
     
     // Create the walker parameters
