@@ -12,7 +12,7 @@ import Alamofire
 import SwiftyJSON
 
 var yourGroupNames: [String] = []
-
+var myIndex = 0
 
 class GroupMenuTVC: UITableViewController {
     
@@ -102,8 +102,14 @@ class GroupMenuTVC: UITableViewController {
         if (editingStyle == UITableViewCellEditingStyle.delete) {
             // handle delete (by removing the data from your array and updating the tableview)
             yourGroupNames.remove(at: indexPath.row)
+            //ADD REMOVING FROM DATABASE
             tableView.reloadData()
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        myIndex = indexPath.row
+        performSegue(withIdentifier: "menuToDetail", sender: self)
     }
     
 
