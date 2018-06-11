@@ -53,12 +53,27 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="d3d-yF-TBA">
                                 <rect key="frame" x="0.0" y="64" width="320" height="455"/>
                             </mapView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VmJ-AN-yyl">
+                                <rect key="frame" x="250" y="74" width="60" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="Rh4-jo-iSx"/>
+                                    <constraint firstAttribute="width" constant="60" id="TgC-3m-Ju4"/>
+                                </constraints>
+                                <state key="normal" image="navigatorButton">
+                                    <color key="titleShadowColor" red="0.75406885150000003" green="0.75408679249999999" blue="0.75407713649999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="resetCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mA3-FD-azK"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="d3d-yF-TBA" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="58W-cA-Ux3"/>
                             <constraint firstItem="d3d-yF-TBA" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="EE7-hX-v56"/>
                             <constraint firstItem="d3d-yF-TBA" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Udq-QY-047"/>
+                            <constraint firstItem="VmJ-AN-yyl" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="10" id="Wwi-Im-sdf"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="VmJ-AN-yyl" secondAttribute="trailing" constant="10" id="ZiT-OD-dwy"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="d3d-yF-TBA" secondAttribute="bottom" id="f1l-yu-dMU"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -78,7 +93,7 @@
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="2246" y="-144"/>
+            <point key="canvasLocation" x="2244.375" y="-144.71830985915494"/>
         </scene>
         <!--Join Group PopupVC-->
         <scene sceneID="9Ro-VN-ITk">
@@ -622,6 +637,7 @@
     <resources>
         <image name="Logo" width="1080" height="1080"/>
         <image name="home" width="30" height="30"/>
+        <image name="navigatorButton" width="180" height="180"/>
         <image name="walking" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>

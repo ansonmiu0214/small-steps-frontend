@@ -107,7 +107,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     //GroupMenuTVC.loadYourGroups()
     
   }
-  
+    @IBAction func resetCamera(_ sender: Any) {
+        fitAll(showGroups: false)
+    }
+    
   static func createGroupFromJSON(item: JSON) -> Group{
     
     print("item: \(item)")
@@ -238,7 +241,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     if let annotationTitle = view.annotation?.title
     {
       print("User tapped on annotation with title: \(annotationTitle!)")
-      
     }
   }
   
@@ -295,17 +297,24 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   func fitAll(showGroups: Bool) {
     var zoomRect = MKMapRectNull;
     print(map.annotations)
-    for annotation in map.annotations {
-      if showGroups
-        || annotation is MKUserLocation
-        || (annotation.coordinate.latitude == selectedPin?.coordinate.latitude
-          && annotation.coordinate.longitude == selectedPin?.coordinate.longitude) {
-        let annotationPoint = MKMapPointForCoordinate(annotation.coordinate)
-        let pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.05, 0.05);
-        zoomRect = MKMapRectUnion(zoomRect, pointRect);
-      }
+    if showGroups {
+      for annotation in map.annotations {
+          annotation is MKUserLocation
+  //        || (annotation.coordinate.latitude == selectedPin?.coordinate.latitude
+  //          && annotation.coordinate.longitude == selectedPin?.coordinate.longitude)
+          let annotationPoint = MKMapPointForCoordinate(annotation.coordinate)
+          let pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.03, 0.03);
+          zoomRect = MKMapRectUnion(zoomRect, pointRect);
+          let edgePadding: CGFloat = 70
+          map.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(edgePadding, edgePadding, edgePadding, edgePadding), animated: true)
+        }
+    } else{
+      let location = map.userLocation
+      let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
+      let myLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
+      let region: MKCoordinateRegion = MKCoordinateRegionMake(myLocation, span)
+      map.setRegion(region, animated: true)
     }
-    map.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(70, 70, 70, 70), animated: true)
   }
   
   func callPopUp(identifier: String){
