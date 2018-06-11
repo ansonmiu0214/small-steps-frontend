@@ -11,7 +11,7 @@ import CoreData
 import MapKit
 import Alamofire
 
-// Universal constants
+// Universal constants and variables
 let UUID: String = UIDevice.current.identifierForVendor!.uuidString
 let SERVER_IP: String = "http://146.169.45.120:8080/smallsteps"
 
