@@ -222,6 +222,7 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="on0-Xp-7yx" firstAttribute="top" secondItem="vCs-15-0R1" secondAttribute="top" id="Fh4-Ko-BfS"/>
+                                                <constraint firstAttribute="trailing" secondItem="on0-Xp-7yx" secondAttribute="trailing" id="G2S-fI-DP3"/>
                                                 <constraint firstAttribute="bottom" secondItem="on0-Xp-7yx" secondAttribute="bottom" constant="-0.5" id="MJ1-AJ-v8b"/>
                                                 <constraint firstItem="on0-Xp-7yx" firstAttribute="leading" secondItem="vCs-15-0R1" secondAttribute="leading" id="Nxj-ha-Y9h"/>
                                                 <constraint firstAttribute="trailing" secondItem="on0-Xp-7yx" secondAttribute="trailing" id="kWB-sD-abH"/>
