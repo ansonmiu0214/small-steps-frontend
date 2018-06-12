@@ -47,16 +47,13 @@ func addWalkerToGroup(groupId: String, completion: @escaping (Bool) -> Void)  {
   }
 }
 
-// TODO change name of protocol
 class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleGroupSelection {
   var selectedPin:MKPlacemark? = nil
   var currGroupId: String = "-1"
   
   @IBOutlet var map: MKMapView!
-  @IBOutlet weak var groupDetailsPanel: UIView!
   
   var resultSearchController:UISearchController? = nil
-  var userId: Int = 0
   
   let manager = CLLocationManager()
   
@@ -125,7 +122,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       self.resultSearchController?.hidesNavigationBarDuringPresentation = false
       self.resultSearchController?.dimsBackgroundDuringPresentation = true
       self.definesPresentationContext = true
-
       
       // Zoom into your location
       let span = MKCoordinateSpanMake(0.01, 0.01)
@@ -133,45 +129,17 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       self.map.setRegion(region, animated: true)
     }
     
-//    getGroups(center: (manager.location?.coordinate)!) { [unowned self] allGroups in
-//      getGroupsByUUID { userGroups in
-//        // Set fields
-//        self.allGroups = allGroups
-//        self.userGroups = userGroups
-//
-//        // Reset annotations
-//        self.map.removeAnnotations(self.map.annotations)
-//        self.allGroups.forEach(self.createPinFromGroup)
-//
-//        // Set up MapView
-//        self.map.delegate = self
-//        self.map.showsUserLocation = true
-//
-//        // Set up CoreLocation manager
-//        self.manager.delegate = self
-//        self.manager.desiredAccuracy = kCLLocationAccuracyBest
-//        self.manager.requestWhenInUseAuthorization()
-//        self.manager.startUpdatingLocation()
-//
-//        // Zoom into your location
-//        let span = MKCoordinateSpanMake(0.01, 0.01)
-//        let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
-//        self.map.setRegion(region, animated: true)
-//      }
-//    }
-    
     super.viewWillAppear(animated)
   }
   
   override func viewDidLoad() {
-    groupDetailsPanel.isHidden = true
-
     if isButtonClick {
       isButtonClick = !isButtonClick
       getRoute()
     }
     
     super.viewDidLoad()
+
   }
   
 //  static func createGroupFromJSON(item: JSON) -> Group {
@@ -259,8 +227,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
   }
 
-  func mapView(_ mapView: MKMapView, rendererFor
-    overlay: MKOverlay) -> MKOverlayRenderer {
+  func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
     let renderer = MKPolylineRenderer(overlay: overlay)
     renderer.strokeColor = UIColor.red
     renderer.lineWidth = 5.0
@@ -313,22 +280,25 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     return pinView
   }
   
-  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)
-  {
-    selectedPin = MKPlacemark(coordinate: (view.annotation?.coordinate)!)
-    print("currently selected pin at: \(String(describing: selectedPin))")
-    if let locPointAnnotation = view.annotation as? LocationPointer{
-      if locPointAnnotation.discipline != ""{
-        currGroupId = (locPointAnnotation.groupId)
-        print("groupId = \(currGroupId)")
-      }
-    }
-    
-    if let annotationTitle = view.annotation?.title
-    {
-      print("User tapped on annotation with title: \(annotationTitle!)")
-      
-    }
+  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+//    UIView.transition(with: groupDetailsPanel, duration: 1.0, options: .transitionCrossDissolve, animations: { [unowned self] in
+//      self.groupDetailsPanel.isHidden = false
+//    }, completion: nil)
+//
+//    selectedPin = MKPlacemark(coordinate: (view.annotation?.coordinate)!)
+//    print("currently selected pin at: \(String(describing: selectedPin))")
+//    if let locPointAnnotation = view.annotation as? LocationPointer{
+//      if locPointAnnotation.discipline != ""{
+//        currGroupId = (locPointAnnotation.groupId)
+//        print("groupId = \(currGroupId)")
+//      }
+//    }
+//
+//    if let annotationTitle = view.annotation?.title
+//    {
+//      print("User tapped on annotation with title: \(annotationTitle!)")
+//
+//    }
   }
   
   func createPinFromGroup(group: Group){
