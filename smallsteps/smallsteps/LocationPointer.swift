@@ -1,6 +1,7 @@
 import MapKit
 
 class LocationPointer: NSObject, MKAnnotation {
+  
     var markerTintColor: UIColor  {
         switch discipline {
         case "Not Started":
