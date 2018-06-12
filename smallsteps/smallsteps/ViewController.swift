@@ -124,33 +124,32 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     super.viewWillAppear(animated)
   }
   
-  static func createGroupFromJSON(item: JSON) -> Group {
-    //Convert JSON to string to datetime
-    let dateFormatterDT: DateFormatter = DateFormatter()
-    dateFormatterDT.dateFormat = "yyyy-MM-dd hh:mm:ss"
-    let newDate: Date = dateFormatterDT.date(from: item["time"].string!)!
-    
-    //Convert JSON to string to duration
-    let dateFormatterDur: DateFormatter = DateFormatter()
-    dateFormatterDur.dateFormat = "hh:mm"
-    //print("THE DURATION IS :" + item["duration"].string!)
-    //let newDuration: Date = dateFormatterDur.date(from: item["duration"].string!)!
-    
-    //Add new group to group array
-    let newGroup: Group = Group(groupName: item["name"].string!,
-                                datetime: newDate,
-                                repeats: "yes",
-                                duration: Date(),
-                                latitude: item["location_latitude"].string!,
-                                longitude: item["location_longitude"].string!,
-                                hasDog: item["has_dogs"].bool!,
-                                hasKid: item["has_kids"].bool!,
-                                adminID: item["admin_id"].string!,
-                                isWalking: item["is_walking"].bool!,
-                                groupId: item["id"].string!)
-    return newGroup
-  }
-  
+//  static func createGroupFromJSON(item: JSON) -> Group {
+//    //Convert JSON to string to datetime
+//    let dateFormatterDT: DateFormatter = DateFormatter()
+//    dateFormatterDT.dateFormat = "yyyy-MM-dd hh:mm:ss"
+//    let newDate: Date = dateFormatterDT.date(from: item["time"].string!)!
+//
+//    //Convert JSON to string to duration
+//    let dateFormatterDur: DateFormatter = DateFormatter()
+//    dateFormatterDur.dateFormat = "hh:mm"
+//    print("THE DURATION IS :" + item["duration"].string!)
+//    let newDuration: Date = dateFormatterDur.date(from: item["duration"].string!)!
+//
+//    //Add new group to group array
+//    let newGroup: Group = Group(groupName: item["name"].string!,
+//                                datetime: newDate,
+//                                repeats: "yes",
+//                                duration: Date(),
+//                                latitude: item["location_latitude"].string!,
+//                                longitude: item["location_longitude"].string!,
+//                                hasDog: item["has_dogs"].bool!,
+//                                hasKid: item["has_kids"].bool!,
+//                                adminID: item["admin_id"].string!,
+//                                isWalking: item["is_walking"].bool!,
+//                                groupId: item["id"].string!)
+//    return newGroup
+//  }
   
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) { self.view.endEditing(true) }
   
@@ -187,8 +186,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     self.fitAll(showGroups: false)
   }
   
-  func mapView(_ mapView: MKMapView, rendererFor
-    overlay: MKOverlay) -> MKOverlayRenderer {
+  func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
     let renderer = MKPolylineRenderer(overlay: overlay)
     renderer.strokeColor = UIColor.red
     renderer.lineWidth = 5.0
@@ -199,10 +197,9 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     // Return on user location
     if annotation is MKUserLocation { return nil }
     
-    let reuseId = "Pin"
-    let pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
+    let pinView = LocationPointerView(annotation: annotation, reuseIdentifier: "Pin")
     pinView.canShowCallout = true
-    print(annotation.title ?? "no title!!")
+    
     let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 30, height: 30)))
     directionButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
     directionButton.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
@@ -211,21 +208,19 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     if let locPointAnnotation = annotation as? LocationPointer{
       if(locPointAnnotation.discipline != ""){
         let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
-          infoButton.setTitle("Join", for: .normal)
-        
-        print("locpointannotgroup: \(locPointAnnotation)")
+        infoButton.setTitle("Join", for: .normal)
+      
         if let grp = locPointAnnotation.group {
           // Add entry to lookup dictionary for `tag -> group`
-          
           infoButton.tag = Int(grp.groupId)!
-          let tag = infoButton.tag
           pinToGroup[infoButton.tag] = grp
-          print("group is: \(grp.groupName)")
+          
           if userGroups.contains(grp) {
             infoButton.setTitle("Joined", for: .normal)
             infoButton.isEnabled = false
           }
         }
+        
         infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
         infoButton.addTarget(self, action: #selector(self.joinGroup(_:)), for: .touchUpInside)
         pinView.rightCalloutAccessoryView = infoButton
@@ -241,44 +236,43 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     return pinView
   }
   
-  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)
-  {
-    selectedPin = MKPlacemark(coordinate: (view.annotation?.coordinate)!)
-    print("currently selected pin at: \(String(describing: selectedPin))")
-    if let locPointAnnotation = view.annotation as? LocationPointer{
-      if locPointAnnotation.discipline != ""{
-        currGroupId = (locPointAnnotation.groupId)
-        print("groupId = \(currGroupId)")
-      }
-    }
-    
-    if let annotationTitle = view.annotation?.title
-    {
-      print("User tapped on annotation with title: \(annotationTitle!)")
-      
-    }
+  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+//    selectedPin = MKPlacemark(coordinate: (view.annotation?.coordinate)!)
+//    print("currently selected pin at: \(String(describing: selectedPin))")
+//    if let locPointAnnotation = view.annotation as? LocationPointer{
+//      if locPointAnnotation.discipline != ""{
+//        currGroupId = (locPointAnnotation.groupId)
+//        print("groupId = \(currGroupId)")
+//      }
+//    }
+//
+//    if let annotationTitle = view.annotation?.title
+//    {
+//      print("User tapped on annotation with title: \(annotationTitle!)")
+//
+//    }
   }
   
   func createPinFromGroup(group: Group){
     var subtitle = "Meeting Time: \(dateToString(datetime: group.datetime))"
-    subtitle += "\nDuration ~ \(getHoursMinutes(time: group.duration))"
-    if(group.hasDog){
-      subtitle += "\nHas Dogs"
-    }
-    if(group.hasKid){
-      subtitle += "\nHas Kids"
-    }
+    subtitle += "\nDuration: \(getHoursMinutes(time: group.duration))"
+    
+    if group.hasDog { subtitle += "\nHas dogs" }
+    if group.hasKid { subtitle += "\nHas kids" }
+    if let placemark = group.placemark { subtitle += "\nMeeting Place: \(placemark.name!)" }
     
     let discipline = group.isWalking ? "In Progress" : "Not Started"
     let coordinate = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
-    let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate:  coordinate, groupId: group.groupId, group: group)
+    let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate: coordinate, group: group)
+    
     map.addAnnotation(annotation)
   }
   
   func selectAnnotation(group: Group) {
+    // Filter location pointers only
     let annotations: [LocationPointer] = map.annotations.filter({ $0 is LocationPointer }) as! [LocationPointer]
     
-    
+    // Show annotation
     if let annotation = annotations.filter({ $0.group! == group }).first {
       map.selectAnnotation(annotation, animated: true)
     }
@@ -346,27 +340,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     dateFormatter.dateStyle = .long
     let newDate: String = dateFormatter.string(for: datetime)!
     return "\(newTime) \(newDate)"
-  }
-  
-  func getHoursMinutes(time: Date) -> String {
-    let dateFormatter: DateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "H"
-    let newHour: String = dateFormatter.string(for: time)!
-    dateFormatter.dateFormat = "m"
-    let newMinute: String = dateFormatter.string(from: time)
-    if newHour == "0"{
-      return "\(newMinute) minutes"
-    }
-    var hour: String
-    if(newHour == "1"){
-      hour = "\(newHour) hour"
-    }
-    hour = "\(newHour) hours"
-    if(newMinute == "0"){
-      return hour
-    }
-    
-    return "\(hour) and \(newMinute) minutes"
   }
   
 }

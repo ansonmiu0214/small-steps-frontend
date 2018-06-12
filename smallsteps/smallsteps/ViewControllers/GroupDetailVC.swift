@@ -42,19 +42,7 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
             detailsCell.meetingTimeLabel.text = stringDate
             
             //Duration
-            let dateFormatter2: DateFormatter = DateFormatter()
-            dateFormatter2.dateFormat = "hh"
-            let hours: String = dateFormatter2.string(from: globalUserGroups[currGroup].duration)
-            dateFormatter2.dateFormat = "mm"
-            let mins: String = dateFormatter2.string(from: globalUserGroups[currGroup].duration)
-            
-            if (hours == "") {
-                detailsCell.durationLabel.text = "\(mins) minutes walk"
-            } else if (hours == "01") {
-                detailsCell.durationLabel.text = "\(hours) hour \(mins) minutes walk"
-            } else {
-                detailsCell.durationLabel.text = "\(hours) hours \(mins) minutes walk"
-            }
+            detailsCell.durationLabel.text = "\(getHoursMinutes(time: globalUserGroups[currGroup].duration)) walk"
         case 1:
             //Meeting location
             locationCell = tableView.dequeueReusableCell(withIdentifier: "meetingLocationCell", for: indexPath) as! MeetingLocationTableViewCell
