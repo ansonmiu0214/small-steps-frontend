@@ -55,7 +55,6 @@ extension LocationSearchTable {
     return matchingGroups.count
   }
 
-  // TODO - make a better subtitle?
   override func tableView(_ tableView: UITableView, cellForRowAt at: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
     let selectedGroup = matchingGroups[at.row]

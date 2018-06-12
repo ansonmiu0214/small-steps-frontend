@@ -46,10 +46,12 @@ func addWalkerToGroup(groupId: String, completion: @escaping (Bool) -> Void)  {
   }
 }
 
-class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleGroupSelection{
+class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleGroupSelection {
   var selectedPin:MKPlacemark? = nil
   var currGroupId: String = "-1"
+  
   @IBOutlet var map: MKMapView!
+  @IBOutlet weak var groupDetailsPanel: UIView!
   
   var resultSearchController:UISearchController? = nil
   var userId: Int = 0
