@@ -30,7 +30,7 @@ class GroupMenuTVC: UITableViewController {
                 if((responseData.result.value) != nil) {
                     if let swiftyJsonVar = try? JSON(responseData.result.value!) {
                         for (_, item) in swiftyJsonVar{
-                            if ()
+                            //if ()
                             userGroups.append(ViewController.createGroupFromJSON(item: item))
 //                            yourGroupNames.append(item["name"].string!)
 //                            yourGroupNames = Array(Set(yourGroupNames))

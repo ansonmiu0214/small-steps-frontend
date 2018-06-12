@@ -12,6 +12,7 @@ import MapKit
 import Alamofire
 import AVFoundation
 import SwiftyJSON
+import StompClientLib
 
 var userGroups: [Group] = []
 
@@ -19,7 +20,7 @@ protocol HandleMapSearch {
     func dropPinZoomIn(placemark:MKPlacemark)
 }
 
-class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleMapSearch{
+class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleMapSearch {
     var selectedPin:MKPlacemark? = nil
     var currGroupId: String = "-1"
     @IBOutlet var map: MKMapView!
@@ -28,7 +29,11 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     var userId: Int = 0
     let manager = CLLocationManager()
     
-    
+    var socketClient = StompClientLib()
+    let subscriptionURL = "/all/messages"
+    let registrationURL = "http://localhost:8080/notifyWalkers"
+    //let registrationURL = "http://146.169.45.120:8080/smallsteps/notifyWalkers"
+    let destinationURL = "/app/notifyWalkers"
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if(groups.count == 0){
@@ -41,6 +46,22 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         
         self.map.showsUserLocation = true
         map.delegate = self
+    }
+    
+    func registerSocket(){
+        let url = NSURL(string: registrationURL)
+    
+        socketClient.openSocketWithURLRequest(request: NSURLRequest(url: url! as URL) , delegate: self as StompClientLibDelegate)
+    }
+
+    @IBAction func message(_ sender: Any) {
+        print("messaging")
+        let ack = "ack_\(destinationURL)" // It can be any unique string
+        let subsId = "subscription_\(destinationURL)" // It can be any unique string
+        let header = ["destination": destinationURL, "ack": ack]
+        
+        let msg = "{ \"message\": \"hello omar\" }"
+        socketClient.sendMessage(message: msg, toDestination: destinationURL, withHeaders: nil, withReceipt: nil)
     }
     
     override func viewDidLoad() {
@@ -90,7 +111,9 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         
         ////Used in GroupMenuTVC
         GroupMenuTVC.loadYourGroups()
- 
+        
+        registerSocket()
+       
     }
     
     static func createGroupFromJSON(item: JSON) -> Group{
@@ -402,4 +425,56 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         return "\(hour) and \(newMinute) minutes"
     }
     
+}
+
+extension ViewController: StompClientLibDelegate{
+    func stompClient(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: AnyObject?, withHeader header: [String : String]?, withDestination destination: String) {
+        print("> Destination : \(destination)")
+        print("> JSON Body : \(String(describing: jsonBody))")
+    }
+    
+    func stompClientJSONBody(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
+        print("> DESTINATION : \(destination)")
+        print("> String JSON BODY : \(String(describing: jsonBody!))")
+    }
+    
+    func serverDidSendReceipt(client: StompClientLib!, withReceiptId receiptId: String) {
+        print("> Receipt : \(receiptId)")
+    }
+    
+    func serverDidSendError(client: StompClientLib!, withErrorMessage description: String, detailedErrorMessage message: String?) {
+        print("> Error Send : \(String(describing: message))")
+    }
+    
+    func serverDidSendPing() {
+        print("> Server ping")
+    }
+    
+    func stompClientDidConnect(client: StompClientLib!) {
+        print("> Socket is connected")
+        // Stomp subscribe will be here!
+        socketClient.subscribe(destination: "/all/messages")
+//        socketClient.subscribeToDestination(destination: subscriptionURL, ackMode: StompAckMode.AutoMode)
+        print("> sending message?")
+        //socketClient.subscribeToDestination(destination: destinationURL, ackMode: StompAckMode.AutoMode)
+        //stompClientJSONBody(client: socketClient, didReceiveMessageWithJSONBody: nil, withHeader: nil, withDestination: destinationURL)
+//        let ack = "ack_\(destinationURL)" // It can be any unique string
+//        let subsId = "subscription_\(destinationURL)" // It can be any unique string
+//        let header = ["destination": destinationURL, "ack": ack]
+//
+//
+        
+        let msg = "{ \"message\": \"hello omar\" }"
+        socketClient.sendMessage(message: msg, toDestination: destinationURL, withHeaders: nil, withReceipt: nil)
+
+    }
+    
+    func stompClientDidDisconnect(client: StompClientLib!) {
+        print("> Socket is Disconnected")
+        socketClient.unsubscribe(destination: subscriptionURL)
+    }
+    
+    func stompClientWillDisconnect(client: StompClientLib!, withError error: NSError) {
+        
+    }
 }
