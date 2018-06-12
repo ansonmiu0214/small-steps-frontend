@@ -28,13 +28,7 @@ func getGroups(center: CLLocationCoordinate2D, completion: @escaping ([Group]) -
     
     Alamofire.request("\(SERVER_IP)/groups", method: .get, parameters: params)
       .responseJSON { response in
-        var allGroups: [Group] = []
-        if let jsonVal = response.result.value {
-          let jsonVar = JSON(jsonVal)
-          for (_, item) in jsonVar {
-            allGroups.append(createGroupFromJSON(item: item))
-          }
-        }
+        let allGroups = parseGroupsFromJSON(res: response)
         completion(allGroups)
     }
   }
@@ -47,7 +41,11 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   var resultSearchController:UISearchController? = nil
   var userId: Int = 0
+  
   let manager = CLLocationManager()
+  
+  var allGroups: [Group] = []
+  var userGroups: [Group] = []
   
   // On new location data
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -55,19 +53,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       let myLocation = locations[0]
       let span = MKCoordinateSpanMake(0.01, 0.01)
       let region: MKCoordinateRegion = MKCoordinateRegion(center: myLocation.coordinate, span: span)
-      map.setRegion(region, animated: true)
+      map.setRegion(region, animated: false)
     }
-  }
-
-  fileprivate func updateMap() {
-    self.map.removeAnnotations(self.map.annotations)
-    print("groups is: \(groups)")
-    for group in groups{
-      print("showing groups")
-      
-      self.createPinFromGroup(group: group)
-    }
-    self.fitAll(showGroups: true)
   }
   
   func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
@@ -75,37 +62,37 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   override func viewWillAppear(_ animated: Bool) {
-    getGroups(center: (manager.location?.coordinate)!) { [unowned self] groups in
-      groups.forEach(self.createPinFromGroup)
+    getGroups(center: (manager.location?.coordinate)!) { [unowned self] allGroups in
+      getGroupsByUUID { userGroups in
+        // Set fields
+        self.allGroups = allGroups
+        self.userGroups = userGroups
       
-      let annotations = self.map.annotations
-      
-      // Set up MapView
-      self.map.delegate = self
-      self.map.showsUserLocation = true
-    
-      // Set up CoreLocation manager
-      self.manager.delegate = self
-      self.manager.desiredAccuracy = kCLLocationAccuracyBest
-      self.manager.requestWhenInUseAuthorization()
-      self.manager.startUpdatingLocation()
-      
-      // Zoom into your location
-      let span = MKCoordinateSpanMake(0.01, 0.01)
-      let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
-      self.map.setRegion(region, animated: true)
+        // Reset annotations
+        self.map.removeAnnotations(self.map.annotations)
+        self.allGroups.forEach(self.createPinFromGroup)
+        
+        // Set up MapView
+        self.map.delegate = self
+        self.map.showsUserLocation = true
+        
+        // Set up CoreLocation manager
+        self.manager.delegate = self
+        self.manager.desiredAccuracy = kCLLocationAccuracyBest
+        self.manager.requestWhenInUseAuthorization()
+        self.manager.startUpdatingLocation()
+        
+        // Zoom into your location
+        let span = MKCoordinateSpanMake(0.01, 0.01)
+        let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
+        self.map.setRegion(region, animated: true)
+      }
     }
     
     super.viewWillAppear(animated)
   }
   
   override func viewDidLoad() {
-    
-    
-    
-    //MapKit Setup
-    
-    
     //Location Search Table Setup
     let locationSearchTable = storyboard!.instantiateViewController(withIdentifier: "LocationSearchTable") as! LocationSearchTable
     resultSearchController = UISearchController(searchResultsController: locationSearchTable)
@@ -122,8 +109,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     resultSearchController?.dimsBackgroundDuringPresentation = true
     definesPresentationContext = true
     
-    //fitAll(showGroups: true)
-    
     //Set the map view in locationSearchTable
     locationSearchTable.map = map
     
@@ -131,9 +116,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   static func createGroupFromJSON(item: JSON) -> Group {
-    
-    print("item: \(item)")
-    
     //Convert JSON to string to datetime
     let dateFormatterDT: DateFormatter = DateFormatter()
     dateFormatterDT.dateFormat = "yyyy-MM-dd hh:mm:ss"
@@ -205,10 +187,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView?{
-    if annotation is MKUserLocation {
-      //so we don't modify the standard user location
-      return nil
-    }
+    // Return on user location
+    if annotation is MKUserLocation { return nil }
     
     let reuseId = "Pin"
     let pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
@@ -225,8 +205,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         infoButton.setTitle("Join", for: .normal)
         print("locpointannotgroup: \(locPointAnnotation)")
         if let grp = locPointAnnotation.group {
-          print("group is: \(grp)")
-          if myGroups.contains(grp) {
+          print("group is: \(grp.groupName)")
+          if userGroups.contains(grp) {
             infoButton.setTitle("Joined", for: .normal)
             infoButton.isEnabled = false
           }
@@ -275,8 +255,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
     
     let discipline = group.isWalking ? "In Progress" : "Not Started"
-    
-    let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
+    let coordinate = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
     let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate:  coordinate, groupId: group.groupId, group: group)
     map.addAnnotation(annotation)
   }

@@ -22,10 +22,10 @@ class LoadingGroupsVC: UIViewController {
                 if((responseData.result.value) != nil) {
                     if let swiftyJsonVar = try? JSON(responseData.result.value!) {
                         for (_, item) in swiftyJsonVar{
-                            yourGroups.append(ViewController.createGroupFromJSON(item: item))
-                            yourGroupNames.append(item["name"].string!)
-                            yourGroupNames = Array(Set(yourGroupNames))
-                            print("THE GROUP NAME IS: \(item["name"].string)")
+//                            yourGroups.append(ViewController.createGroupFromJSON(item: item))
+//                            yourGroupNames.append(item["name"].string!)
+//                            yourGroupNames = Array(Set(yourGroupNames))
+//                            print("THE GROUP NAME IS: \(item["name"].string)")
                         }
                     }
                     completion()
