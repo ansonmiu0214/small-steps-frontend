@@ -12,6 +12,7 @@ import Alamofire
 import SwiftyJSON
 
 var currGroup = 0
+var globalUserGroups: [Group] = []
 
 func parseGroupsFromJSON(res: DataResponse<Any>) -> [Group] {
   var parsedGroups: [Group] = []
@@ -29,6 +30,7 @@ func getGroupsByUUID(completion: @escaping ([Group]) -> Void) {
     let query = queryBuilder(endpoint: "groups", params: [("device_id", UUID)])
     Alamofire.request(query, method: .get).responseJSON { response in
       let userGroups = parseGroupsFromJSON(res: response)
+      globalUserGroups = userGroups
       completion(userGroups)
     }
   }

@@ -227,7 +227,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="meetingMap" destination="on0-Xp-7yx" id="b5t-bp-Pd3"/>
+                                            <outlet property="meetingMap" destination="on0-Xp-7yx" id="NDz-Ke-J4K"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
