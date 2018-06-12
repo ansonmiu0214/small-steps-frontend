@@ -13,8 +13,8 @@ import Alamofire
 import AVFoundation
 import SwiftyJSON
 
-protocol HandleMapSearch {
-  func dropPinZoomIn(placemark:MKPlacemark)
+protocol HandleGroupSelection {
+  func selectAnnotation(group: Group)
 }
 
 func getGroups(center: CLLocationCoordinate2D, completion: @escaping ([Group]) -> Void) {
@@ -46,7 +46,7 @@ func addWalkerToGroup(groupId: String, completion: @escaping (Bool) -> Void)  {
   }
 }
 
-class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleMapSearch{
+class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleGroupSelection{
   var selectedPin:MKPlacemark? = nil
   var currGroupId: String = "-1"
   @IBOutlet var map: MKMapView!
@@ -62,12 +62,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   // On new location data
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//    if groups.count == 0 {
-//      let myLocation = locations[0]
-//      let span = MKCoordinateSpanMake(0.01, 0.01)
-//      let region: MKCoordinateRegion = MKCoordinateRegion(center: myLocation.coordinate, span: span)
-//      map.setRegion(region, animated: false)
-//    }
+
   }
   
   func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
@@ -103,63 +98,33 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       self.manager.requestWhenInUseAuthorization()
       self.manager.startUpdatingLocation()
       
+      // Set up LocationSearchTable
+      let locationSearchTable = self.storyboard!.instantiateViewController(withIdentifier: "LocationSearchTable") as! LocationSearchTable
+      locationSearchTable.groups = self.allGroups
+      self.resultSearchController = UISearchController(searchResultsController: locationSearchTable)
+      self.resultSearchController?.searchResultsUpdater = locationSearchTable
+      
+      locationSearchTable.handleMapSearchDelegate = self
+      
+      // Set up SearchBar
+      let searchBar = self.resultSearchController!.searchBar
+      searchBar.sizeToFit()
+      searchBar.placeholder = "Search for groups"
+      self.navigationItem.titleView = self.resultSearchController?.searchBar
+      self.resultSearchController?.hidesNavigationBarDuringPresentation = false
+      self.resultSearchController?.dimsBackgroundDuringPresentation = true
+      self.definesPresentationContext = true
+
+//      // Set up map view in LocationSearchTable
+//      locationSearchTable.map = self.map
+      
       // Zoom into your location
       let span = MKCoordinateSpanMake(0.01, 0.01)
       let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
       self.map.setRegion(region, animated: true)
     }
     
-//    getGroups(center: (manager.location?.coordinate)!) { [unowned self] allGroups in
-//      getGroupsByUUID { userGroups in
-//        // Set fields
-//        self.allGroups = allGroups
-//        self.userGroups = userGroups
-//
-//        // Reset annotations
-//        self.map.removeAnnotations(self.map.annotations)
-//        self.allGroups.forEach(self.createPinFromGroup)
-//
-//        // Set up MapView
-//        self.map.delegate = self
-//        self.map.showsUserLocation = true
-//
-//        // Set up CoreLocation manager
-//        self.manager.delegate = self
-//        self.manager.desiredAccuracy = kCLLocationAccuracyBest
-//        self.manager.requestWhenInUseAuthorization()
-//        self.manager.startUpdatingLocation()
-//
-//        // Zoom into your location
-//        let span = MKCoordinateSpanMake(0.01, 0.01)
-//        let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
-//        self.map.setRegion(region, animated: true)
-//      }
-//    }
-    
     super.viewWillAppear(animated)
-  }
-  
-  override func viewDidLoad() {
-    //Location Search Table Setup
-    let locationSearchTable = storyboard!.instantiateViewController(withIdentifier: "LocationSearchTable") as! LocationSearchTable
-    resultSearchController = UISearchController(searchResultsController: locationSearchTable)
-    resultSearchController?.searchResultsUpdater = locationSearchTable
-    
-    locationSearchTable.handleMapSearchDelegate = self
-    
-    //Search Bar Setup
-    let searchBar = resultSearchController!.searchBar
-    searchBar.sizeToFit()
-    searchBar.placeholder = "Set Your Destination"
-    navigationItem.titleView = resultSearchController?.searchBar
-    resultSearchController?.hidesNavigationBarDuringPresentation = false
-    resultSearchController?.dimsBackgroundDuringPresentation = true
-    definesPresentationContext = true
-    
-    //Set the map view in locationSearchTable
-    locationSearchTable.map = map
-    
-    super.viewDidLoad()
   }
   
   static func createGroupFromJSON(item: JSON) -> Group {
@@ -313,36 +278,13 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     map.addAnnotation(annotation)
   }
   
-  func dropPinZoomIn(placemark:MKPlacemark){
-    //Clear previous pin and overlay
-    map.removeOverlays(map.overlays)
+  func selectAnnotation(group: Group) {
+    let annotations: [LocationPointer] = map.annotations.filter({ $0 is LocationPointer }) as! [LocationPointer]
     
-    if(selectedPin != nil){
-      for annotation in map.annotations {
-        if let pointAnnotation = annotation as? LocationPointer{
-          if (pointAnnotation.discipline != "In Progress" ||
-            pointAnnotation.discipline != "Not Started"){
-            map.removeAnnotation(pointAnnotation)
-          }
-        } else{
-          map.removeAnnotation(annotation)
-        }
-      }
+    
+    if let annotation = annotations.filter({ $0.group! == group }).first {
+      map.selectAnnotation(annotation, animated: true)
     }
-    // save the pin so we can find directions to it later
-    selectedPin = placemark
-    
-    var subtitle = ""
-    if let city = placemark.locality,
-      let state = placemark.administrativeArea {
-      subtitle = "\(city), \(state)"
-    }
-    let annotation = LocationPointer(title: placemark.name!, subtitle: subtitle, discipline: "", coordinate: placemark.coordinate)
-    map.addAnnotation(annotation)
-    
-    let span = MKCoordinateSpanMake(0.03, 0.03)
-    let region = MKCoordinateRegionMake(placemark.coordinate, span)
-    map.setRegion(region, animated: true)
   }
   
   //Fits all pins on the map to the map view
@@ -396,46 +338,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         }
       }
     }
-    
-//    //PUT request JSON to the server
-//    Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .put, parameters: joinGroupParams, encoding: URLEncoding.default)
-//      .response {response in
-//
-//        print(response.request)
-//        print(response.response)
-//        print(response.response?.statusCode ?? "no response!")
-//        if let optStatusCode = response.response?.statusCode{
-//          switch optStatusCode {
-//          case 200...300:
-//            print("successfully joined the group!!")
-//            self.callPopUp(identifier: "popup")
-//          default:
-//            print("error")
-//            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-//          }
-//
-//          // TODO delete later
-//          let uuid = UIDevice.current.identifierForVendor!
-//          Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?device_id=\(uuid)", method: .get, encoding: JSONEncoding.default).responseJSON { (responseData) -> Void in
-//            if((responseData.result.value) != nil) {
-//              if let swiftyJsonVar = try? JSON(responseData.result.value!) {
-//                myGroups = []
-//                for (_, item) in swiftyJsonVar{
-//                  myGroups.append(ViewController.createGroupFromJSON(item: item))
-//                  print(item)
-//                }
-//              }
-//            }
-//
-//            // reset map annotations and add them again
-//            self.map.removeAnnotations(self.map.annotations)
-//
-//            groups.forEach { group in self.createPinFromGroup(group: group)}
-//          }
-//          // END (TODO)
-//
-//        }
-//    }
   }
   
   func dateToString(datetime: Date) -> String {
