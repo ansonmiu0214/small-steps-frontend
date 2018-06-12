@@ -453,14 +453,16 @@ extension ViewController: StompClientLibDelegate{
     func stompClientDidConnect(client: StompClientLib!) {
         print("> Socket is connected")
         // Stomp subscribe will be here!
-        socketClient.subscribe(destination: "/all/messages")
+      
+      let ack = "ack_\(destinationURL)" // It can be any unique string
+      let subsId = subscriptionURL // It can be any unique string
+      let header = ["destination": destinationURL, "ack": ack, "id": subsId]
+
+        socketClient.subscribeWithHeader(destination: "/all/messages", withHeader: header)
 //        socketClient.subscribeToDestination(destination: subscriptionURL, ackMode: StompAckMode.AutoMode)
         print("> sending message?")
         //socketClient.subscribeToDestination(destination: destinationURL, ackMode: StompAckMode.AutoMode)
         //stompClientJSONBody(client: socketClient, didReceiveMessageWithJSONBody: nil, withHeader: nil, withDestination: destinationURL)
-//        let ack = "ack_\(destinationURL)" // It can be any unique string
-//        let subsId = "subscription_\(destinationURL)" // It can be any unique string
-//        let header = ["destination": destinationURL, "ack": ack]
 //
 //
         
