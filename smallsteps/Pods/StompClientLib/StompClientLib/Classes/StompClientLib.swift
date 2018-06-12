@@ -177,8 +177,9 @@ public class StompClientLib: NSObject, SRWebSocketDelegate {
     }
     
     public func webSocketDidOpen(_ webSocket: SRWebSocket!) {
-        print("WebSocket is connected")
+        
         connect()
+        print("WebSocket is connected")
     }
     
     public func webSocket(_ webSocket: SRWebSocket!, didFailWithError error: Error!) {

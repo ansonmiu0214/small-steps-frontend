@@ -12,6 +12,7 @@ import MapKit
 import Alamofire
 import AVFoundation
 import SwiftyJSON
+import Starscream
 
 protocol HandleMapSearch {
   func dropPinZoomIn(placemark:MKPlacemark)
@@ -59,6 +60,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var allGroups: [Group] = []
   var userGroups: [Group] = []
   var pinToGroup: [Int: Group] = [:]
+  var socket = WebSocket(url: URL(string: "ws://localhost:8080/notifyWalkers")!, protocols: ["chat"])
+
   
   // On new location data
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -159,7 +162,15 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     //Set the map view in locationSearchTable
     locationSearchTable.map = map
     
+    socket.delegate = self
+    socket.connect()
+    
     super.viewDidLoad()
+  }
+  
+  deinit {
+    socket.disconnect(forceTimeout: 0)
+    socket.delegate = nil
   }
   
   static func createGroupFromJSON(item: JSON) -> Group {
@@ -468,6 +479,24 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
     
     return "\(hour) and \(newMinute) minutes"
+  }
+  
+}
+extension ViewController : WebSocketDelegate {
+  func websocketDidConnect(socket: WebSocketClient) {
+    
+  }
+  
+  func websocketDidDisconnect(socket: WebSocketClient, error: Error?) {
+    
+  }
+  
+  func websocketDidReceiveMessage(socket: WebSocketClient, text: String) {
+    
+  }
+  
+  func websocketDidReceiveData(socket: WebSocketClient, data: Data) {
+    
   }
   
 }
