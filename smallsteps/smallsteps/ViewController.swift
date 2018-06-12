@@ -12,6 +12,7 @@ import MapKit
 import Alamofire
 import AVFoundation
 import SwiftyJSON
+import StompClientLib
 
 protocol HandleGroupSelection {
 //  func dropPinZoomIn(placemark:MKPlacemark)
@@ -66,7 +67,38 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var userGroups: [Group] = []
   var pinToGroup: [Int: Group] = [:]
   
-  // On new location data
+  var socketClient = StompClientLib()
+  let subscriptionURL = "/topic/frontEnd"
+    let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"
+  let destinationURL = "/app/backEnd"
+  var deviceIDAppend = "/-1"
+
+    
+    func registerSocket(){
+        let url = NSURL(string: registrationURL)
+        
+        socketClient.openSocketWithURLRequest(request: NSURLRequest(url: url! as URL) , delegate: self as StompClientLibDelegate)
+    }
+
+    @IBAction func message(_ sender: Any) {
+        print("messaging")
+        //        let ack = "ack_\(destinationURL)" // It can be any unique string
+        //        let subsId = "subscription_\(destinationURL)" // It can be any unique string
+        //        let header = ["destination": destinationURL, "ack": ack, "id":subsId]
+        //
+        //let msg = "{ \"text\": \"hello omar\" }"
+        let msg = """
+{"text": "hello"}
+"""
+        let newDestinationURL = "\(destinationURL)\(deviceIDAppend)"
+        let newSubscriptionURL = "\(subscriptionURL)\(deviceIDAppend)"
+        
+        //socketClient.sendJSONForDict(dict: msg as AnyObject, toDestination: destinationURL)
+        socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: newSubscriptionURL)
+
+    }
+    
+    // On new location data
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 //    if groups.count == 0 {
 //      let myLocation = locations[0]
@@ -170,7 +202,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       isButtonClick = !isButtonClick
       getRoute()
     }
-    
+    registerSocket()
     super.viewDidLoad()
   }
   
@@ -476,3 +508,47 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
 }
+
+extension ViewController: StompClientLibDelegate{
+  func stompClient(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: AnyObject?, withHeader header: [String : String]?, withDestination destination: String) {
+    print("> Destination : \(destination)")
+    print("> JSON Body : \(String(describing: jsonBody))")
+  }
+  
+  func stompClientJSONBody(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
+    print("> DESTINATION : \(destination)")
+    print("> String JSON BODY : \(String(describing: jsonBody!))")
+  }
+  
+  func serverDidSendReceipt(client: StompClientLib!, withReceiptId receiptId: String) {
+    print("> Receipt : \(receiptId)")
+  }
+  
+  func serverDidSendError(client: StompClientLib!, withErrorMessage description: String, detailedErrorMessage message: String?) {
+    print("> Error Send : \(String(describing: message))")
+  }
+  
+  func serverDidSendPing() {
+    print("> Server ping")
+  }
+  
+  func stompClientDidConnect(client: StompClientLib!) {
+    print("> Socket is connected")
+    // Stomp subscribe will be here!
+    
+    let ack = "ack_\(destinationURL)" // It can be any unique string
+    let subsId = subscriptionURL // It can be any unique string
+    let header = ["destination": destinationURL, "ack": ack, "id": subsId]
+    let newURL = "\(subscriptionURL)\(deviceIDAppend)"
+    socketClient.subscribeWithHeader(destination: newURL, withHeader: header)
+  }
+  
+  func stompClientDidDisconnect(client: StompClientLib!) {
+    print("> Socket is Disconnected")
+    socketClient.unsubscribe(destination: subscriptionURL)
+  }
+  
+  func stompClientWillDisconnect(client: StompClientLib!, withError error: NSError) {
+  }
+}
+
