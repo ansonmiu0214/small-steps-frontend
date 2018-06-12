@@ -63,7 +63,12 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var socket = WebSocket(url: URL(string: "ws://localhost:8080/notifyWalkers")!, protocols: ["chat"])
 
   
-  // On new location data
+    @IBAction func sendAMessage(_ sender: Any) {
+      print("send a message?")
+        sendMessage("gday mate")
+    }
+    
+    // On new location data
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 //    if groups.count == 0 {
 //      let myLocation = locations[0]
@@ -78,7 +83,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   func setUpGroupData(completion: (() -> Void)? = nil) {
-    getGroups(center: (manager.location?.coordinate)!) { [unowned self] allGroups in
+    getGroups(center: CLLocationCoordinate2DMake(51.49, -0.17)) { [unowned self] allGroups in
+//    getGroups(center: (manager.location?.coordinate)!) { [unowned self] allGroups in
       getGroupsByUUID { userGroups in
         // Set fields
         self.allGroups = allGroups
@@ -108,7 +114,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       
       // Zoom into your location
       let span = MKCoordinateSpanMake(0.01, 0.01)
-      let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
+      let region = MKCoordinateRegion(center: CLLocationCoordinate2DMake(51.49, -0.17), span: span)
+      //let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
       self.map.setRegion(region, animated: true)
     }
     
@@ -483,20 +490,41 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
 }
 extension ViewController : WebSocketDelegate {
-  func websocketDidConnect(socket: WebSocketClient) {
-    
-  }
-  
-  func websocketDidDisconnect(socket: WebSocketClient, error: Error?) {
-    
-  }
-  
-  func websocketDidReceiveMessage(socket: WebSocketClient, text: String) {
-    
+  func websocketDidReceivePong(socket: WebSocketClient, data: Data?) {
+    print("Got pong! Maybe some data: \(data?.count)")
   }
   
   func websocketDidReceiveData(socket: WebSocketClient, data: Data) {
-    
+    print("got some data: \(data.count)")
+
   }
   
+  func websocketDidConnect(socket: WebSocketClient) {
+    print("websocket connected")
+    //socket.write(string: "hello mate")
+
+  }
+  
+  func websocketDidDisconnect(socket: WebSocketClient, error: Error?) {
+    print("websocket is disconnected: \(error?.localizedDescription)")
+  }
+  
+  func websocketDidReceiveMessage(socket: WebSocketClient, text: String) {
+    print("got some text: \(text)")
+    }
+  
+}
+
+
+fileprivate extension ViewController {
+  
+  func sendMessage(_ message: String) {
+    print("sending a message: \(message)")
+    socket.write(string: "WORK!!!")
+    //socket.write(data: "message".data(using: .utf8)!)
+  }
+  
+  func messageReceived(_ message: String, senderName: String) {
+    print("recieved the message: \(message)")
+  }
 }
