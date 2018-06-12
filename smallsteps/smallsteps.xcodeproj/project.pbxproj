@@ -26,14 +26,12 @@
 		6E03487320BEBC79008EFC5D /* smallstepsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E03487220BEBC79008EFC5D /* smallstepsUITests.swift */; };
 		6E03488120BECC62008EFC5D /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 6E03488020BECC62008EFC5D /* Podfile */; };
 		6E0348C620BF3A72008EFC5D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6E0348C520BF3A72008EFC5D /* GoogleService-Info.plist */; };
-		6E12C5E520CF0D4300C24F91 /* MeetingLocationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E12C5E420CF0D4300C24F91 /* MeetingLocationTableViewCell.swift */; };
 		6E1445CB20CFF02900934D0A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E1445CA20CFF02900934D0A /* Utils.swift */; };
 		6E1445CE20CFF07300934D0A /* JoinGroupPopupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E1445CC20CFF07300934D0A /* JoinGroupPopupVC.swift */; };
 		6E1445CF20CFF07300934D0A /* CreateUserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E1445CD20CFF07300934D0A /* CreateUserVC.swift */; };
 		6E1445D220CFF09300934D0A /* LoadingGroupsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E1445D020CFF09300934D0A /* LoadingGroupsVC.swift */; };
 		6E1445D320CFF09300934D0A /* LoadingMapsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E1445D120CFF09300934D0A /* LoadingMapsVC.swift */; };
 		6E5978A120CECECC006E6AC1 /* GroupDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E5978A020CECECC006E6AC1 /* GroupDetailVC.swift */; };
-		6E5978A320CED9FC006E6AC1 /* GroupDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E5978A220CED9FC006E6AC1 /* GroupDetailTableViewCell.swift */; };
 		6EA7782820C0483A00D885C8 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EA7782720C0483A00D885C8 /* CoreLocation.framework */; };
 		E5308FDE632403EB2FD8F542 /* Pods_smallsteps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 31BE804FD74B4010CC95E798 /* Pods_smallsteps.framework */; };
 /* End PBXBuildFile section */
@@ -82,14 +80,12 @@
 		6E03487420BEBC79008EFC5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6E03488020BECC62008EFC5D /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		6E0348C520BF3A72008EFC5D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
-		6E12C5E420CF0D4300C24F91 /* MeetingLocationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingLocationTableViewCell.swift; sourceTree = "<group>"; };
 		6E1445CA20CFF02900934D0A /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		6E1445CC20CFF07300934D0A /* JoinGroupPopupVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinGroupPopupVC.swift; sourceTree = "<group>"; };
 		6E1445CD20CFF07300934D0A /* CreateUserVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateUserVC.swift; sourceTree = "<group>"; };
 		6E1445D020CFF09300934D0A /* LoadingGroupsVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingGroupsVC.swift; sourceTree = "<group>"; };
 		6E1445D120CFF09300934D0A /* LoadingMapsVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingMapsVC.swift; sourceTree = "<group>"; };
 		6E5978A020CECECC006E6AC1 /* GroupDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailVC.swift; sourceTree = "<group>"; };
-		6E5978A220CED9FC006E6AC1 /* GroupDetailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailTableViewCell.swift; sourceTree = "<group>"; };
 		6EA7782720C0483A00D885C8 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		A2D4966D20D1BE09456D34A8 /* Pods-smallsteps.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-smallsteps.release.xcconfig"; path = "Pods/Target Support Files/Pods-smallsteps/Pods-smallsteps.release.xcconfig"; sourceTree = "<group>"; };
 		C0F2DAE76E7D67759002A8FC /* Pods-smallsteps.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-smallsteps.debug.xcconfig"; path = "Pods/Target Support Files/Pods-smallsteps/Pods-smallsteps.debug.xcconfig"; sourceTree = "<group>"; };
@@ -178,8 +174,6 @@
 				0461EBF720C6BB150014EB34 /* LocationSearchTable.swift */,
 				04AB146220C841AF007419F0 /* CustomCells.swift */,
 				6E1445CA20CFF02900934D0A /* Utils.swift */,
-				6E5978A220CED9FC006E6AC1 /* GroupDetailTableViewCell.swift */,
-				6E12C5E420CF0D4300C24F91 /* MeetingLocationTableViewCell.swift */,
 				3E72F8DE20CC3879002F4AAC /* ViewControllers */,
 			);
 			path = smallsteps;
@@ -412,12 +406,10 @@
 				3E72F8DD20CC3357002F4AAC /* LandingVC.swift in Sources */,
 				6E03485820BEBC77008EFC5D /* smallsteps.xcdatamodeld in Sources */,
 				6E03485220BEBC77008EFC5D /* ViewController.swift in Sources */,
-				6E5978A320CED9FC006E6AC1 /* GroupDetailTableViewCell.swift in Sources */,
 				0461EBF820C6BB150014EB34 /* LocationSearchTable.swift in Sources */,
 				6E01D6D620C6A386004ABE58 /* Group.swift in Sources */,
 				6E01D6D420C6A355004ABE58 /* AllGroupsTVC.swift in Sources */,
 				6E1445CE20CFF07300934D0A /* JoinGroupPopupVC.swift in Sources */,
-				6E12C5E520CF0D4300C24F91 /* MeetingLocationTableViewCell.swift in Sources */,
 				6E01D6D220C69C9F004ABE58 /* CreateGroupVC.swift in Sources */,
 				3E52B2BE20C9CDB000F4C460 /* GroupMenuTVC.swift in Sources */,
 				6E1445D220CFF09300934D0A /* LoadingGroupsVC.swift in Sources */,

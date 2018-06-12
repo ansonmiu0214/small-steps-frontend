@@ -22,7 +22,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="d3d-yF-TBA">
-                                <rect key="frame" x="0.0" y="64" width="320" height="455"/>
+                                <rect key="frame" x="0.0" y="20" width="320" height="548"/>
                             </mapView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -201,6 +201,7 @@
                         <outlet property="groupNameLabel" destination="qUR-gJ-Zgz" id="tmB-Xu-Y0u"/>
                         <outlet property="meetingMap" destination="on0-Xp-7yx" id="mtc-pN-KnS"/>
                         <outlet property="meetingTimeLabel" destination="HGg-rq-WBX" id="bbm-z4-Dl0"/>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="meetingRoute" id="CnP-qi-gvu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="byr-a6-ovB" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -629,6 +630,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Mik-Eo-aM5"/>
+        <segue reference="CnP-qi-gvu"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.72156862749999995" green="0.38823529410000002" blue="0.49803921569999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

@@ -84,25 +84,12 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
     }
     
     func getRoute() {
-        
-        let directionRequest = MKDirectionsRequest()
-        directionRequest.source = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: (manager.location?.coordinate.latitude)!, longitude: (manager.location?.coordinate.longitude)!)))
-        directionRequest.destination = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: Double(globalUserGroups[currGroup].latitude)!, longitude: Double(globalUserGroups[currGroup].longitude)!)))
-        directionRequest.transportType = .automobile
-        let directions = MKDirections(request: directionRequest)
-        directions.calculate { (response, error) in
-            guard let directionResponse = response else {
-                if let error = error {
-                    print("We have an error getting the right directions \(error.localizedDescription)")
-                }
-                return
-            }
-            
-            let route = directionResponse.routes[0]
-            self.meetingMap.add(route.polyline, level: .aboveRoads)
-            
-            let rect = route.polyline.boundingMapRect
-            self.meetingMap.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
+        self.performSegue(withIdentifier: "meetingRoute", sender: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let destVC = segue.destination as? ViewController {
+            destVC.isButtonClick = true
         }
     }
     

@@ -56,6 +56,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   let manager = CLLocationManager()
   
+  var isButtonClick: Bool = false
+  
   var allGroups: [Group] = []
   var userGroups: [Group] = []
   var pinToGroup: [Int: Group] = [:]
@@ -160,6 +162,12 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     locationSearchTable.map = map
     
     super.viewDidLoad()
+    
+    if isButtonClick == true {
+      isButtonClick = !isButtonClick
+      getRoute()
+    }
+    
   }
   
   static func createGroupFromJSON(item: JSON) -> Group {
@@ -225,6 +233,29 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     self.fitAll(showGroups: false)
   }
   
+  //used by group detail
+  func getRoute() {
+    let directionRequest = MKDirectionsRequest()
+    directionRequest.source = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: (manager.location?.coordinate.latitude)!, longitude: (manager.location?.coordinate.longitude)!)))
+    directionRequest.destination = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: Double(globalUserGroups[currGroup].latitude)!, longitude: Double(globalUserGroups[currGroup].longitude)!)))
+    directionRequest.transportType = .automobile
+    let directions = MKDirections(request: directionRequest)
+    directions.calculate { (response, error) in
+      guard let directionResponse = response else {
+        if let error = error {
+          print("We have an error getting the right directions \(error.localizedDescription)")
+        }
+        return
+      }
+
+      let route = directionResponse.routes[0]
+      self.map.add(route.polyline, level: .aboveRoads)
+
+      let rect = route.polyline.boundingMapRect
+      self.map.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
+    }
+  }
+
   func mapView(_ mapView: MKMapView, rendererFor
     overlay: MKOverlay) -> MKOverlayRenderer {
     let renderer = MKPolylineRenderer(overlay: overlay)
