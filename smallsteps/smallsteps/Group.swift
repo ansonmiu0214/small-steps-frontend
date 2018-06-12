@@ -40,5 +40,6 @@ class Group: Equatable {
         self.groupId = groupId
     }
     
+
 }
 

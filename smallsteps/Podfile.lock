@@ -3,6 +3,7 @@ PODS:
   - Eureka (4.1.1)
   - PopupWindow (0.1.0)
   - SocketRocket (0.5.1)
+  - Starscream (3.0.5)
   - StompClientLib (1.2.2):
     - SocketRocket
   - SwiftyJSON (4.1.0)
@@ -11,6 +12,7 @@ DEPENDENCIES:
   - Alamofire (~> 4.7)
   - Eureka
   - PopupWindow
+  - Starscream
   - StompClientLib
   - SwiftyJSON
 
@@ -20,6 +22,7 @@ SPEC REPOS:
     - Eureka
     - PopupWindow
     - SocketRocket
+    - Starscream
     - StompClientLib
     - SwiftyJSON
 
@@ -28,9 +31,10 @@ SPEC CHECKSUMS:
   Eureka: b88fb930e42c79f8c03c373d0fcdc28c1d6c50ed
   PopupWindow: 2f3a33001295435a3ab568e42a970d51539ed6e9
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
+  Starscream: faf918b2f2eff7d5dd21180646bf015a669673bd
   StompClientLib: 722379c85b96423de965245d2bb9e01e931ce7ed
   SwiftyJSON: c29297daf073d2aa016295d5809cdd68045c39b3
 
-PODFILE CHECKSUM: 73c946154f01c77903fe3e7e81f4379aa6e2ce5b
+PODFILE CHECKSUM: 3752a7b463d2be1de1b549d93d7ddbae36923d11
 
 COCOAPODS: 1.5.3

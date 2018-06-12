@@ -27,7 +27,7 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         
     }
     
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -38,9 +38,12 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         let detailsCell = tableView.dequeueReusableCell(withIdentifier: "groupDetailCell", for: indexPath) as! GroupDetailTableViewCell
         var locationCell = tableView.dequeueReusableCell(withIdentifier: "meetingLocationCell", for: indexPath) as! MeetingLocationTableViewCell
         
-        switch indexPath.section {
+        getGroupsByUUID(){ userGroups in
+            switch indexPath.section {
+                
             case 0:
                 //Group name
+                
                 detailsCell.groupNameLabel.text = userGroups[currGroup].groupName
                 
                 //Convert from datetime to string
@@ -48,7 +51,7 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
                 dateFormatter.dateFormat = "MMM d yyyy, h:mm a"
                 let stringDate: String = dateFormatter.string(from: userGroups[currGroup].datetime)
                 detailsCell.meetingTimeLabel.text = stringDate
-            
+                
                 //Duration
                 let dateFormatter2: DateFormatter = DateFormatter()
                 dateFormatter2.dateFormat = "hh"
@@ -65,11 +68,13 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
                 }
             case 1:
                 //Meeting location
+                print("meeting group loc: lat = \(userGroups[currGroup].latitude), long = \(userGroups[currGroup].longitude)")
                 locationCell = tableView.dequeueReusableCell(withIdentifier: "meetingLocationCell", for: indexPath) as! MeetingLocationTableViewCell
                 locationCell.showLocation(location: CLLocation(latitude: Double(userGroups[currGroup].latitude)!, longitude: Double(userGroups[currGroup].longitude)!))
+                
             default: break
-            
-            
+                
+            }
         }
         
         if indexPath.section == 0 {
@@ -77,20 +82,21 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         } else {
             return locationCell
         }
-        
-        
-        
-//        var groupName: String
-//        var datetime: Date
-//        var repeats: String
-//        var duration: Date
-//        var latitude: String
-//        var longitude: String
-//        var hasDog: Bool
-//        var hasKid: Bool
-//        var adminID: String
-//        var isWalking: Bool
-//        var groupId: String
-        
     }
+    
+    
+    
+    //        var groupName: String
+    //        var datetime: Date
+    //        var repeats: String
+    //        var duration: Date
+    //        var latitude: String
+    //        var longitude: String
+    //        var hasDog: Bool
+    //        var hasKid: Bool
+    //        var adminID: String
+    //        var isWalking: Bool
+    //        var groupId: String
+    
 }
+

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class JoinGroupPopupViewController: UIViewController {    
+class JoinGroupPopupVC: UIViewController {    
     @IBOutlet weak var popupview: UIView!
     
     override func viewDidLoad() {
@@ -20,7 +20,7 @@ class JoinGroupPopupViewController: UIViewController {
     }
 
     @IBAction func closePopUp(_ sender: Any) {
-        let popup = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "popup") as! JoinGroupPopupViewController
+        let popup = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "popup") as! JoinGroupPopupVC
         self.addChildViewController(popup)
         popup.view.frame = self.view.frame
         self.view.addSubview(popup.view)

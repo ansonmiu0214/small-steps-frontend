@@ -38,13 +38,14 @@ class MeetingLocationTableViewCell: UITableViewCell, MKMapViewDelegate, CLLocati
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let span: MKCoordinateSpan = MKCoordinateSpanMake(0.001, 0.001)
-        let myLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(Double(userGroups[currGroup].latitude)!, Double(userGroups[currGroup].longitude)!)
-        let region: MKCoordinateRegion = MKCoordinateRegionMake(myLocation, span)
-        meetingMap.setRegion(region, animated: true)
-        
-        self.meetingMap.showsUserLocation = true
-        meetingMap.delegate = self
+        getGroupsByUUID() { userGroups in
+            let myLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(Double(userGroups[currGroup].latitude)!, Double(userGroups[currGroup].longitude)!)
+            let span: MKCoordinateSpan = MKCoordinateSpanMake(0.001, 0.001)
+            let region: MKCoordinateRegion = MKCoordinateRegionMake(myLocation, span)
+            self.meetingMap.setRegion(region, animated: true)
+            self.meetingMap.showsUserLocation = true
+            self.meetingMap.delegate = self
+        }
     }
     
     func showLocation(location:CLLocation) {
