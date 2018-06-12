@@ -30,10 +30,12 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     let manager = CLLocationManager()
     
     var socketClient = StompClientLib()
-    let subscriptionURL = "/all/messages"
-    let registrationURL = "http://localhost:8080/notifyWalkers"
-    //let registrationURL = "http://146.169.45.120:8080/smallsteps/notifyWalkers"
-    let destinationURL = "/app/notifyWalkers"
+    let subscriptionURL = "/topic/frontEnd"
+    let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"
+    let destinationURL = "/app/backEnd"
+    var deviceIDAppend = "/-1"
+    //var deviceIDAppend = "/\(UIDevice.current.identifierForVendor!.uuidString)"
+    var adminIDAppend = "--"
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if(groups.count == 0){
@@ -50,23 +52,30 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     func registerSocket(){
         let url = NSURL(string: registrationURL)
-    
+        
         socketClient.openSocketWithURLRequest(request: NSURLRequest(url: url! as URL) , delegate: self as StompClientLibDelegate)
     }
-
+    
     @IBAction func message(_ sender: Any) {
         print("messaging")
-        let ack = "ack_\(destinationURL)" // It can be any unique string
-        let subsId = "subscription_\(destinationURL)" // It can be any unique string
-        let header = ["destination": destinationURL, "ack": ack]
+        //        let ack = "ack_\(destinationURL)" // It can be any unique string
+        //        let subsId = "subscription_\(destinationURL)" // It can be any unique string
+        //        let header = ["destination": destinationURL, "ack": ack, "id":subsId]
+        //
+        //let msg = "{ \"text\": \"hello omar\" }"
+        let msg = """
+{"text": "hello"}
+"""
+        let newDestinationURL = "\(destinationURL)\(deviceIDAppend)"
+        let newSubscriptionURL = "\(subscriptionURL)\(deviceIDAppend)"
         
-        let msg = "{ \"message\": \"hello omar\" }"
-        socketClient.sendMessage(message: msg, toDestination: destinationURL, withHeaders: nil, withReceipt: nil)
+        //socketClient.sendJSONForDict(dict: msg as AnyObject, toDestination: destinationURL)
+        socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: newSubscriptionURL)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
         //
         //MapKit Setup
         manager.delegate = self
@@ -99,9 +108,9 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             AllGroupsTVC.loadUserGroups{
                 //Create pins from groups
                 self.map.removeAnnotations(self.map.annotations)
-                print("groups is: \(groups)")
+                //print("groups is: \(groups)")
                 for group in groups{
-                    print("showing groups")
+                    //print("showing groups")
                     
                     self.createPinFromGroup(group: group)
                 }
@@ -113,12 +122,12 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         GroupMenuTVC.loadYourGroups()
         
         registerSocket()
-       
+        
     }
     
     static func createGroupFromJSON(item: JSON) -> Group{
         
-        print("item: \(item)")
+        //print("item: \(item)")
         
         //Convert JSON to string to datetime
         let dateFormatterDT: DateFormatter = DateFormatter()
@@ -174,7 +183,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     func showRoute(_ response: MKDirectionsResponse) {
         map.removeOverlays(map.overlays)
-        print("showing route!")
+        //print("showing route!")
         for route in response.routes {
             map.add(route.polyline,
                     level: MKOverlayLevel.aboveRoads)
@@ -193,6 +202,12 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         return renderer
     }
     
+    @objc func meetUp(){
+        print("meeting up with group: \(currGroupId)")
+        
+        //TODO: subscribe to the group admin's channel
+    }
+    
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView?{
         if annotation is MKUserLocation {
             //so we don't modify the standard user location
@@ -202,35 +217,41 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         let reuseId = "Pin"
         var pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
         pinView.canShowCallout = true
-        print(annotation.title ?? "no title!!")
+        //print(annotation.title ?? "no title!!")
         let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 30, height: 30)))
         directionButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
         directionButton.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
-
+        
         pinView.leftCalloutAccessoryView = directionButton
-         if let locPointAnnotation = annotation as? LocationPointer{
+        if let locPointAnnotation = annotation as? LocationPointer{
             if(locPointAnnotation.discipline != ""){
                 let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
+                infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
+                if(locPointAnnotation.discipline == "Not Started"){
                     infoButton.setTitle("Join", for: .normal)
-                print("locpointannotgroup: \(locPointAnnotation)")
+                    infoButton.addTarget(self, action: #selector(self.joinGroup), for: .touchUpInside)
+                } else{
+                    infoButton.setTitle("Meet Up", for: .normal)
+                    infoButton.addTarget(self, action: #selector(self.meetUp), for: .touchUpInside)
+
+                }
+                //print("locpointannotgroup: \(locPointAnnotation)")
                 if let grp = locPointAnnotation.group {
-                    print("group is: \(grp)")
+                    //print("group is: \(grp)")
                     if myGroups.contains(grp) {
                         infoButton.setTitle("Joined", for: .normal)
                         infoButton.isEnabled = false
                     }
                 }
-//
-//
-//                if myGroups.contains(locPointAnnotation.group!) {
-//                    infoButton.setTitle("Joined", for: .normal)
-//                    infoButton.isEnabled = false
-//                } else {
-//                    infoButton.setTitle("Join", for: .normal)
-//                }
-            
-                infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
-                infoButton.addTarget(self, action: #selector(self.joinGroup), for: .touchUpInside)
+                //
+                //
+                //                if myGroups.contains(locPointAnnotation.group!) {
+                //                    infoButton.setTitle("Joined", for: .normal)
+                //                    infoButton.isEnabled = false
+                //                } else {
+                //                    infoButton.setTitle("Join", for: .normal)
+                //                }
+                
                 pinView.rightCalloutAccessoryView = infoButton
             }
         }
@@ -247,19 +268,19 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)
     {
         selectedPin = MKPlacemark(coordinate: (view.annotation?.coordinate)!)
-        print("currently selected pin at: \(selectedPin)")
+        //print("currently selected pin at: \(selectedPin)")
         if let locPointAnnotation = view.annotation as? LocationPointer{
             if locPointAnnotation.discipline != ""{
                 currGroupId = (locPointAnnotation.groupId)
-                print("groupId = \(currGroupId)")
+                //print("groupId = \(currGroupId)")
             }
         }
-        
-        if let annotationTitle = view.annotation?.title
-        {
-            print("User tapped on annotation with title: \(annotationTitle!)")
-            
-        }
+//
+//        if let annotationTitle = view.annotation?.title
+//        {
+//            print("User tapped on annotation with title: \(annotationTitle!)")
+//
+//        }
     }
     
     func createPinFromGroup(group: Group){
@@ -317,7 +338,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     //Fits all pins on the map to the map view
     func fitAll(showGroups: Bool) {
         var zoomRect = MKMapRectNull;
-        print(map.annotations)
+        //print(map.annotations)
         for annotation in map.annotations {
             if showGroups
                 || annotation is MKUserLocation
@@ -331,15 +352,15 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         map.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(70, 70, 70, 70), animated: true)
     }
     
-        func callPopUp(identifier: String){
-            let popOverVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: identifier) as! JoinGroupPopupViewController
-            self.addChildViewController(popOverVC)
-            popOverVC.view.frame = self.view.frame
-            self.view.addSubview(popOverVC.view)
-            popOverVC.didMove(toParentViewController: self)
-        }
+    func callPopUp(identifier: String){
+        let popOverVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: identifier) as! JoinGroupPopupViewController
+        self.addChildViewController(popOverVC)
+        popOverVC.view.frame = self.view.frame
+        self.view.addSubview(popOverVC.view)
+        popOverVC.didMove(toParentViewController: self)
+    }
     
-
+    
     @objc func joinGroup(){
         print("joining group with id: \(currGroupId)")
         
@@ -348,17 +369,17 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             "group_id": currGroupId
         ]
         
-        print(UIDevice.current.identifierForVendor!.uuidString)
+        //print(UIDevice.current.identifierForVendor!.uuidString)
         
-        print(joinGroupParams)
+        //print(joinGroupParams)
         
         //PUT request JSON to the server
         Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .put, parameters: joinGroupParams, encoding: URLEncoding.default)
             .response {response in
                 
-                print(response.request)
-                print(response.response)
-                print(response.response?.statusCode ?? "no response!")
+                //print(response.request)
+                //print(response.response)
+                //print(response.response?.statusCode ?? "no response!")
                 if let optStatusCode = response.response?.statusCode{
                     switch optStatusCode {
                     case 200...300:
@@ -377,7 +398,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
                                 myGroups = []
                                 for (_, item) in swiftyJsonVar{
                                     myGroups.append(ViewController.createGroupFromJSON(item: item))
-                                    print(item)
+                                    //print(item)
                                 }
                             }
                         }
@@ -453,22 +474,12 @@ extension ViewController: StompClientLibDelegate{
     func stompClientDidConnect(client: StompClientLib!) {
         print("> Socket is connected")
         // Stomp subscribe will be here!
-      
-      let ack = "ack_\(destinationURL)" // It can be any unique string
-      let subsId = subscriptionURL // It can be any unique string
-      let header = ["destination": destinationURL, "ack": ack, "id": subsId]
-
-        socketClient.subscribeWithHeader(destination: "/all/messages", withHeader: header)
-//        socketClient.subscribeToDestination(destination: subscriptionURL, ackMode: StompAckMode.AutoMode)
-        print("> sending message?")
-        //socketClient.subscribeToDestination(destination: destinationURL, ackMode: StompAckMode.AutoMode)
-        //stompClientJSONBody(client: socketClient, didReceiveMessageWithJSONBody: nil, withHeader: nil, withDestination: destinationURL)
-//
-//
         
-        let msg = "{ \"message\": \"hello omar\" }"
-        socketClient.sendMessage(message: msg, toDestination: destinationURL, withHeaders: nil, withReceipt: nil)
-
+        let ack = "ack_\(destinationURL)" // It can be any unique string
+        let subsId = subscriptionURL // It can be any unique string
+        let header = ["destination": destinationURL, "ack": ack, "id": subsId]
+        let newURL = "\(subscriptionURL)\(deviceIDAppend)"
+        socketClient.subscribeWithHeader(destination: newURL, withHeader: header)
     }
     
     func stompClientDidDisconnect(client: StompClientLib!) {
@@ -477,6 +488,5 @@ extension ViewController: StompClientLibDelegate{
     }
     
     func stompClientWillDisconnect(client: StompClientLib!, withError error: NSError) {
-        
     }
 }
