@@ -39,7 +39,7 @@ class MeetingLocationTableViewCell: UITableViewCell, MKMapViewDelegate, CLLocati
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let span: MKCoordinateSpan = MKCoordinateSpanMake(0.001, 0.001)
-        let myLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(Double(userGroups[myIndex].latitude)!, Double(userGroups[myIndex].longitude)!)
+        let myLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(Double(userGroups[currGroup].latitude)!, Double(userGroups[currGroup].longitude)!)
         let region: MKCoordinateRegion = MKCoordinateRegionMake(myLocation, span)
         meetingMap.setRegion(region, animated: true)
         

@@ -41,20 +41,20 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         switch indexPath.section {
             case 0:
                 //Group name
-                detailsCell.groupNameLabel.text = userGroups[myIndex].groupName
+                detailsCell.groupNameLabel.text = userGroups[currGroup].groupName
                 
                 //Convert from datetime to string
                 let dateFormatter: DateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "MMM d yyyy, h:mm a"
-                let stringDate: String = dateFormatter.string(from: userGroups[myIndex].datetime)
+                let stringDate: String = dateFormatter.string(from: userGroups[currGroup].datetime)
                 detailsCell.meetingTimeLabel.text = stringDate
             
                 //Duration
                 let dateFormatter2: DateFormatter = DateFormatter()
                 dateFormatter2.dateFormat = "hh"
-                let hours: String = dateFormatter2.string(from: userGroups[myIndex].duration)
+                let hours: String = dateFormatter2.string(from: userGroups[currGroup].duration)
                 dateFormatter2.dateFormat = "mm"
-                let mins: String = dateFormatter2.string(from: userGroups[myIndex].duration)
+                let mins: String = dateFormatter2.string(from: userGroups[currGroup].duration)
                 
                 if (hours == "") {
                     detailsCell.durationLabel.text = "\(mins) minutes walk"
@@ -66,7 +66,7 @@ class GroupDetailVC: UIViewController, UITableViewDataSource, UITableViewDelegat
             case 1:
                 //Meeting location
                 locationCell = tableView.dequeueReusableCell(withIdentifier: "meetingLocationCell", for: indexPath) as! MeetingLocationTableViewCell
-                locationCell.showLocation(location: CLLocation(latitude: Double(userGroups[myIndex].latitude)!, longitude: Double(userGroups[myIndex].longitude)!))
+                locationCell.showLocation(location: CLLocation(latitude: Double(userGroups[currGroup].latitude)!, longitude: Double(userGroups[currGroup].longitude)!))
             default: break
             
             

@@ -11,7 +11,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-var myIndex = 0
+var currGroup = 0
 
 class GroupMenuTVC: UITableViewController {
     
@@ -103,14 +103,14 @@ class GroupMenuTVC: UITableViewController {
             // handle delete (by removing the data from your array and updating the tableview)
             userGroups.remove(at: indexPath.row)
             //ADD REMOVING FROM DATABASE
-            
-            
+            let uuid = UIDevice.current.identifierForVendor!
+            Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?device_id=\(uuid)&group_id=\(userGroups[currGroup].groupId)", method: .delete)
             tableView.reloadData()
         }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        myIndex = indexPath.row
+        currGroup = indexPath.row
         performSegue(withIdentifier: "menuToDetail", sender: self)
     }
     

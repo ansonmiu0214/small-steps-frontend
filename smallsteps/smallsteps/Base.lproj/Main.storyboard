@@ -216,7 +216,7 @@
                                                 <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="on0-Xp-7yx">
                                                     <rect key="frame" x="0.0" y="0.0" width="320" height="175"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" secondItem="on0-Xp-7yx" secondAttribute="height" multiplier="64:35" id="8bq-bL-ygS"/>
+                                                        <constraint firstAttribute="width" secondItem="on0-Xp-7yx" secondAttribute="height" multiplier="64:35" id="fEc-sv-ftp"/>
                                                     </constraints>
                                                 </mapView>
                                             </subviews>
@@ -225,7 +225,6 @@
                                                 <constraint firstAttribute="trailing" secondItem="on0-Xp-7yx" secondAttribute="trailing" id="G2S-fI-DP3"/>
                                                 <constraint firstAttribute="bottom" secondItem="on0-Xp-7yx" secondAttribute="bottom" constant="-0.5" id="MJ1-AJ-v8b"/>
                                                 <constraint firstItem="on0-Xp-7yx" firstAttribute="leading" secondItem="vCs-15-0R1" secondAttribute="leading" id="Nxj-ha-Y9h"/>
-                                                <constraint firstAttribute="trailing" secondItem="on0-Xp-7yx" secondAttribute="trailing" id="kWB-sD-abH"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
