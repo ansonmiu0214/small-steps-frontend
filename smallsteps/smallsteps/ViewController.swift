@@ -238,7 +238,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     let directionRequest = MKDirectionsRequest()
     directionRequest.source = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: (manager.location?.coordinate.latitude)!, longitude: (manager.location?.coordinate.longitude)!)))
     directionRequest.destination = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: Double(globalUserGroups[currGroup].latitude)!, longitude: Double(globalUserGroups[currGroup].longitude)!)))
-    directionRequest.transportType = .automobile
+    directionRequest.transportType = .walking
     let directions = MKDirections(request: directionRequest)
     directions.calculate { (response, error) in
       guard let directionResponse = response else {
