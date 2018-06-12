@@ -13,13 +13,11 @@ import Alamofire
 import AVFoundation
 import SwiftyJSON
 
-var yourGroups: [Group] = []
-
 protocol HandleMapSearch {
   func dropPinZoomIn(placemark:MKPlacemark)
 }
 
-func getGroups(center: CLLocationCoordinate2D, completion: @escaping ([Group]) -> Void) -> Void {
+func getGroups(center: CLLocationCoordinate2D, completion: @escaping ([Group]) -> Void) {
   DispatchQueue(label: "Get Groups", qos: .background).async {
     let params: Parameters = [
       "latitude": String(center.latitude),
@@ -30,6 +28,20 @@ func getGroups(center: CLLocationCoordinate2D, completion: @escaping ([Group]) -
       .responseJSON { response in
         let allGroups = parseGroupsFromJSON(res: response)
         completion(allGroups)
+    }
+  }
+}
+
+func addWalkerToGroup(groupId: String, completion: @escaping (Bool) -> Void)  {
+  DispatchQueue(label: "JoinRequest", qos: .background).async {
+    let params: Parameters = [
+      "group_id": groupId,
+      "walker_id": UUID
+    ]
+    
+    Alamofire.request("\(SERVER_IP)/groups", method: .put, parameters: params)
+      .responseJSON { response in
+        completion(response.response?.statusCode == HTTP_OK)
     }
   }
 }
@@ -46,48 +58,83 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   var allGroups: [Group] = []
   var userGroups: [Group] = []
+  var pinToGroup: [Int: Group] = [:]
   
   // On new location data
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    if groups.count == 0 {
-      let myLocation = locations[0]
-      let span = MKCoordinateSpanMake(0.01, 0.01)
-      let region: MKCoordinateRegion = MKCoordinateRegion(center: myLocation.coordinate, span: span)
-      map.setRegion(region, animated: false)
-    }
+//    if groups.count == 0 {
+//      let myLocation = locations[0]
+//      let span = MKCoordinateSpanMake(0.01, 0.01)
+//      let region: MKCoordinateRegion = MKCoordinateRegion(center: myLocation.coordinate, span: span)
+//      map.setRegion(region, animated: false)
+//    }
   }
   
   func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
     // TODO update groups shown with respect to changed regions
   }
   
-  override func viewWillAppear(_ animated: Bool) {
+  func setUpGroupData(completion: (() -> Void)? = nil) {
     getGroups(center: (manager.location?.coordinate)!) { [unowned self] allGroups in
       getGroupsByUUID { userGroups in
         // Set fields
         self.allGroups = allGroups
         self.userGroups = userGroups
-      
+        
         // Reset annotations
+        self.pinToGroup = [:]
         self.map.removeAnnotations(self.map.annotations)
         self.allGroups.forEach(self.createPinFromGroup)
         
-        // Set up MapView
-        self.map.delegate = self
-        self.map.showsUserLocation = true
-        
-        // Set up CoreLocation manager
-        self.manager.delegate = self
-        self.manager.desiredAccuracy = kCLLocationAccuracyBest
-        self.manager.requestWhenInUseAuthorization()
-        self.manager.startUpdatingLocation()
-        
-        // Zoom into your location
-        let span = MKCoordinateSpanMake(0.01, 0.01)
-        let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
-        self.map.setRegion(region, animated: true)
+        completion?()
       }
     }
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    setUpGroupData { [unowned self] in
+      // Set up MapView
+      self.map.delegate = self
+      self.map.showsUserLocation = true
+      
+      // Set up CoreLocation manager
+      self.manager.delegate = self
+      self.manager.desiredAccuracy = kCLLocationAccuracyBest
+      self.manager.requestWhenInUseAuthorization()
+      self.manager.startUpdatingLocation()
+      
+      // Zoom into your location
+      let span = MKCoordinateSpanMake(0.01, 0.01)
+      let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
+      self.map.setRegion(region, animated: true)
+    }
+    
+//    getGroups(center: (manager.location?.coordinate)!) { [unowned self] allGroups in
+//      getGroupsByUUID { userGroups in
+//        // Set fields
+//        self.allGroups = allGroups
+//        self.userGroups = userGroups
+//
+//        // Reset annotations
+//        self.map.removeAnnotations(self.map.annotations)
+//        self.allGroups.forEach(self.createPinFromGroup)
+//
+//        // Set up MapView
+//        self.map.delegate = self
+//        self.map.showsUserLocation = true
+//
+//        // Set up CoreLocation manager
+//        self.manager.delegate = self
+//        self.manager.desiredAccuracy = kCLLocationAccuracyBest
+//        self.manager.requestWhenInUseAuthorization()
+//        self.manager.startUpdatingLocation()
+//
+//        // Zoom into your location
+//        let span = MKCoordinateSpanMake(0.01, 0.01)
+//        let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
+//        self.map.setRegion(region, animated: true)
+//      }
+//    }
     
     super.viewWillAppear(animated)
   }
@@ -202,9 +249,15 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     if let locPointAnnotation = annotation as? LocationPointer{
       if(locPointAnnotation.discipline != ""){
         let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
-        infoButton.setTitle("Join", for: .normal)
+          infoButton.setTitle("Join", for: .normal)
+        
         print("locpointannotgroup: \(locPointAnnotation)")
         if let grp = locPointAnnotation.group {
+          // Add entry to lookup dictionary for `tag -> group`
+          
+          infoButton.tag = Int(grp.groupId)!
+          let tag = infoButton.tag
+          pinToGroup[infoButton.tag] = grp
           print("group is: \(grp.groupName)")
           if userGroups.contains(grp) {
             infoButton.setTitle("Joined", for: .normal)
@@ -212,7 +265,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
           }
         }
         infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
-        infoButton.addTarget(self, action: #selector(self.joinGroup), for: .touchUpInside)
+        infoButton.addTarget(self, action: #selector(self.joinGroup(_:)), for: .touchUpInside)
         pinView.rightCalloutAccessoryView = infoButton
       }
     }
@@ -317,58 +370,72 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     popOverVC.didMove(toParentViewController: self)
   }
   
+  func buildCompletionAlert(success: Bool, group: Group) -> UIAlertController {
+    let title = success ? "Success!" : "Error occurred"
+    let msg = success ? "You have joined \(group.groupName)" : "Please try again later."
+    
+    let alert = UIAlertController(title: title, message: msg, preferredStyle: UIAlertControllerStyle.alert)
+    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+    return alert
+  }
   
-  @objc func joinGroup(){
-    print("joining group with id: \(currGroupId)")
+  @objc func joinGroup(_ sender: UIButton){
+    let groupToJoin = pinToGroup[sender.tag]!
     
-    let joinGroupParams: Parameters = [
-      "walker_id": UIDevice.current.identifierForVendor!.uuidString,
-      "group_id": currGroupId
-    ]
-    
-    print(UIDevice.current.identifierForVendor!.uuidString)
-    
-    print(joinGroupParams)
-    
-    //PUT request JSON to the server
-    Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .put, parameters: joinGroupParams, encoding: URLEncoding.default)
-      .response {response in
-        
-        print(response.request)
-        print(response.response)
-        print(response.response?.statusCode ?? "no response!")
-        if let optStatusCode = response.response?.statusCode{
-          switch optStatusCode {
-          case 200...300:
-            print("successfully joined the group!!")
-            self.callPopUp(identifier: "popup")
-          default:
-            print("error")
-            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-          }
+    // Show loading overlay
+    let alert = buildLoadingOverlay(message: "Adding you to \(groupToJoin.groupName)...")
+    present(alert, animated: true) { [unowned self] in
+      // Submit request to server, dismiss alert on complete, show error alert on error
+      addWalkerToGroup(groupId: groupToJoin.groupId) { isSuccess in
+        alert.dismiss(animated: true) {
+          let completionAlert = self.buildCompletionAlert(success: isSuccess, group: groupToJoin)
+          self.present(completionAlert, animated: true, completion: nil)
           
-          // TODO delete later
-          let uuid = UIDevice.current.identifierForVendor!
-          Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?device_id=\(uuid)", method: .get, encoding: JSONEncoding.default).responseJSON { (responseData) -> Void in
-            if((responseData.result.value) != nil) {
-              if let swiftyJsonVar = try? JSON(responseData.result.value!) {
-                myGroups = []
-                for (_, item) in swiftyJsonVar{
-                  myGroups.append(ViewController.createGroupFromJSON(item: item))
-                  print(item)
-                }
-              }
-            }
-            
-            // reset map annotations and add them again
-            self.map.removeAnnotations(self.map.annotations)
-            
-            groups.forEach { group in self.createPinFromGroup(group: group)}
-          }
-          // END (TODO)
-          
+          // Reload groups if success
+          if isSuccess { self.setUpGroupData() }
         }
+      }
     }
+    
+//    //PUT request JSON to the server
+//    Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .put, parameters: joinGroupParams, encoding: URLEncoding.default)
+//      .response {response in
+//
+//        print(response.request)
+//        print(response.response)
+//        print(response.response?.statusCode ?? "no response!")
+//        if let optStatusCode = response.response?.statusCode{
+//          switch optStatusCode {
+//          case 200...300:
+//            print("successfully joined the group!!")
+//            self.callPopUp(identifier: "popup")
+//          default:
+//            print("error")
+//            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+//          }
+//
+//          // TODO delete later
+//          let uuid = UIDevice.current.identifierForVendor!
+//          Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?device_id=\(uuid)", method: .get, encoding: JSONEncoding.default).responseJSON { (responseData) -> Void in
+//            if((responseData.result.value) != nil) {
+//              if let swiftyJsonVar = try? JSON(responseData.result.value!) {
+//                myGroups = []
+//                for (_, item) in swiftyJsonVar{
+//                  myGroups.append(ViewController.createGroupFromJSON(item: item))
+//                  print(item)
+//                }
+//              }
+//            }
+//
+//            // reset map annotations and add them again
+//            self.map.removeAnnotations(self.map.annotations)
+//
+//            groups.forEach { group in self.createPinFromGroup(group: group)}
+//          }
+//          // END (TODO)
+//
+//        }
+//    }
   }
   
   func dateToString(datetime: Date) -> String {

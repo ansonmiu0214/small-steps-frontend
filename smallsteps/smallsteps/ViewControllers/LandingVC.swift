@@ -23,9 +23,9 @@ class LandingVC: UIViewController, CLLocationManagerDelegate {
     Alamofire.request(requestURL, method: .get).responseJSON { [unowned self] response in
       self.spinner.stopAnimating()
       switch response.response?.statusCode {
-      case 200:
+      case HTTP_OK:
         completion("isRegistered")
-      case 404:
+      case HTTP_NOT_FOUND:
         completion("notRegistered")
       default:
         let alert = UIAlertController(title: "Service Unavailable", message: "Please try again later.", preferredStyle: UIAlertControllerStyle.alert)
