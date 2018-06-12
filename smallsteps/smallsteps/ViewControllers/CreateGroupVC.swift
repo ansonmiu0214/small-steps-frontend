@@ -12,12 +12,9 @@ import Alamofire
 import CoreLocation
 
 class CreateGroupVC: FormViewController {
-  
-  
-  
+
   override func viewDidLoad() {
     setUpCreateGroupForm()
-    
     super.viewDidLoad()
   }
   
@@ -84,10 +81,8 @@ class CreateGroupVC: FormViewController {
   }
   
   @objc func createGroup() {
-    // Show progress overlay
-    
+    // Build group
     let valuesDict = form.values()
-    
     let newGroup: Group = Group(groupName: valuesDict["groupName"] as! String,
                                 datetime: valuesDict["datetime"] as! Date,
                                 repeats: valuesDict["repeat"] as! String ,
@@ -95,15 +90,17 @@ class CreateGroupVC: FormViewController {
                                 latitude: "\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.latitude)!)",
       longitude: "\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.longitude)!)",
       hasDog: ((form.rowBy(tag: "hasDogs") as? SwitchRow)?.cell.switchControl.isOn)!,
-      //                                    hasKid: ((form.rowBy(tag: "hasKids") as? SwitchRow)?.cell.switchControl.isOn)!,
-      adminID: UIDevice.current.identifierForVendor!.uuidString)
-    print("Group created \(newGroup.groupName)")
+      adminID: UUID)
     
+    // Show progress overlay
+    let alert = buildLoadingOverlay(message: "Setting up \"\(newGroup.groupName)\"")
+    present(alert, animated: true, completion: nil)
     
     //Create the walker parameters
     let groupParams: Parameters = [
       "name": newGroup.groupName,
       "time": removeTimezone(datetime: newGroup.datetime),
+      "description": "Some description",
       "admin_id": newGroup.adminID,
       "location_latitude": newGroup.latitude,
       "location_longitude": newGroup.longitude,
@@ -112,18 +109,43 @@ class CreateGroupVC: FormViewController {
       "has_kids": false
     ]
     
-    //POST the JSON to the server
-    Alamofire.request("http://146.169.45.120:8080/smallsteps/groups", method: .post, parameters: groupParams, encoding: JSONEncoding.default)
-      .response {response in
-        print(groupParams)
-        print("POStedddddddddd")
-        print(response.response?.statusCode ?? "no response!")
-        
+    // Submit POST request
+    DispatchQueue(label: "Create Group", qos: .background).async {
+      Alamofire.request("\(SERVER_IP)/groups", method: .post, parameters: groupParams, encoding: JSONEncoding.default)
+        .responseJSON { [unowned self] response in
+          alert.dismiss(animated: false) {
+            if let statusCode = response.response?.statusCode {
+              switch statusCode {
+              case HTTP_OK:
+                // TODO reload groups
+                self.performSegue(withIdentifier: "returnHome", sender: nil)
+              case HTTP_BAD_REQUEST:
+                self.badFormHandler()
+              default:
+                self.serviceUnavailableHandler()
+              }
+            } else {
+              self.serviceUnavailableHandler()
+            }
+          }
+      }
     }
-    self.performSegue(withIdentifier: "returnHome", sender: nil)
+  }
+  
+  // TODO enforce protocol for these handlers
+  private func badFormHandler() {
+    let alert = UIAlertController(title: "Invalid Details", message: "Please verify the details of the group you are trying to create.", preferredStyle: .alert)
+    alert.addAction(UIAlertAction(title: "OK", style: .destructive, handler: nil))
     
-    //self.tabBarController?.selectedIndex = 0
+    present(alert, animated: true, completion: nil)
+  }
+  
+  // TODO enforce protocol for these handlers
+  private func serviceUnavailableHandler() {
+    let alert = UIAlertController(title: "Service Unavailable", message: "Please check your network connections and try again later.", preferredStyle: .alert)
+    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
     
+    present(alert, animated: true, completion: nil)
   }
   
   func removeTimezone(datetime: Date) -> String {
@@ -133,8 +155,7 @@ class CreateGroupVC: FormViewController {
     //print("THE NEW DATE IS: \(newDate)")
     return newDate
   }
-  
-  
+
   func getHoursMinutesSeconds(time: Date) -> String {
     let dateFormatter: DateFormatter = DateFormatter()
     dateFormatter.dateFormat = "hh:mm:ss"
@@ -143,5 +164,6 @@ class CreateGroupVC: FormViewController {
     
     return newTime
   }
+  
 }
 

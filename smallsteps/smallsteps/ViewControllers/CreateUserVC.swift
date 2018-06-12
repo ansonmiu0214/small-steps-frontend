@@ -57,7 +57,7 @@ class CreateUserVC: UIViewController {
   }
   
   func serviceUnavailableHandler() {
-    let alert = UIAlertController(title: "", message: "", preferredStyle: .alert)
+    let alert = UIAlertController(title: "Service Unavailable", message: "Please check your network connections and try again later.", preferredStyle: .alert)
     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
     
     present(alert, animated: true, completion: nil)
@@ -81,13 +81,17 @@ class CreateUserVC: UIViewController {
       Alamofire.request("\(SERVER_IP)/walker", method: .post, parameters: walkerParams, encoding: JSONEncoding.default)
         .responseJSON { [unowned self] response in
           // Stop spinning screen
-          alert.dismiss(animated: false) { [unowned self] in
-            switch (response.response!.statusCode) {
-            case HTTP_OK:
-              self.performSegue(withIdentifier: "continueToNext", sender: nil)
-            case HTTP_BAD_REQUEST:
-              self.badFormHandler()
-            default:
+          alert.dismiss(animated: false) {
+            if let statusCode = response.response?.statusCode {
+              switch statusCode {
+              case HTTP_OK:
+                self.performSegue(withIdentifier: "continueToNext", sender: nil)
+              case HTTP_BAD_REQUEST:
+                self.badFormHandler()
+              default:
+                self.serviceUnavailableHandler()
+              }
+            } else {
               self.serviceUnavailableHandler()
             }
           }

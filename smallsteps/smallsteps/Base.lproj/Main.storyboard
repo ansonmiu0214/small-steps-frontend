@@ -13,35 +13,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Loading MapsVC-->
-        <scene sceneID="yOd-e0-RDe">
-            <objects>
-                <viewController id="7L8-o7-7uf" customClass="LoadingMapsVC" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="V9e-Gn-8Yq">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="UEL-zi-Gvc">
-                                <rect key="frame" x="150" y="274" width="20" height="20"/>
-                            </activityIndicatorView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="UEL-zi-Gvc" firstAttribute="centerY" secondItem="V9e-Gn-8Yq" secondAttribute="centerY" id="dqK-yh-hc2"/>
-                            <constraint firstItem="UEL-zi-Gvc" firstAttribute="centerX" secondItem="V9e-Gn-8Yq" secondAttribute="centerX" id="uQ8-Ej-XhB"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="GGt-Jl-MSZ"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="Swy-2m-bm1"/>
-                    <connections>
-                        <outlet property="spinner" destination="UEL-zi-Gvc" id="cDd-qZ-Me9"/>
-                        <segue destination="BYZ-38-t0r" kind="show" identifier="goToMap" id="qcN-Rh-HuP"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="7hC-FM-xyh" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1481" y="-144"/>
-        </scene>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
@@ -411,7 +382,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="7L8-o7-7uf" kind="relationship" relationship="rootViewController" id="Z7N-9u-USN"/>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="blc-Hp-EAd"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Kas-Gx-ByY" userLabel="First Responder" sceneMemberID="firstResponder"/>

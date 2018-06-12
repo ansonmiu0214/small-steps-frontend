@@ -19,6 +19,27 @@ protocol HandleMapSearch {
   func dropPinZoomIn(placemark:MKPlacemark)
 }
 
+func getGroups(center: CLLocationCoordinate2D, completion: @escaping ([Group]) -> Void) -> Void {
+  DispatchQueue(label: "Get Groups", qos: .background).async {
+    let params: Parameters = [
+      "latitude": String(center.latitude),
+      "longitude": String(center.longitude)
+    ]
+    
+    Alamofire.request("\(SERVER_IP)/groups", method: .get, parameters: params)
+      .responseJSON { response in
+        var allGroups: [Group] = []
+        if let jsonVal = response.result.value {
+          let jsonVar = JSON(jsonVal)
+          for (_, item) in jsonVar {
+            allGroups.append(createGroupFromJSON(item: item))
+          }
+        }
+        completion(allGroups)
+    }
+  }
+}
+
 class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleMapSearch{
   var selectedPin:MKPlacemark? = nil
   var currGroupId: String = "-1"
@@ -28,19 +49,16 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var userId: Int = 0
   let manager = CLLocationManager()
   
+  // On new location data
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    if(groups.count == 0){
-      let location = locations[0]
-      let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
-      let myLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
-      let region: MKCoordinateRegion = MKCoordinateRegionMake(myLocation, span)
+    if groups.count == 0 {
+      let myLocation = locations[0]
+      let span = MKCoordinateSpanMake(0.01, 0.01)
+      let region: MKCoordinateRegion = MKCoordinateRegion(center: myLocation.coordinate, span: span)
       map.setRegion(region, animated: true)
     }
-    
-    self.map.showsUserLocation = true
-    map.delegate = self
   }
-  
+
   fileprivate func updateMap() {
     self.map.removeAnnotations(self.map.annotations)
     print("groups is: \(groups)")
@@ -52,18 +70,41 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     self.fitAll(showGroups: true)
   }
   
+  func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+    // TODO update groups shown with respect to changed regions
+  }
+  
   override func viewWillAppear(_ animated: Bool) {
-    updateMap()
+    getGroups(center: (manager.location?.coordinate)!) { [unowned self] groups in
+      groups.forEach(self.createPinFromGroup)
+      
+      let annotations = self.map.annotations
+      
+      // Set up MapView
+      self.map.delegate = self
+      self.map.showsUserLocation = true
+    
+      // Set up CoreLocation manager
+      self.manager.delegate = self
+      self.manager.desiredAccuracy = kCLLocationAccuracyBest
+      self.manager.requestWhenInUseAuthorization()
+      self.manager.startUpdatingLocation()
+      
+      // Zoom into your location
+      let span = MKCoordinateSpanMake(0.01, 0.01)
+      let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
+      self.map.setRegion(region, animated: true)
+    }
+    
+    super.viewWillAppear(animated)
   }
   
   override func viewDidLoad() {
-    super.viewDidLoad()
+    
+    
     
     //MapKit Setup
-    manager.delegate = self
-    manager.desiredAccuracy = kCLLocationAccuracyBest
-    manager.requestWhenInUseAuthorization()
-    manager.startUpdatingLocation()
+    
     
     //Location Search Table Setup
     let locationSearchTable = storyboard!.instantiateViewController(withIdentifier: "LocationSearchTable") as! LocationSearchTable
@@ -86,10 +127,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     //Set the map view in locationSearchTable
     locationSearchTable.map = map
     
-    updateMap()
+    super.viewDidLoad()
   }
   
-  static func createGroupFromJSON(item: JSON) -> Group{
+  static func createGroupFromJSON(item: JSON) -> Group {
     
     print("item: \(item)")
     
