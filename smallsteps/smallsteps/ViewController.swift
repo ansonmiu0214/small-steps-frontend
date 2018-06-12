@@ -126,6 +126,12 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     super.viewWillAppear(animated)
   }
   
+  override func viewDidLoad() {
+    groupDetailsPanel.isHidden = true
+
+    super.viewDidLoad()
+  }
+  
 //  static func createGroupFromJSON(item: JSON) -> Group {
 //    //Convert JSON to string to datetime
 //    let dateFormatterDT: DateFormatter = DateFormatter()
