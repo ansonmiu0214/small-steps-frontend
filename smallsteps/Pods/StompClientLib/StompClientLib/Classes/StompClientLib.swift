@@ -343,7 +343,8 @@ public class StompClientLib: NSObject, SRWebSocketDelegate {
         
         // Setting up content type as plain text.
         if headersToSend[StompCommands.commandHeaderContentType] == nil {
-            headersToSend[StompCommands.commandHeaderContentType] = "text/plain"
+            //headersToSend[StompCommands.commandHeaderContentType] = "text/plain"
+            headersToSend[StompCommands.commandHeaderContentType] = "application/json;charset=UTF-8"
         }
         
         sendFrame(command: StompCommands.commandSend, header: headersToSend, body: message as AnyObject)
