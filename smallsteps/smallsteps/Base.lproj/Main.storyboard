@@ -154,9 +154,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Hq8-Bm-GET">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Hq8-Bm-GET">
                                 <rect key="frame" x="0.0" y="64" width="320" height="455"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="groupDetailCell" rowHeight="145" id="ui0-uj-urr" customClass="GroupDetailTableViewCell" customModule="smallsteps" customModuleProvider="target">
@@ -209,7 +208,7 @@
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="meetingLocationCell" rowHeight="175" id="SYw-7w-mWj" customClass="MeetingLocationTableViewCell" customModule="smallsteps" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="173" width="320" height="175"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="SYw-7w-mWj" id="vCs-15-0R1">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="SYw-7w-mWj" id="vCs-15-0R1">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="174.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
@@ -239,6 +238,12 @@
                             </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Hq8-Bm-GET" firstAttribute="bottom" secondItem="wkk-MM-7uB" secondAttribute="bottom" id="IZC-jy-kql"/>
+                            <constraint firstItem="Hq8-Bm-GET" firstAttribute="trailing" secondItem="wkk-MM-7uB" secondAttribute="trailing" id="WhT-K4-cCa"/>
+                            <constraint firstItem="Hq8-Bm-GET" firstAttribute="top" secondItem="wkk-MM-7uB" secondAttribute="top" id="sbe-Wv-iea"/>
+                            <constraint firstItem="Hq8-Bm-GET" firstAttribute="leading" secondItem="wkk-MM-7uB" secondAttribute="leading" id="vnU-WY-aFA"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="wkk-MM-7uB"/>
                     </view>
                 </viewController>

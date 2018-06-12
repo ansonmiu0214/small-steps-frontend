@@ -7,4 +7,5 @@ target 'smallsteps' do
     pod 'SwiftyJSON'
     pod 'Eureka'
     pod "StompClientLib"
+    pod 'PopupWindow'
 end
