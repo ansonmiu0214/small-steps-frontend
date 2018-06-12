@@ -54,7 +54,7 @@ extension LocationSearchTable {
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return matchingGroups.count
   }
-
+  
   override func tableView(_ tableView: UITableView, cellForRowAt at: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
     let selectedGroup = matchingGroups[at.row]
@@ -73,7 +73,7 @@ extension LocationSearchTable {
     
     return cell
   }
-
+  
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)  {
     let group = matchingGroups[indexPath.row]
     dismiss(animated: true) { [unowned self] in
@@ -81,4 +81,3 @@ extension LocationSearchTable {
     }
   }
 }
-

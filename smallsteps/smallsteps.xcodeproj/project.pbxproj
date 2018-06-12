@@ -15,6 +15,7 @@
 		3E72F8D920CC1BC1002F4AAC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E72F8D820CC1BC1002F4AAC /* Utils.swift */; };
 		3E72F8DD20CC3357002F4AAC /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E72F8DC20CC3357002F4AAC /* LandingVC.swift */; };
 		3E72F8E020CEDB56002F4AAC /* JoinGroupPopupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E72F8DF20CEDB56002F4AAC /* JoinGroupPopupVC.swift */; };
+		3E72F8EC20D0671B002F4AAC /* GroupDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E72F8EB20D06715002F4AAC /* GroupDetailVC.swift */; };
 		6E01D6D220C69C9F004ABE58 /* CreateGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E01D6D120C69C9F004ABE58 /* CreateGroupVC.swift */; };
 		6E01D6D420C6A355004ABE58 /* AllGroupsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E01D6D320C6A355004ABE58 /* AllGroupsTVC.swift */; };
 		6E01D6D620C6A386004ABE58 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E01D6D520C6A386004ABE58 /* Group.swift */; };
@@ -60,6 +61,7 @@
 		3E72F8D820CC1BC1002F4AAC /* Utils.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; tabWidth = 2; };
 		3E72F8DC20CC3357002F4AAC /* LandingVC.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; tabWidth = 2; };
 		3E72F8DF20CEDB56002F4AAC /* JoinGroupPopupVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinGroupPopupVC.swift; sourceTree = "<group>"; };
+		3E72F8EB20D06715002F4AAC /* GroupDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupDetailVC.swift; sourceTree = "<group>"; };
 		6E01D6D120C69C9F004ABE58 /* CreateGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateGroupVC.swift; sourceTree = "<group>"; };
 		6E01D6D320C6A355004ABE58 /* AllGroupsTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllGroupsTVC.swift; sourceTree = "<group>"; };
 		6E01D6D520C6A386004ABE58 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
@@ -115,6 +117,7 @@
 		3E72F8DE20CC3879002F4AAC /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				3E72F8EB20D06715002F4AAC /* GroupDetailVC.swift */,
 				3E72F8DF20CEDB56002F4AAC /* JoinGroupPopupVC.swift */,
 				6EAD1FBE20C5AD4500E5DF61 /* CreateUserVC.swift */,
 				3E52B2BD20C9CDB000F4C460 /* GroupMenuTVC.swift */,
@@ -391,6 +394,7 @@
 				6E03485820BEBC77008EFC5D /* smallsteps.xcdatamodeld in Sources */,
 				6E03485220BEBC77008EFC5D /* ViewController.swift in Sources */,
 				0461EBF820C6BB150014EB34 /* LocationSearchTable.swift in Sources */,
+				3E72F8EC20D0671B002F4AAC /* GroupDetailVC.swift in Sources */,
 				6E01D6D620C6A386004ABE58 /* Group.swift in Sources */,
 				3E72F8D920CC1BC1002F4AAC /* Utils.swift in Sources */,
 				6E01D6D420C6A355004ABE58 /* AllGroupsTVC.swift in Sources */,

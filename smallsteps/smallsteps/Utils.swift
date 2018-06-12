@@ -33,21 +33,3 @@ func buildLoadingOverlay(title: String? = nil, message: String) -> UIAlertContro
   alert.view.addSubview(indicator)
   return alert
 }
-
-func getHoursMinutes(time: Date) -> String {
-  let dateFormatter: DateFormatter = DateFormatter()
-  
-  dateFormatter.dateFormat = "H"
-  let newHour: String = dateFormatter.string(from: time)
-  
-  dateFormatter.dateFormat = "m"
-  let newMinute: String = dateFormatter.string(from: time)
-  
-  if newHour == "0" { return "\(newMinute) minutes" }
-  
-  let hour = "\(newHour) hour" + (newHour == "1" ? "" : "s")
-  
-  if (newMinute == "0") { return hour }
-  
-  return "\(hour) and \(newMinute) minutes"
-}
