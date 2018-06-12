@@ -1,6 +1,33 @@
 import UIKit
 import MapKit
 
+//just formatting the address for extra prettiness
+func parseAddress(selectedItem: CLPlacemark) -> String {
+  //Formatting the Address Line
+  // put space between address number and address location
+  let firstSpace = (selectedItem.subThoroughfare != nil && selectedItem.thoroughfare != nil) ? " " : ""
+  // put comma between street name and city name
+  let comma = (selectedItem.subThoroughfare != nil || selectedItem.thoroughfare != nil) && (selectedItem.subAdministrativeArea != nil || selectedItem.administrativeArea != nil) ? ", " : ""
+  // put space between subAdministrativeArea and administrativeArea
+  let secondSpace = (selectedItem.subAdministrativeArea != nil && selectedItem.administrativeArea != nil) ? " " : ""
+  
+  let addressLine = String(
+    format:"%@%@%@%@%@%@%@",
+    // street number
+    selectedItem.subThoroughfare ?? "",
+    firstSpace,
+    // street name
+    selectedItem.thoroughfare ?? "",
+    comma,
+    // city
+    selectedItem.locality ?? "",
+    secondSpace,
+    // state
+    selectedItem.administrativeArea ?? ""
+  )
+  return addressLine
+}
+
 class LocationSearchTable : UITableViewController {
   
   var groups: [Group] = []
@@ -21,32 +48,6 @@ extension LocationSearchTable : UISearchResultsUpdating {
     self.tableView.reloadData()
   }
   
-  //just formatting the address for extra prettiness
-  func parseAddress(selectedItem:MKPlacemark) -> String {
-    //Formatting the Address Line
-    // put space between address number and address location
-    let firstSpace = (selectedItem.subThoroughfare != nil && selectedItem.thoroughfare != nil) ? " " : ""
-    // put comma between street name and city name
-    let comma = (selectedItem.subThoroughfare != nil || selectedItem.thoroughfare != nil) && (selectedItem.subAdministrativeArea != nil || selectedItem.administrativeArea != nil) ? ", " : ""
-    // put space between subAdministrativeArea and administrativeArea
-    let secondSpace = (selectedItem.subAdministrativeArea != nil && selectedItem.administrativeArea != nil) ? " " : ""
-    
-    let addressLine = String(
-      format:"%@%@%@%@%@%@%@",
-      // street number
-      selectedItem.subThoroughfare ?? "",
-      firstSpace,
-      // street name
-      selectedItem.thoroughfare ?? "",
-      comma,
-      // city
-      selectedItem.locality ?? "",
-      secondSpace,
-      // state
-      selectedItem.administrativeArea ?? ""
-    )
-    return addressLine
-  }
 }
 
 extension LocationSearchTable {
@@ -57,12 +58,20 @@ extension LocationSearchTable {
   // TODO - make a better subtitle?
   override func tableView(_ tableView: UITableView, cellForRowAt at: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
-    let selectedItem = matchingGroups[at.row]
-    cell.textLabel?.text = selectedItem.groupName
+    let selectedGroup = matchingGroups[at.row]
     
-    let formatter = DateFormatter()
-    formatter.dateFormat = "dd MMMM yyyy HH:mm"
-    cell.detailTextLabel?.text = formatter.string(from: selectedItem.datetime)
+    // Set title
+    cell.textLabel?.text = selectedGroup.groupName
+    
+    // Set subtitle
+    if let placemark = selectedGroup.placemark {
+      cell.detailTextLabel?.text = parseAddress(selectedItem: placemark)
+    } else {
+      let formatter = DateFormatter()
+      formatter.dateFormat = "dd MMMM yyyy HH:mm"
+      cell.detailTextLabel?.text = formatter.string(from: selectedGroup.datetime)
+    }
+    
     return cell
   }
 

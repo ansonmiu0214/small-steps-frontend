@@ -71,7 +71,7 @@ class CreateGroupVC: FormViewController {
         $0.tag = "location"
         let locManager = CLLocationManager()
         $0.value = CLLocation(latitude: (locManager.location?.coordinate.latitude)!, longitude: (locManager.location?.coordinate.longitude)!)
-        }.onChange { [weak self] row in
+        }.onChange { [weak self] _ in
           self!.tableView!.reloadData()
     }
   }

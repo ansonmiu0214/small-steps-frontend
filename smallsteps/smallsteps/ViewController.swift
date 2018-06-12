@@ -115,9 +115,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       self.resultSearchController?.dimsBackgroundDuringPresentation = true
       self.definesPresentationContext = true
 
-//      // Set up map view in LocationSearchTable
-//      locationSearchTable.map = self.map
-      
       // Zoom into your location
       let span = MKCoordinateSpanMake(0.01, 0.01)
       let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
