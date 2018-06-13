@@ -67,7 +67,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var socketClient = StompClientLib()
   let subscriptionURL = "/topic/confluence"
   let destinationURL = "/app/confluence"
-  let registrationURL = "http://localhost:8080/ws"
+  let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"
   //  let subscriptionURL = "/topic/frontEnd"
   //let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"
   //  let destinationURL = "/app/backEnd"
@@ -108,9 +108,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       """
     }
     
-    let newDestinationURL = "\(destinationURL)\(adminId)"
+    let newDestinationURL = "\(destinationURL)/\(adminId)"
+    print("destination is: " + newDestinationURL)
     let newSubscriptionURL = "\(subscriptionURL)\(deviceIDAppend)"
-    
+    print("sunsvription is: " + newSubscriptionURL)
     //socketClient.sendJSONForDict(dict: msg as AnyObject, toDestination: destinationURL)
     socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: newSubscriptionURL)
   }
@@ -517,7 +518,7 @@ extension ViewController: StompClientLibDelegate{
     let subsId = subscriptionURL // It can be any unique string
     let header = ["destination": destinationURL, "ack": ack, "id": subsId]
     let newURL = "\(subscriptionURL)\(deviceIDAppend)"
-    print(newURL)
+    print("i am subscribed toL " + newURL)
     socketClient.subscribeWithHeader(destination: newURL, withHeader: header)
   }
   
