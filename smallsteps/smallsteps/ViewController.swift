@@ -18,6 +18,10 @@ protocol HandleGroupSelection {
   func selectAnnotation(group: Group)
 }
 
+func createCoordinateFromJSON(item: JSON) -> CLLocationCoordinate2D {
+  return CLLocationCoordinate2D(latitude: Double(item["lat"].string!)!, longitude: Double(item["long"].string!)!)
+}
+
 func getGroups(center: CLLocationCoordinate2D, completion: @escaping ([Group]) -> Void) {
   DispatchQueue(label: "Get Groups", qos: .background).async {
     let params: Parameters = [
@@ -67,13 +71,13 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var socketClient = StompClientLib()
   let subscriptionURL = "/topic/confluence"
   let destinationURL = "/app/confluence"
-  let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"
+  //let registrationURL = "http://localhost:8080/ws"
   //  let subscriptionURL = "/topic/frontEnd"
-  //let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"
+  let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"
   //  let destinationURL = "/app/backEnd"
   //  var deviceIDAppend = "/-1"
-  var deviceIDAppend = "/\(UIDevice.current.identifierForVendor!.uuidString)"
-  //var adminIDAppend = "-1"
+  var deviceIDAppend = UIDevice.current.identifierForVendor!.uuidString
+ // var adminIDAppend = "F0B53972-55DC-446E-8919-F096E4D91236"
   
   func registerSocket(){
     let url = NSURL(string: registrationURL)
@@ -81,11 +85,11 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     socketClient.openSocketWithURLRequest(request: NSURLRequest(url: url! as URL) , delegate: self as StompClientLibDelegate)
   }
   
-  func alertAdmin(adminId:String){
+  func sendLocToAdmin(adminId:String){
     print("messaging")
-    var location = manager.location?.coordinate
-    
+    let location = manager.location?.coordinate
     var msg: String
+    
     if let lat = location?.latitude {
       if let long = location?.longitude{
         msg = """
@@ -107,13 +111,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       }
       """
     }
-    
+ 
     let newDestinationURL = "\(destinationURL)/\(adminId)"
     print("destination is: " + newDestinationURL)
-    let newSubscriptionURL = "\(subscriptionURL)\(deviceIDAppend)"
-    print("sunsvription is: " + newSubscriptionURL)
-    //socketClient.sendJSONForDict(dict: msg as AnyObject, toDestination: destinationURL)
-    socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: newSubscriptionURL)
+    socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
   }
   
   @IBAction func message(_ sender: Any) {
@@ -143,11 +144,11 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       """
     }
     
-    let newDestinationURL = "\(destinationURL)\(deviceIDAppend)"
-    let newSubscriptionURL = "\(subscriptionURL)\(deviceIDAppend)"
+    let newDestinationURL = "\(destinationURL)/\(deviceIDAppend)"
+    let newSubscriptionURL = "\(subscriptionURL)/\(deviceIDAppend)"
     
     //socketClient.sendJSONForDict(dict: msg as AnyObject, toDestination: destinationURL)
-    socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: newSubscriptionURL)
+    socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
   }
   
   // On new location data
@@ -352,7 +353,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       Alamofire.request("\(SERVER_IP)/groups/admin", method: .get, parameters: params)
         .response { response in
           if let data = response.data, let id = String(data: data, encoding: .utf8) {
-            completion(id)
+            completion(id.trimmingCharacters(in: .whitespaces))
           }
       }
     }
@@ -364,7 +365,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     getAdminFromGroup(groupId: currGroupId){ adminId in
       print(adminId)
       //self.adminIDAppend = "/\(adminId)"
-      self.alertAdmin(adminId: adminId)
+      self.sendLocToAdmin(adminId: adminId)
     }
     //TODO: subscribe to the group admin's channel
   }
@@ -517,9 +518,10 @@ extension ViewController: StompClientLibDelegate{
     let ack = "ack_\(destinationURL)" // It can be any unique string
     let subsId = subscriptionURL // It can be any unique string
     let header = ["destination": destinationURL, "ack": ack, "id": subsId]
-    let newURL = "\(subscriptionURL)\(deviceIDAppend)"
+    let newURL = "\(subscriptionURL)/\(deviceIDAppend)"
     print("i am subscribed toL " + newURL)
     socketClient.subscribeWithHeader(destination: newURL, withHeader: header)
+    
   }
   
   func stompClientDidDisconnect(client: StompClientLib!) {
