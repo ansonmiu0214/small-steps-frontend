@@ -134,6 +134,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       self.map.setRegion(region, animated: true)
       
       self.addNewConfluence(location: (self.manager.location?.coordinate)!)
+      
     }
     
 //    getGroups(center: (manager.location?.coordinate)!) { [unowned self] allGroups in
@@ -173,8 +174,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       isButtonClick = !isButtonClick
       getRoute()
     }
-    
-
     
     super.viewDidLoad()
   }
@@ -463,6 +462,9 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
   }
   
+  
+  //------------------------CONFLUENCE------------------------
+  
   //Adds confluence point annotation to the map
   func addNewConfluence(location: CLLocationCoordinate2D) {
     let confluencePoint = LocationPointer(title: "Confluence", subtitle: "Confluence", discipline: "Confluence", coordinate: location)
@@ -475,6 +477,15 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     confluencePoint.changeLocationTo(newLocation)
     map.addAnnotation(confluencePoint)
   }
+  
+  func confluenceAlert() {
+    let alert = UIAlertController(title: "Confluence Request", message: "Would you like to meet at a confluence?", preferredStyle: UIAlertControllerStyle.alert)
+    alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: nil))
+    alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.default, handler: nil))
+    self.present(alert, animated: true, completion: nil)
+  }
+  
+  //~~~~~~~~~~~~~~~~~~~~~~~~CONFLUENCE~~~~~~~~~~~~~~~~~~~~~~~~
   
   func dateToString(datetime: Date) -> String {
     let timeFormatter: DateFormatter = DateFormatter()
