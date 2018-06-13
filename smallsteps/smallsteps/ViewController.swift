@@ -65,12 +65,15 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   
   var socketClient = StompClientLib()
-  let subscriptionURL = "/topic/frontEnd"
-  let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"
-  let destinationURL = "/app/backEnd"
-  var deviceIDAppend = "/-1"
-  //var deviceIDAppend = "/\(UIDevice.current.identifierForVendor!.uuidString)"
-  var adminIDAppend = "--"
+  let subscriptionURL = "/topic/confluence"
+  let destinationURL = "/app/confluence"
+  let registrationURL = "http://localhost:8080/ws"
+  //  let subscriptionURL = "/topic/frontEnd"
+  //let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"
+  //  let destinationURL = "/app/backEnd"
+  //  var deviceIDAppend = "/-1"
+  var deviceIDAppend = "/\(UIDevice.current.identifierForVendor!.uuidString)"
+  //var adminIDAppend = "--"
   
   func registerSocket(){
     let url = NSURL(string: registrationURL)
@@ -80,14 +83,31 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   @IBAction func message(_ sender: Any) {
     print("messaging")
-    //        let ack = "ack_\(destinationURL)" // It can be any unique string
-    //        let subsId = "subscription_\(destinationURL)" // It can be any unique string
-    //        let header = ["destination": destinationURL, "ack": ack, "id":subsId]
-    //
-    //let msg = "{ \"text\": \"hello omar\" }"
-    let msg = """
-{"text": "hello"}
-"""
+    var location = manager.location?.coordinate
+    
+    var msg: String
+    if let lat = location?.latitude {
+      if let long = location?.longitude{
+        msg = """
+        {"lat": \(lat),
+        "long": \(long)
+        }
+        """
+      } else{
+          msg = """
+          {"lat": \(lat),
+          "long": -0.1790
+          }
+          """
+        }
+    } else{
+      msg = """
+      {"lat": 51.4989,
+      "long": -0.1790
+      }
+      """
+    }
+    
     let newDestinationURL = "\(destinationURL)\(deviceIDAppend)"
     let newSubscriptionURL = "\(subscriptionURL)\(deviceIDAppend)"
     
@@ -97,6 +117,13 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   // On new location data
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    let location = locations.last as! CLLocation
+    
+    let center = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+    let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+    
+    self.map.setRegion(region, animated: true)
+    
     //    if groups.count == 0 {
     //      let myLocation = locations[0]
     //      let span = MKCoordinateSpanMake(0.01, 0.01)
@@ -110,7 +137,11 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   func setUpGroupData(completion: (() -> Void)? = nil) {
-    getGroups(center: (manager.location?.coordinate)!) { [unowned self] allGroups in
+    var location = manager.location?.coordinate
+    if location == nil{
+      location = CLLocationCoordinate2DMake(51.4989, -0.1790)
+    }
+    getGroups(center: location!) { [unowned self] allGroups in
       getGroupsByUUID { userGroups in
         // Set fields
         self.allGroups = allGroups
@@ -157,7 +188,11 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       
       // Zoom into your location
       let span = MKCoordinateSpanMake(0.01, 0.01)
-      let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
+      var location = self.manager.location?.coordinate
+      if location == nil{
+        location = CLLocationCoordinate2DMake(51.4989, -0.1790)
+      }
+      let region = MKCoordinateRegion(center: location!, span: span)
       self.map.setRegion(region, animated: true)
     }
     
@@ -241,7 +276,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-    // TODO
+      // TODO
   }
   
   func createPinFromGroup(group: Group){
@@ -269,8 +304,31 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
   }
   
+  func getAdminFromGroup(groupId:String, completion: @escaping((String)->()) ){
+    DispatchQueue(label: "Get AdminId", qos: .background).async {
+      let params: Parameters = [
+        "group_id": groupId
+      ]
+      
+      Alamofire.request("\(SERVER_IP)/groups/admin", method: .get, parameters: params)
+        .responseJSON { response in
+          if let jsonVal = response.result.value {
+            let jsonVar = JSON(jsonVal)
+            for (_, item) in jsonVar {
+              print(item)
+            }
+          }
+          completion("asdf")
+      }
+    }
+  }
+  
   @objc func meetUp(){
+    //TODO: fix the group
     print("meeting up with group: \(currGroupId)")
+    getAdminFromGroup(groupId: currGroupId){ adminId in
+      print(adminId)
+    }
     
     //TODO: subscribe to the group admin's channel
   }
@@ -280,6 +338,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       //so we don't modify the standard user location
       return nil
     }
+    
     
     let reuseId = "Pin"
     var pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
@@ -292,6 +351,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     pinView.leftCalloutAccessoryView = directionButton
     if let locPointAnnotation = annotation as? LocationPointer{
       if(locPointAnnotation.discipline != ""){
+        print("tapped on group with id: \(locPointAnnotation.groupId) and name: \(locPointAnnotation.title)")
+        currGroupId = locPointAnnotation.groupId
         let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
         infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
         if(locPointAnnotation.discipline == "Not Started"){
@@ -357,7 +418,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
     return alert
   }
-    
+  
   @objc func joinGroup(_ sender: UIButton){
     let groupToJoin = pinToGroup[sender.tag]!
     
@@ -376,7 +437,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       }
     }
   }
-        
+  
   func dateToString(datetime: Date) -> String {
     let timeFormatter: DateFormatter = DateFormatter()
     timeFormatter.dateFormat = "H:mm"
@@ -387,7 +448,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     let newDate: String = dateFormatter.string(for: datetime)!
     return "\(newTime) \(newDate)"
   }
-
+  
 }
 
 extension ViewController: StompClientLibDelegate{
@@ -395,24 +456,24 @@ extension ViewController: StompClientLibDelegate{
     print("> Destination : \(destination)")
     print("> JSON Body : \(String(describing: jsonBody))")
   }
-
+  
   func stompClientJSONBody(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
     print("> DESTINATION : \(destination)")
     print("> String JSON BODY : \(String(describing: jsonBody!))")
   }
-
+  
   func serverDidSendReceipt(client: StompClientLib!, withReceiptId receiptId: String) {
     print("> Receipt : \(receiptId)")
   }
-
+  
   func serverDidSendError(client: StompClientLib!, withErrorMessage description: String, detailedErrorMessage message: String?) {
     print("> Error Send : \(String(describing: message))")
   }
-
+  
   func serverDidSendPing() {
     print("> Server ping")
   }
-
+  
   func stompClientDidConnect(client: StompClientLib!) {
     print("> Socket is connected")
     // Stomp subscribe will be here!
@@ -424,12 +485,12 @@ extension ViewController: StompClientLibDelegate{
     print(newURL)
     socketClient.subscribeWithHeader(destination: newURL, withHeader: header)
   }
-
+  
   func stompClientDidDisconnect(client: StompClientLib!) {
     print("> Socket is Disconnected")
     socketClient.unsubscribe(destination: subscriptionURL)
   }
-
+  
   func stompClientWillDisconnect(client: StompClientLib!, withError error: NSError) {
   }
 }

@@ -38,6 +38,7 @@ func createGroupFromJSON(item: JSON) -> Group{
                               adminID: item["admin_id"].string!,
                               isWalking: item["is_walking"].bool!,
                               groupId: item["id"].string!)
+    //print("formed a group with name: \(item["name"]) and id: \(item["id"])")
   return newGroup
 }
 
