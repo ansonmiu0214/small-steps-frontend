@@ -20,7 +20,7 @@ class Group: Equatable {
   var description: String
   var groupId: String
   
-    init(groupName: String, datetime: Date, repeats: String, duration: Date, latitude: String, longitude: String, hasDog: Bool, hasKid: Bool = false, adminID: String, isWalking: Bool = false, description: String, groupId: String = "-1") {
+    init(groupName: String, datetime: Date, repeats: String, duration: Date, latitude: String, longitude: String, hasDog: Bool, hasKid: Bool = false, adminID: String, isWalking: Bool = false, description: String = "A Small Steps walking group", groupId: String = "-1") {
     self.groupName = groupName
     self.datetime = datetime
     self.repeats = repeats
@@ -38,8 +38,8 @@ class Group: Equatable {
     
     DispatchQueue(label: "Geocoding", qos: .background).async { [unowned self] in
       CLGeocoder().reverseGeocodeLocation(location) { placemarks, error in
-        self.placemark = error == nil ? placemarks![0] : nil
-        print(">> Placemark for \(self.groupName) is \(String(describing: self.placemark?.name!))")
+        //self.placemark = error == nil ? placemarks![0] : nil
+        //print(">> Placemark for \(self.groupName) is \(String(describing: self.placemark?.name!))")
       }
     }
     
