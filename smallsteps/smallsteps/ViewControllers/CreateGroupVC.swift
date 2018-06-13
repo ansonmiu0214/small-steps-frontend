@@ -39,6 +39,12 @@ class CreateGroupVC: FormViewController {
             nextButton.isEnabled = true
           }
       }
+      <<< TextRow(){ row in
+        row.tag = "description"
+        row.title = "Description"
+        row.placeholder = "Enter description here"
+        row.value = "description"
+        }
       +++ Section("Meeting Date and Time")
       <<< DateTimeRow(){
         $0.tag = "datetime"
@@ -101,13 +107,13 @@ class CreateGroupVC: FormViewController {
     let groupParams: Parameters = [
       "name": newGroup.groupName,
       "time": removeTimezone(datetime: newGroup.datetime),
-      "description": "Some description",
       "admin_id": newGroup.adminID,
       "location_latitude": newGroup.latitude,
       "location_longitude": newGroup.longitude,
       "duration": getHoursMinutesSeconds(time: newGroup.duration),
       "has_dogs": false,
-      "has_kids": false
+      "has_kids": false,
+      "description": newGroup.description
     ]
     
     // Submit POST request
