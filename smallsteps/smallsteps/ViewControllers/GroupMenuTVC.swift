@@ -80,14 +80,31 @@ class GroupMenuTVC: UITableViewController {
   }
 
     
+    func deleteEntry(completion: @escaping()->()) {
+        //ADD REMOVING FROM DATABASE
+
+        DispatchQueue(label: "Remove Group", qos: .background).async {
+            let params: Parameters = [
+                "walker_id": UUID,
+                "group_id":globalUserGroups[currGroup].groupId
+            ]
+            
+            Alamofire.request("\(SERVER_IP)/groups", method: .delete, parameters: params)
+                .responseJSON { response in
+                    print(response.response?.statusCode)
+                    completion()
+            }
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if (editingStyle == UITableViewCellEditingStyle.delete) {
+            currGroup = indexPath.row
             // handle delete (by removing the data from your array and updating the tableview)
             userGroups.remove(at: indexPath.row)
-            //ADD REMOVING FROM DATABASE
-            let uuid = UIDevice.current.identifierForVendor!
-            Alamofire.request("http://146.169.45.120:8080/smallsteps/groups?device_id=\(uuid)&group_id=\(userGroups[currGroup].groupId)", method: .delete)
-            tableView.reloadData()
+            deleteEntry(){
+                tableView.reloadData()
+            }
         }
     }
     
