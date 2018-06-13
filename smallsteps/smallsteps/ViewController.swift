@@ -52,6 +52,16 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var currGroupId: String = "-1"
   
   @IBOutlet var map: MKMapView!
+
+  // Pin details view
+  @IBOutlet var pinDetailView: UIView!
+  var effect: UIVisualEffect!
+  var activeAnnotation: MKAnnotation? = nil
+  @IBOutlet weak var fxView: UIVisualEffectView!
+  @IBOutlet weak var detailTitle: UILabel!
+  @IBOutlet weak var detailDescription: UILabel!
+  @IBOutlet weak var detailTimings: UILabel!
+  @IBOutlet weak var detailActions: UIButton!
   
   var resultSearchController:UISearchController? = nil
   
@@ -116,8 +126,11 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         self.allGroups = allGroups
         self.userGroups = userGroups
         
+        for group in self.allGroups {
+          self.pinToGroup[Int(group.groupId)!] = group
+        }
+        
         // Reset annotations
-        self.pinToGroup = [:]
         self.map.removeAnnotations(self.map.annotations)
         self.allGroups.forEach(self.createPinFromGroup)
         
@@ -172,10 +185,82 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     registerSocket()
     
+    // Initialise visual effect view
+    fxView.isHidden = true
+    pinDetailView.layer.cornerRadius = 5
+    
+    fxView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTap)))
     super.viewDidLoad()
   }
   
-  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) { self.view.endEditing(true) }
+  @objc func dismissOnTap() {
+    map.deselectAnnotation(activeAnnotation, animated: false)
+    deinitialisePinDetailView()
+  }
+  
+  func initialisePinDetailView(group: Group) {
+    // Set up the panel
+    detailTitle.text = group.groupName
+    detailDescription.text = group.description
+    detailTimings.text = "Meeting time: \(dateToString(datetime: group.datetime))"
+    
+    detailActions.setTitle("Joined", for: .disabled)
+    
+    if userGroups.contains(group) {
+      detailActions.isEnabled = false
+    } else {
+      detailActions.isEnabled = true
+      if group.isWalking {
+        detailActions.setTitle("Meet", for: .normal)
+        
+      } else {
+        detailActions.setTitle("Join", for: .normal)
+        detailActions.tag = Int(group.groupId)!
+        detailActions.addTarget(self, action: #selector(self.joinGroup(_:)), for: .touchUpInside)
+      }
+      
+      detailActions.setTitle(group.isWalking ? "Meet" : "Join", for: .normal)
+      
+    }
+    
+    
+    // First initialise to transparent
+    pinDetailView.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
+    pinDetailView.alpha = 0
+    
+    // Animate introduction with "magic move"
+    UIView.animate(withDuration: 0.4) {
+      self.view.addSubview(self.pinDetailView)
+      self.pinDetailView.center = self.view.center
+      
+      self.fxView.isHidden = false
+      self.pinDetailView.alpha = 1
+      self.pinDetailView.transform = CGAffineTransform.identity
+    }
+  }
+  
+  func deinitialisePinDetailView() {
+    // Destroy view components
+    detailTitle.text = nil
+    detailDescription.text = nil
+    detailTimings.text = nil
+    
+    UIView.animate(withDuration: 0.4, animations: {
+      self.pinDetailView.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
+      self.pinDetailView.alpha = 0
+      self.fxView.isHidden = true
+      self.pinDetailView.removeFromSuperview()
+    })
+  }
+  
+  @IBAction func closePinDetailView(_ sender: Any) {
+    map.deselectAnnotation(activeAnnotation, animated: false)
+    deinitialisePinDetailView()
+  }
+  
+  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    self.view.endEditing(true)
+  }
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
@@ -256,7 +341,14 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-    // TODO
+    if let locationPointer = view.annotation as? LocationPointer {
+      activeAnnotation = locationPointer
+      initialisePinDetailView(group: locationPointer.group!)
+    }
+  }
+  
+  func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+    deinitialisePinDetailView()
   }
   
   func createPinFromGroup(group: Group){
@@ -295,7 +387,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       //so we don't modify the standard user location
       return nil
     }
-    
+
     let reuseId = "Pin"
     var pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
     pinView.canShowCallout = true
@@ -303,7 +395,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 30, height: 30)))
     directionButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
     directionButton.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
-    
+
     pinView.leftCalloutAccessoryView = directionButton
     if let locPointAnnotation = annotation as? LocationPointer{
       if(locPointAnnotation.discipline != ""){
@@ -315,7 +407,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         } else{
           infoButton.setTitle("Meet Up", for: .normal)
           infoButton.addTarget(self, action: #selector(self.meetUp), for: .touchUpInside)
-          
+
         }
         //print("locpointannotgroup: \(locPointAnnotation)")
         if let grp = locPointAnnotation.group {
@@ -325,17 +417,17 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             infoButton.isEnabled = false
           }
         }
-        
+
         pinView.rightCalloutAccessoryView = infoButton
       }
     }
-    
+
     let subtitleView = UILabel()
     subtitleView.font = subtitleView.font.withSize(12)
     subtitleView.numberOfLines = 4
     subtitleView.text = annotation.subtitle!
     pinView.detailCalloutAccessoryView = subtitleView
-    
+
     return pinView
   }
   
@@ -373,7 +465,9 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     return alert
   }
     
-  @objc func joinGroup(_ sender: UIButton){
+  @objc func joinGroup(_ sender: UIButton) {
+    let tag = sender.tag
+    
     let groupToJoin = pinToGroup[sender.tag]!
     
     // Show loading overlay
