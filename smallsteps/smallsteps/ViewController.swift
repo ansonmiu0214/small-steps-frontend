@@ -66,6 +66,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var userGroups: [Group] = []
   var pinToGroup: [Int: Group] = [:]
   
+  
   // On new location data
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 //    if groups.count == 0 {
@@ -132,8 +133,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
       self.map.setRegion(region, animated: true)
       
-      //Add confluence point
-      self.addConfluence()
+      self.addNewConfluence(location: (self.manager.location?.coordinate)!)
     }
     
 //    getGroups(center: (manager.location?.coordinate)!) { [unowned self] allGroups in
@@ -463,10 +463,16 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
   }
   
-  //Adds confluence point annotation to map
-  func addConfluence() {
-    let confluencePoint = LocationPointer(title: "Confluence", subtitle: "Confluence", discipline: "Confluence", coordinate: self.manager.location!.coordinate)
-    //let confluencePoint = MeetingPointMarker(identifier: "confluence", title: "Confluence", coordinate: self.manager.location!.coordinate)
+  //Adds confluence point annotation to the map
+  func addNewConfluence(location: CLLocationCoordinate2D) {
+    let confluencePoint = LocationPointer(title: "Confluence", subtitle: "Confluence", discipline: "Confluence", coordinate: location)
+    map.addAnnotation(confluencePoint)
+  }
+  
+  //Updates confluence point annotation on the map
+  func updateConfluence(confluencePoint: LocationPointer, newLocation: CLLocationCoordinate2D) {
+    map.removeAnnotation(confluencePoint)
+    confluencePoint.changeLocationTo(newLocation)
     map.addAnnotation(confluencePoint)
   }
   
