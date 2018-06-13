@@ -89,8 +89,9 @@ class CreateGroupVC: FormViewController {
                                 duration: valuesDict["duration"] as! Date,
                                 latitude: "\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.latitude)!)",
       longitude: "\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.longitude)!)",
-      hasDog: ((form.rowBy(tag: "hasDogs") as? SwitchRow)?.cell.switchControl.isOn)!,
-      adminID: UUID)
+        hasDog: ((form.rowBy(tag: "hasDogs") as? SwitchRow)?.cell.switchControl.isOn)!,
+      adminID: UUID,
+      description: valuesDict["description"] as! String)
     
     // Show progress overlay
     let alert = buildLoadingOverlay(message: "Setting up \"\(newGroup.groupName)\"")

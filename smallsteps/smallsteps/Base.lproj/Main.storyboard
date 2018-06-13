@@ -22,7 +22,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="d3d-yF-TBA">
-                                <rect key="frame" x="0.0" y="20" width="320" height="548"/>
+                                <rect key="frame" x="0.0" y="64" width="320" height="455"/>
                             </mapView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SYz-SB-gTX">
                                 <rect key="frame" x="0.0" y="533" width="320" height="128"/>
@@ -163,51 +163,71 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Group Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qUR-gJ-Zgz">
-                                <rect key="frame" x="16" y="20" width="290" height="36"/>
+                                <rect key="frame" x="16" y="72" width="290" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Meeting Time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HGg-rq-WBX">
-                                <rect key="frame" x="16" y="64" width="290" height="21"/>
+                                <rect key="frame" x="16" y="116" width="290" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Duration" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RUP-w7-FQu">
-                                <rect key="frame" x="16" y="93" width="290" height="21"/>
+                                <rect key="frame" x="16" y="145" width="290" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="on0-Xp-7yx">
-                                <rect key="frame" x="1" y="131" width="320" height="175"/>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="on0-Xp-7yx">
+                                <rect key="frame" x="1" y="183" width="320" height="154"/>
+                                <gestureRecognizers/>
                             </mapView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Vq-c1-Ha7">
+                                <rect key="frame" x="8" y="345" width="296" height="154"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2k1-M4-XZn">
+                                <rect key="frame" x="11" y="474" width="298" height="30"/>
+                                <state key="normal" title="Join Group"/>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="wkk-MM-7uB" firstAttribute="trailing" secondItem="HGg-rq-WBX" secondAttribute="trailing" constant="14" id="2NR-58-9DG"/>
                             <constraint firstItem="qUR-gJ-Zgz" firstAttribute="leading" secondItem="wkk-MM-7uB" secondAttribute="leading" constant="16" id="6GX-bU-28g"/>
+                            <constraint firstItem="7Vq-c1-Ha7" firstAttribute="top" secondItem="on0-Xp-7yx" secondAttribute="bottom" constant="8" id="6mz-d7-Ozm"/>
                             <constraint firstItem="wkk-MM-7uB" firstAttribute="bottom" secondItem="on0-Xp-7yx" secondAttribute="bottom" constant="262" id="76q-LY-5gj"/>
-                            <constraint firstItem="qUR-gJ-Zgz" firstAttribute="top" secondItem="wkk-MM-7uB" secondAttribute="top" id="GHo-WQ-pfv"/>
                             <constraint firstItem="on0-Xp-7yx" firstAttribute="leading" secondItem="wkk-MM-7uB" secondAttribute="leading" constant="1" id="JQo-tv-9TX"/>
+                            <constraint firstItem="2k1-M4-XZn" firstAttribute="leading" secondItem="wkk-MM-7uB" secondAttribute="leading" constant="11" id="Kaj-VM-9lz"/>
                             <constraint firstItem="wkk-MM-7uB" firstAttribute="trailing" secondItem="qUR-gJ-Zgz" secondAttribute="trailing" constant="14" id="N7Y-H7-iIT"/>
+                            <constraint firstItem="wkk-MM-7uB" firstAttribute="trailing" secondItem="2k1-M4-XZn" secondAttribute="trailing" constant="11" id="PWw-jQ-dCU"/>
+                            <constraint firstItem="qUR-gJ-Zgz" firstAttribute="top" secondItem="wkk-MM-7uB" secondAttribute="top" constant="8" id="Qcw-LU-Nud"/>
                             <constraint firstItem="wkk-MM-7uB" firstAttribute="trailing" secondItem="RUP-w7-FQu" secondAttribute="trailing" constant="14" id="Sau-7j-wXd"/>
                             <constraint firstItem="HGg-rq-WBX" firstAttribute="top" secondItem="qUR-gJ-Zgz" secondAttribute="bottom" constant="8" id="Uxt-Lx-vJm"/>
                             <constraint firstItem="HGg-rq-WBX" firstAttribute="leading" secondItem="wkk-MM-7uB" secondAttribute="leading" constant="16" id="aA6-Kr-NXi"/>
+                            <constraint firstItem="wkk-MM-7uB" firstAttribute="bottom" secondItem="2k1-M4-XZn" secondAttribute="bottom" constant="15" id="bE2-Mq-MtU"/>
                             <constraint firstAttribute="trailing" secondItem="on0-Xp-7yx" secondAttribute="trailing" constant="-1" id="dhk-tB-4oA"/>
+                            <constraint firstItem="wkk-MM-7uB" firstAttribute="bottom" secondItem="7Vq-c1-Ha7" secondAttribute="bottom" constant="100" id="hfn-Kv-UgF"/>
                             <constraint firstItem="on0-Xp-7yx" firstAttribute="top" secondItem="RUP-w7-FQu" secondAttribute="bottom" constant="17" id="m8I-XN-Yuf"/>
                             <constraint firstItem="HGg-rq-WBX" firstAttribute="top" secondItem="qUR-gJ-Zgz" secondAttribute="bottom" constant="8" id="nlH-lq-VxR"/>
                             <constraint firstItem="RUP-w7-FQu" firstAttribute="top" secondItem="HGg-rq-WBX" secondAttribute="bottom" constant="8" id="nvB-g1-PMu"/>
+                            <constraint firstItem="wkk-MM-7uB" firstAttribute="trailing" secondItem="7Vq-c1-Ha7" secondAttribute="trailing" constant="16" id="oC1-bn-8YQ"/>
                             <constraint firstItem="RUP-w7-FQu" firstAttribute="leading" secondItem="wkk-MM-7uB" secondAttribute="leading" constant="16" id="qEC-Mj-qf3"/>
+                            <constraint firstItem="7Vq-c1-Ha7" firstAttribute="leading" secondItem="wkk-MM-7uB" secondAttribute="leading" constant="8" id="s27-li-cmz"/>
                             <constraint firstItem="RUP-w7-FQu" firstAttribute="top" secondItem="HGg-rq-WBX" secondAttribute="bottom" constant="8" id="sQT-bG-5Da"/>
                             <constraint firstItem="on0-Xp-7yx" firstAttribute="top" secondItem="RUP-w7-FQu" secondAttribute="bottom" constant="17" id="xhD-J6-223"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="wkk-MM-7uB"/>
                     </view>
                     <connections>
+                        <outlet property="descriptionLabel" destination="7Vq-c1-Ha7" id="0hh-iy-xUz"/>
                         <outlet property="durationLabel" destination="RUP-w7-FQu" id="cDF-mf-v72"/>
                         <outlet property="groupNameLabel" destination="qUR-gJ-Zgz" id="tmB-Xu-Y0u"/>
+                        <outlet property="joinGroupBtn" destination="2k1-M4-XZn" id="byU-nt-atA"/>
                         <outlet property="meetingMap" destination="on0-Xp-7yx" id="mtc-pN-KnS"/>
                         <outlet property="meetingTimeLabel" destination="HGg-rq-WBX" id="bbm-z4-Dl0"/>
                         <segue destination="BYZ-38-t0r" kind="show" identifier="meetingRoute" id="CnP-qi-gvu"/>
@@ -215,7 +235,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="byr-a6-ovB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2244" y="1673"/>
+            <point key="canvasLocation" x="2242.5" y="1672.1830985915494"/>
         </scene>
         <!--Create GroupVC-->
         <scene sceneID="Km3-Jp-EdV">
@@ -638,7 +658,7 @@
         <image name="walking" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Mik-Eo-aM5"/>
+        <segue reference="3Oe-eP-GUe"/>
         <segue reference="CnP-qi-gvu"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.72156862749999995" green="0.38823529410000002" blue="0.49803921569999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

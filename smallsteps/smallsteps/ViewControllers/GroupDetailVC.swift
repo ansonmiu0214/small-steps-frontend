@@ -7,6 +7,8 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
     @IBOutlet weak var meetingTimeLabel: UILabel!
     @IBOutlet weak var durationLabel: UILabel!
     @IBOutlet weak var meetingMap: MKMapView!
+    @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet weak var joinGroupBtn: UIButton!
     
     let dropPin = MKPointAnnotation()
     let manager = CLLocationManager()
@@ -41,28 +43,9 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
         showLocation(location: CLLocation(latitude: Double(globalUserGroups[currGroup].latitude)!, longitude: Double(globalUserGroups[currGroup].longitude)!))
         
         addGesture()
-        // Do any additional setup after loading the view.
+        
+        descriptionLabel.text = globalUserGroups[currGroup].description
     }
-    
-//    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-//        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
-//        annotationView.isEnabled = true
-//        annotationView.canShowCallout = true
-//        let btn = UIButton(type: .detailDisclosure)
-//        annotationView.rightCalloutAccessoryView = btn
-//        return annotationView
-//    }
-//
-//    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-//        let ac = UIAlertController(title: "", message: "", preferredStyle: .actionSheet)
-//        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-//        let routeToMeetingPoint = UIAlertAction(title: "Find Route to Meeting Point", style: .default, handler: nil)
-//
-//        ac.addAction(cancel)
-//        ac.addAction(routeToMeetingPoint)
-//
-//        present(ac, animated: true)
-//    }
     
     
     func addGesture() {
@@ -93,15 +76,6 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
         }
     }
     
-    //MARK :- MapKit delegates
-    
-    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        let renderer = MKPolylineRenderer(overlay: overlay)
-        renderer.strokeColor = UIColor.blue
-        renderer.lineWidth = 4.0
-        return renderer
-    }
-    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations[0]
         
@@ -118,13 +92,10 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
     func showLocation(location:CLLocation) {
         let orgLocation = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
         
-        
         dropPin.coordinate = orgLocation
         meetingMap!.addAnnotation(dropPin)
         self.meetingMap?.setRegion(MKCoordinateRegionMakeWithDistance(orgLocation, 500, 500), animated: true)
     }
-    
-    
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
