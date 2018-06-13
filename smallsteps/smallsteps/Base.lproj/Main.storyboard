@@ -183,10 +183,6 @@
                                 <rect key="frame" x="1" y="183" width="320" height="154"/>
                                 <gestureRecognizers/>
                             </mapView>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2k1-M4-XZn">
-                                <rect key="frame" x="12" y="476" width="298" height="30"/>
-                                <state key="normal" title="Join Group"/>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Vq-c1-Ha7">
                                 <rect key="frame" x="12" y="352" width="296" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -201,14 +197,11 @@
                             <constraint firstItem="7Vq-c1-Ha7" firstAttribute="top" secondItem="on0-Xp-7yx" secondAttribute="bottom" constant="8" id="6mz-d7-Ozm"/>
                             <constraint firstItem="wkk-MM-7uB" firstAttribute="bottom" secondItem="on0-Xp-7yx" secondAttribute="bottom" constant="262" id="76q-LY-5gj"/>
                             <constraint firstItem="on0-Xp-7yx" firstAttribute="leading" secondItem="wkk-MM-7uB" secondAttribute="leading" constant="1" id="JQo-tv-9TX"/>
-                            <constraint firstItem="2k1-M4-XZn" firstAttribute="leading" secondItem="wkk-MM-7uB" secondAttribute="leading" constant="11" id="Kaj-VM-9lz"/>
                             <constraint firstItem="wkk-MM-7uB" firstAttribute="trailing" secondItem="qUR-gJ-Zgz" secondAttribute="trailing" constant="14" id="N7Y-H7-iIT"/>
-                            <constraint firstItem="wkk-MM-7uB" firstAttribute="trailing" secondItem="2k1-M4-XZn" secondAttribute="trailing" constant="11" id="PWw-jQ-dCU"/>
                             <constraint firstItem="qUR-gJ-Zgz" firstAttribute="top" secondItem="wkk-MM-7uB" secondAttribute="top" constant="8" id="Qcw-LU-Nud"/>
                             <constraint firstItem="wkk-MM-7uB" firstAttribute="trailing" secondItem="RUP-w7-FQu" secondAttribute="trailing" constant="14" id="Sau-7j-wXd"/>
                             <constraint firstItem="HGg-rq-WBX" firstAttribute="top" secondItem="qUR-gJ-Zgz" secondAttribute="bottom" constant="8" id="Uxt-Lx-vJm"/>
                             <constraint firstItem="HGg-rq-WBX" firstAttribute="leading" secondItem="wkk-MM-7uB" secondAttribute="leading" constant="16" id="aA6-Kr-NXi"/>
-                            <constraint firstItem="wkk-MM-7uB" firstAttribute="bottom" secondItem="2k1-M4-XZn" secondAttribute="bottom" constant="15" id="bE2-Mq-MtU"/>
                             <constraint firstAttribute="trailing" secondItem="on0-Xp-7yx" secondAttribute="trailing" constant="-1" id="dhk-tB-4oA"/>
                             <constraint firstItem="wkk-MM-7uB" firstAttribute="bottom" secondItem="7Vq-c1-Ha7" secondAttribute="bottom" constant="100" id="hfn-Kv-UgF"/>
                             <constraint firstItem="on0-Xp-7yx" firstAttribute="top" secondItem="RUP-w7-FQu" secondAttribute="bottom" constant="17" id="m8I-XN-Yuf"/>
@@ -226,7 +219,6 @@
                         <outlet property="descriptionLabel" destination="7Vq-c1-Ha7" id="0hh-iy-xUz"/>
                         <outlet property="durationLabel" destination="RUP-w7-FQu" id="cDF-mf-v72"/>
                         <outlet property="groupNameLabel" destination="qUR-gJ-Zgz" id="tmB-Xu-Y0u"/>
-                        <outlet property="joinGroupBtn" destination="2k1-M4-XZn" id="byU-nt-atA"/>
                         <outlet property="meetingMap" destination="on0-Xp-7yx" id="mtc-pN-KnS"/>
                         <outlet property="meetingTimeLabel" destination="HGg-rq-WBX" id="bbm-z4-Dl0"/>
                         <segue destination="BYZ-38-t0r" kind="show" identifier="meetingRoute" id="CnP-qi-gvu"/>
