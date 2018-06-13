@@ -12,10 +12,14 @@ import MapKit
 import Alamofire
 import AVFoundation
 import SwiftyJSON
+import StompClientLib
 
 protocol HandleGroupSelection {
-//  func dropPinZoomIn(placemark:MKPlacemark)
   func selectAnnotation(group: Group)
+}
+
+func createCoordinateFromJSON(item: JSON) -> CLLocationCoordinate2D {
+  return CLLocationCoordinate2D(latitude: Double(item["lat"].string!)!, longitude: Double(item["long"].string!)!)
 }
 
 func getGroups(center: CLLocationCoordinate2D, completion: @escaping ([Group]) -> Void) {
@@ -47,16 +51,13 @@ func addWalkerToGroup(groupId: String, completion: @escaping (Bool) -> Void)  {
   }
 }
 
-// TODO change name of protocol
 class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleGroupSelection {
   var selectedPin:MKPlacemark? = nil
   var currGroupId: String = "-1"
   
   @IBOutlet var map: MKMapView!
-  @IBOutlet weak var groupDetailsPanel: UIView!
   
   var resultSearchController:UISearchController? = nil
-  var userId: Int = 0
   
   let manager = CLLocationManager()
   
@@ -67,14 +68,104 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var pinToGroup: [Int: Group] = [:]
   
   
+  var socketClient = StompClientLib()
+  let subscriptionURL = "/topic/confluence"
+  let destinationURL = "/app/confluence"
+  //let registrationURL = "http://localhost:8080/ws"
+  //  let subscriptionURL = "/topic/frontEnd"
+  let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"
+  //  let destinationURL = "/app/backEnd"
+  //  var deviceIDAppend = "/-1"
+  var deviceIDAppend = UIDevice.current.identifierForVendor!.uuidString
+ // var adminIDAppend = "F0B53972-55DC-446E-8919-F096E4D91236"
+  
+  func registerSocket(){
+    let url = NSURL(string: registrationURL)
+    
+    socketClient.openSocketWithURLRequest(request: NSURLRequest(url: url! as URL) , delegate: self as StompClientLibDelegate)
+  }
+  
+  func sendLocToAdmin(adminId:String){
+    print("messaging")
+    let location = manager.location?.coordinate
+    var msg: String
+    
+    if let lat = location?.latitude {
+      if let long = location?.longitude{
+        msg = """
+        {"lat": \(lat),
+        "long": \(long)
+        }
+        """
+      } else{
+        msg = """
+        {"lat": \(lat),
+        "long": -0.1790
+        }
+        """
+      }
+    } else{
+      msg = """
+      {"lat": 51.4989,
+      "long": -0.1790
+      }
+      """
+    }
+ 
+    let newDestinationURL = "\(destinationURL)/\(adminId)"
+    print("destination is: " + newDestinationURL)
+    socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
+  }
+  
+  @IBAction func message(_ sender: Any) {
+    print("messaging")
+    var location = manager.location?.coordinate
+    
+    var msg: String
+    if let lat = location?.latitude {
+      if let long = location?.longitude{
+        msg = """
+        {"lat": \(lat),
+        "long": \(long)
+        }
+        """
+      } else{
+          msg = """
+          {"lat": \(lat),
+          "long": -0.1790
+          }
+          """
+        }
+    } else{
+      msg = """
+      {"lat": 51.4989,
+      "long": -0.1790
+      }
+      """
+    }
+    
+    let newDestinationURL = "\(destinationURL)/\(deviceIDAppend)"
+    let newSubscriptionURL = "\(subscriptionURL)/\(deviceIDAppend)"
+    
+    //socketClient.sendJSONForDict(dict: msg as AnyObject, toDestination: destinationURL)
+    socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
+  }
+  
   // On new location data
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//    if groups.count == 0 {
-//      let myLocation = locations[0]
-//      let span = MKCoordinateSpanMake(0.01, 0.01)
-//      let region: MKCoordinateRegion = MKCoordinateRegion(center: myLocation.coordinate, span: span)
-//      map.setRegion(region, animated: false)
-//    }
+    let location = locations.last as! CLLocation
+    
+    let center = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+    let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+    
+    self.map.setRegion(region, animated: true)
+    
+    //    if groups.count == 0 {
+    //      let myLocation = locations[0]
+    //      let span = MKCoordinateSpanMake(0.01, 0.01)
+    //      let region: MKCoordinateRegion = MKCoordinateRegion(center: myLocation.coordinate, span: span)
+    //      map.setRegion(region, animated: false)
+    //    }
   }
   
   func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
@@ -82,7 +173,11 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   func setUpGroupData(completion: (() -> Void)? = nil) {
-    getGroups(center: (manager.location?.coordinate)!) { [unowned self] allGroups in
+    var location = manager.location?.coordinate
+    if location == nil{
+      location = CLLocationCoordinate2DMake(51.4989, -0.1790)
+    }
+    getGroups(center: location!) { [unowned self] allGroups in
       getGroupsByUUID { userGroups in
         // Set fields
         self.allGroups = allGroups
@@ -126,84 +221,33 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       self.resultSearchController?.hidesNavigationBarDuringPresentation = false
       self.resultSearchController?.dimsBackgroundDuringPresentation = true
       self.definesPresentationContext = true
-
       
       // Zoom into your location
       let span = MKCoordinateSpanMake(0.01, 0.01)
-      let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
+      var location = self.manager.location?.coordinate
+      if location == nil{
+        location = CLLocationCoordinate2DMake(51.4989, -0.1790)
+      }
+      let region = MKCoordinateRegion(center: location!, span: span)
       self.map.setRegion(region, animated: true)
       
       self.addNewConfluence(location: (self.manager.location?.coordinate)!)
       
     }
     
-//    getGroups(center: (manager.location?.coordinate)!) { [unowned self] allGroups in
-//      getGroupsByUUID { userGroups in
-//        // Set fields
-//        self.allGroups = allGroups
-//        self.userGroups = userGroups
-//
-//        // Reset annotations
-//        self.map.removeAnnotations(self.map.annotations)
-//        self.allGroups.forEach(self.createPinFromGroup)
-//
-//        // Set up MapView
-//        self.map.delegate = self
-//        self.map.showsUserLocation = true
-//
-//        // Set up CoreLocation manager
-//        self.manager.delegate = self
-//        self.manager.desiredAccuracy = kCLLocationAccuracyBest
-//        self.manager.requestWhenInUseAuthorization()
-//        self.manager.startUpdatingLocation()
-//
-//        // Zoom into your location
-//        let span = MKCoordinateSpanMake(0.01, 0.01)
-//        let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
-//        self.map.setRegion(region, animated: true)
-//      }
-//    }
-    
     super.viewWillAppear(animated)
   }
   
   override func viewDidLoad() {
-    groupDetailsPanel.isHidden = true
-
     if isButtonClick {
       isButtonClick = !isButtonClick
       getRoute()
     }
     
+    registerSocket()
+    
     super.viewDidLoad()
   }
-  
-//  static func createGroupFromJSON(item: JSON) -> Group {
-//    //Convert JSON to string to datetime
-//    let dateFormatterDT: DateFormatter = DateFormatter()
-//    dateFormatterDT.dateFormat = "yyyy-MM-dd hh:mm:ss"
-//    let newDate: Date = dateFormatterDT.date(from: item["time"].string!)!
-//
-//    //Convert JSON to string to duration
-//    let dateFormatterDur: DateFormatter = DateFormatter()
-//    dateFormatterDur.dateFormat = "hh:mm"
-//    print("THE DURATION IS :" + item["duration"].string!)
-//    let newDuration: Date = dateFormatterDur.date(from: item["duration"].string!)!
-//
-//    //Add new group to group array
-//    let newGroup: Group = Group(groupName: item["name"].string!,
-//                                datetime: newDate,
-//                                repeats: "yes",
-//                                duration: Date(),
-//                                latitude: item["location_latitude"].string!,
-//                                longitude: item["location_longitude"].string!,
-//                                hasDog: item["has_dogs"].bool!,
-//                                hasKid: item["has_kids"].bool!,
-//                                adminID: item["admin_id"].string!,
-//                                isWalking: item["is_walking"].bool!,
-//                                groupId: item["id"].string!)
-//    return newGroup
-//  }
   
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) { self.view.endEditing(true) }
   
@@ -285,6 +329,65 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     return renderer
   }
   
+  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+    if let pointAnnot = view.annotation as? LocationPointer{
+      print("tapped on pointer: \(pointAnnot.groupId) with name: \(pointAnnot.title)")
+      currGroupId = pointAnnot.groupId
+    }
+  }
+  
+  func createPinFromGroup(group: Group){
+    var subtitle = "Meeting Time: \(dateToString(datetime: group.datetime))"
+    subtitle += "\nDuration: \(getHoursMinutes(time: group.duration))"
+    
+    if group.hasDog { subtitle += "\nHas dogs" }
+    if group.hasKid { subtitle += "\nHas kids" }
+    if let placemark = group.placemark { subtitle += "\nMeeting Place: \(placemark.name!)" }
+    
+    print("the group when creaintg pin is: \(group)")
+    let discipline = group.isWalking ? "In Progress" : "Not Started"
+    let coordinate = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
+    let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate: coordinate, groupId: group.groupId, group: group)
+    
+    map.addAnnotation(annotation)
+  }
+  
+  func selectAnnotation(group: Group) {
+    // Filter location pointers only
+    let annotations: [LocationPointer] = map.annotations.filter({ $0 is LocationPointer }) as! [LocationPointer]
+    
+    // Show annotation
+    if let annotation = annotations.filter({ $0.group! == group }).first {
+      map.selectAnnotation(annotation, animated: true)
+    }
+  }
+  
+  func getAdminFromGroup(groupId:String, completion: @escaping((String)->()) ){
+    DispatchQueue(label: "Get AdminId", qos: .background).async {
+      let params: Parameters = [
+        "group_id": groupId
+      ]
+      
+      Alamofire.request("\(SERVER_IP)/groups/admin", method: .get, parameters: params)
+        .response { response in
+          if let data = response.data, let id = String(data: data, encoding: .utf8) {
+            completion(id.trimmingCharacters(in: .whitespaces))
+          }
+      }
+    }
+  }
+  
+  @objc func meetUp(){
+    //TODO: fix the group
+    print("meeting up with group: \(currGroupId)")
+    getAdminFromGroup(groupId: currGroupId){ adminId in
+      print(adminId)
+      //self.adminIDAppend = "/\(adminId)"
+      self.sendLocToAdmin(adminId: adminId)
+    }
+    //TODO: subscribe to the group admin's channel
+  }
+  
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView?{
     // Return on user location
     if annotation is MKUserLocation { return nil }
@@ -301,23 +404,28 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     if let locPointAnnotation = annotation as? LocationPointer{
       if(locPointAnnotation.discipline != ""){
         let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
-          infoButton.setTitle("Join", for: .normal)
-        
-        print("locpointannotgroup: \(locPointAnnotation)")
-        if let grp = locPointAnnotation.group {
-          // Add entry to lookup dictionary for `tag -> group`
-          
-          infoButton.tag = Int(grp.groupId)!
-          let tag = infoButton.tag
-          pinToGroup[infoButton.tag] = grp
-          print("group is: \(grp.groupName)")
-          if userGroups.contains(grp) {
-            infoButton.setTitle("Joined", for: .normal)
-            infoButton.isEnabled = false
-          }
-        }
         infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
-        infoButton.addTarget(self, action: #selector(self.joinGroup(_:)), for: .touchUpInside)
+        if(locPointAnnotation.discipline == "In Progress"){
+          infoButton.setTitle("Meet Up", for: .normal)
+          infoButton.addTarget(self, action: #selector(self.meetUp), for: .touchUpInside)
+
+        } else{
+          infoButton.setTitle("Join", for: .normal)
+          print("locpointannotgroup: \(locPointAnnotation)")
+          if let grp = locPointAnnotation.group {
+            // Add entry to lookup dictionary for `tag -> group`
+            
+            infoButton.tag = Int(grp.groupId)!
+            let tag = infoButton.tag
+            pinToGroup[infoButton.tag] = grp
+            print("group is: \(grp.groupName)")
+            if userGroups.contains(grp) {
+              infoButton.setTitle("Joined", for: .normal)
+              infoButton.isEnabled = false
+            }
+          }
+          infoButton.addTarget(self, action: #selector(self.joinGroup(_:)), for: .touchUpInside)
+        }
         pinView.rightCalloutAccessoryView = infoButton
       }
     }
@@ -328,91 +436,17 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     subtitleView.text = annotation.subtitle!
     pinView.detailCalloutAccessoryView = subtitleView
     
-    return pinView
-  }
-  
-  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)
-  {
-    selectedPin = MKPlacemark(coordinate: (view.annotation?.coordinate)!)
-    print("currently selected pin at: \(String(describing: selectedPin))")
-    if let locPointAnnotation = view.annotation as? LocationPointer{
-      if locPointAnnotation.discipline != ""{
-        currGroupId = (locPointAnnotation.groupId)
-        print("groupId = \(currGroupId)")
-      }
-    }
-    
-    if let annotationTitle = view.annotation?.title
-    {
-      print("User tapped on annotation with title: \(annotationTitle!)")
-      
-    }
-  }
-  
-  func createPinFromGroup(group: Group){
-    var subtitle = "Meeting Time: \(dateToString(datetime: group.datetime))"
-    subtitle += "\nDuration: \(getHoursMinutes(time: group.duration))"
-    
-    if group.hasDog { subtitle += "\nHas dogs" }
-    if group.hasKid { subtitle += "\nHas kids" }
-    if let placemark = group.placemark { subtitle += "\nMeeting Place: \(placemark.name!)" }
-    
-    let discipline = group.isWalking ? "In Progress" : "Not Started"
-    let coordinate = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
-    let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate: coordinate, group: group)
-    
-    map.addAnnotation(annotation)
-  }
-
-  
-  func selectAnnotation(group: Group) {
-    // Filter location pointers only
-    let annotations: [LocationPointer] = map.annotations.filter({ $0 is LocationPointer }) as! [LocationPointer]
-    
-    // Show annotation
-    if let annotation = annotations.filter({ $0.group! == group }).first {
-      map.selectAnnotation(annotation, animated: true)
-    }
-  }
-
-  
-  func dropPinZoomIn(placemark:MKPlacemark){
-    //Clear previous pin and overlay
-    map.removeOverlays(map.overlays)
-    
-    if(selectedPin != nil){
-      for annotation in map.annotations {
-        if let pointAnnotation = annotation as? LocationPointer{
-          if (pointAnnotation.discipline != "In Progress" ||
-            pointAnnotation.discipline != "Not Started"){
-            map.removeAnnotation(pointAnnotation)
-          }
-        } else{
-          map.removeAnnotation(annotation)
-        }
-      }
-    }
-    // save the pin so we can find directions to it later
-    selectedPin = placemark
-    
-    var subtitle = ""
-    if let city = placemark.locality,
-      let state = placemark.administrativeArea {
-      subtitle = "\(city), \(state)"
-    }
-    let annotation = LocationPointer(title: placemark.name!, subtitle: subtitle, discipline: "", coordinate: placemark.coordinate)
-    map.addAnnotation(annotation)
-    
     
     let span = MKCoordinateSpanMake(0.03, 0.03)
     let region = MKCoordinateRegionMake(placemark.coordinate, span)
     map.setRegion(region, animated: true)
   }
+
   
   //Fits all pins on the map to the map view
   func fitAll(showGroups: Bool) {
     var zoomRect = MKMapRectNull;
-    print(map.annotations)
+    //print(map.annotations)
     for annotation in map.annotations {
       if showGroups
         || annotation is MKUserLocation
@@ -498,25 +532,49 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     return "\(newTime) \(newDate)"
   }
   
-  func getHoursMinutes(time: Date) -> String {
-    let dateFormatter: DateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "H"
-    let newHour: String = dateFormatter.string(for: time)!
-    dateFormatter.dateFormat = "m"
-    let newMinute: String = dateFormatter.string(from: time)
-    if newHour == "0"{
-      return "\(newMinute) minutes"
-    }
-    var hour: String
-    if(newHour == "1"){
-      hour = "\(newHour) hour"
-    }
-    hour = "\(newHour) hours"
-    if(newMinute == "0"){
-      return hour
-    }
-    
-    return "\(hour) and \(newMinute) minutes"
+}
+
+extension ViewController: StompClientLibDelegate{
+  func stompClient(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: AnyObject?, withHeader header: [String : String]?, withDestination destination: String) {
+    print("> Destination : \(destination)")
+    print("> JSON Body : \(String(describing: jsonBody))")
   }
   
+  func stompClientJSONBody(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
+    print("> DESTINATION : \(destination)")
+    print("> String JSON BODY : \(String(describing: jsonBody!))")
+  }
+  
+  func serverDidSendReceipt(client: StompClientLib!, withReceiptId receiptId: String) {
+    print("> Receipt : \(receiptId)")
+  }
+  
+  func serverDidSendError(client: StompClientLib!, withErrorMessage description: String, detailedErrorMessage message: String?) {
+    print("> Error Send : \(String(describing: message))")
+  }
+  
+  func serverDidSendPing() {
+    print("> Server ping")
+  }
+  
+  func stompClientDidConnect(client: StompClientLib!) {
+    print("> Socket is connected")
+    // Stomp subscribe will be here!
+    
+    let ack = "ack_\(destinationURL)" // It can be any unique string
+    let subsId = subscriptionURL // It can be any unique string
+    let header = ["destination": destinationURL, "ack": ack, "id": subsId]
+    let newURL = "\(subscriptionURL)/\(deviceIDAppend)"
+    print("i am subscribed toL " + newURL)
+    socketClient.subscribeWithHeader(destination: newURL, withHeader: header)
+    
+  }
+  
+  func stompClientDidDisconnect(client: StompClientLib!) {
+    print("> Socket is Disconnected")
+    socketClient.unsubscribe(destination: subscriptionURL)
+  }
+  
+  func stompClientWillDisconnect(client: StompClientLib!, withError error: NSError) {
+  }
 }
