@@ -10,7 +10,7 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var joinGroupBtn: UIButton!
     
-    let dropPin = MKPointAnnotation()
+    let dropPin = MeetingPointMarker(identifier: "meetingPoint", title: globalUserGroups[currGroup].groupName, coordinate: CLLocationCoordinate2D(latitude: Double(globalUserGroups[currGroup].latitude)!, longitude: Double(globalUserGroups[currGroup].longitude)!))
     let manager = CLLocationManager()
     
     override func viewDidLoad() {
@@ -42,9 +42,10 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
 
         showLocation(location: CLLocation(latitude: Double(globalUserGroups[currGroup].latitude)!, longitude: Double(globalUserGroups[currGroup].longitude)!))
         
-        addGesture()
-        
+        //addGesture()
         descriptionLabel.text = globalUserGroups[currGroup].description
+        
+
     }
     
     
@@ -92,18 +93,52 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
     func showLocation(location:CLLocation) {
         let orgLocation = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
         
-        dropPin.coordinate = orgLocation
         meetingMap!.addAnnotation(dropPin)
         self.meetingMap?.setRegion(MKCoordinateRegionMakeWithDistance(orgLocation, 500, 500), animated: true)
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        let identifier = "meetingPoint"
+        
+        let pinView = MeetingPointMarkerView(annotation: annotation, reuseIdentifier: identifier)
+        pinView.canShowCallout = true
+        
+        if annotation is MeetingPointMarker {
+            if let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) {
+                annotationView.annotation = annotation
+                
+                return annotationView
+            } else {
+                let annotationView = MKPinAnnotationView(annotation:annotation, reuseIdentifier: identifier)
+                annotationView.isEnabled = true
+                annotationView.canShowCallout = true
+                
+                let btn = UIButton(type: .detailDisclosure)
+                btn.setTitle("Find Route", for: UIControlState.normal)
+                annotationView.rightCalloutAccessoryView = btn
+                
+                return annotationView
+            }
+        }
+        return nil
     }
     
-    
-    
-    
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        let meetingPoint = view.annotation as! MeetingPointMarker
+        
+//        let ac = UIAlertController(title: "Find Route to Meeting Point", message: "", preferredStyle: .alert)
+//        ac.addAction(UIAlertAction(title: "OK", style: .default))
+//        present(ac, animated: true)
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let routeToMeetingPoint = UIAlertAction(title: "Find Route to Meeting Point", style: .default) { action in
+            self.getRoute()
+        }
+        
+        actionSheet.addAction(cancel)
+        actionSheet.addAction(routeToMeetingPoint)
+        
+        present(actionSheet, animated: true, completion: nil)
+    }
 
 }

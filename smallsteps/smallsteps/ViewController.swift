@@ -272,7 +272,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   
-
+  //Style and color of the route
   func mapView(_ mapView: MKMapView, rendererFor
     overlay: MKOverlay) -> MKOverlayRenderer {
     let renderer = MKPolylineRenderer(overlay: overlay)
