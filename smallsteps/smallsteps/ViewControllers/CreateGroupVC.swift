@@ -43,6 +43,7 @@ class CreateGroupVC: FormViewController {
         row.tag = "description"
         row.title = "Description"
         row.placeholder = "Enter description here"
+        row.value = ""
         }
       +++ Section("Meeting Date and Time")
       <<< DateTimeRow(){
