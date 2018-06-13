@@ -224,19 +224,34 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         }
         return
       }
+
+      let ALocation: CLLocation = CLLocation(latitude: (self.manager.location?.coordinate.latitude)!, longitude: (self.manager.location?.coordinate.longitude)!)
+      let BLocation: CLLocation = CLLocation(latitude: Double(globalUserGroups[currGroup].latitude)!, longitude: Double(globalUserGroups[currGroup].longitude)!)
+      let midPointLat = (ALocation.coordinate.latitude + BLocation.coordinate.latitude) / 2
+      let midPointLong = (ALocation.coordinate.longitude + BLocation.coordinate.longitude) / 2
+      let midPoint: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: Double(midPointLat), longitude: Double(midPointLong))
       
+      let dist: CLLocationDistance = ALocation.distance(from: BLocation)
+      
+      let region: MKCoordinateRegion = MKCoordinateRegionMakeWithDistance(midPoint, 2 * dist, 2 * dist)
+
       let route = directionResponse.routes[0]
       self.map.add(route.polyline, level: .aboveRoads)
       
-      let rect = route.polyline.boundingMapRect
-      self.map.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
+      self.map.setRegion(region, animated: true)
+      
+//      let rect = route.polyline.boundingMapRect
+//      self.map.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
     }
   }
   
-  func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+  
+  //Style and color of the route
+  func mapView(_ mapView: MKMapView, rendererFor
+    overlay: MKOverlay) -> MKOverlayRenderer {
     let renderer = MKPolylineRenderer(overlay: overlay)
-    renderer.strokeColor = UIColor.red
-    renderer.lineWidth = 5.0
+    renderer.strokeColor = self.view.tintColor
+    renderer.lineWidth = 7.0
     return renderer
   }
   
