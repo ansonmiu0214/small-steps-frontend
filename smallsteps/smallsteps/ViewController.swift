@@ -437,9 +437,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     pinView.detailCalloutAccessoryView = subtitleView
     
     
-    let span = MKCoordinateSpanMake(0.03, 0.03)
-    let region = MKCoordinateRegionMake(placemark.coordinate, span)
-    map.setRegion(region, animated: true)
+    return pinView
   }
 
   

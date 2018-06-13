@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "smallsteps/ViewController.swift"
-            timestampString = "550613601.977358"
+            timestampString = "550615523.631037"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "92"
             endingLineNumber = "92"
-            landmarkName = "setUpGroupData(completion:)"
+            landmarkName = "sendLocToAdmin(adminId:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -26,12 +26,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "smallsteps/ViewController.swift"
-            timestampString = "550613601.977951"
+            timestampString = "550615523.6320159"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "89"
             endingLineNumber = "89"
-            landmarkName = "setUpGroupData(completion:)"
+            landmarkName = "sendLocToAdmin(adminId:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
