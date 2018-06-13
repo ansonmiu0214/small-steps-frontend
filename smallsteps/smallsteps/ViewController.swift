@@ -230,6 +230,9 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       }
       let region = MKCoordinateRegion(center: location!, span: span)
       self.map.setRegion(region, animated: true)
+      
+      self.addNewConfluence(location: (self.manager.location?.coordinate)!)
+      
     }
     
     super.viewWillAppear(animated)
@@ -296,18 +299,33 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         return
       }
       
+      let ALocation: CLLocation = CLLocation(latitude: (self.manager.location?.coordinate.latitude)!, longitude: (self.manager.location?.coordinate.longitude)!)
+      let BLocation: CLLocation = CLLocation(latitude: Double(globalUserGroups[currGroup].latitude)!, longitude: Double(globalUserGroups[currGroup].longitude)!)
+      let midPointLat = (ALocation.coordinate.latitude + BLocation.coordinate.latitude) / 2
+      let midPointLong = (ALocation.coordinate.longitude + BLocation.coordinate.longitude) / 2
+      let midPoint: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: Double(midPointLat), longitude: Double(midPointLong))
+      
+      let dist: CLLocationDistance = ALocation.distance(from: BLocation)
+      
+      let region: MKCoordinateRegion = MKCoordinateRegionMakeWithDistance(midPoint, 2 * dist, 2 * dist)
+
       let route = directionResponse.routes[0]
       self.map.add(route.polyline, level: .aboveRoads)
       
-      let rect = route.polyline.boundingMapRect
-      self.map.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
+      self.map.setRegion(region, animated: true)
+      
+//      let rect = route.polyline.boundingMapRect
+//      self.map.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
     }
   }
   
-  func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+  
+  //Style and color of the route
+  func mapView(_ mapView: MKMapView, rendererFor
+    overlay: MKOverlay) -> MKOverlayRenderer {
     let renderer = MKPolylineRenderer(overlay: overlay)
-    renderer.strokeColor = UIColor.red
-    renderer.lineWidth = 5.0
+    renderer.strokeColor = self.view.tintColor
+    renderer.lineWidth = 7.0
     return renderer
   }
   
@@ -418,7 +436,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     subtitleView.text = annotation.subtitle!
     pinView.detailCalloutAccessoryView = subtitleView
     
-    return pinView
+    
+    let span = MKCoordinateSpanMake(0.03, 0.03)
+    let region = MKCoordinateRegionMake(placemark.coordinate, span)
+    map.setRegion(region, animated: true)
   }
 
   
@@ -474,6 +495,31 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       }
     }
   }
+  
+  
+  //------------------------CONFLUENCE------------------------
+  
+  //Adds confluence point annotation to the map
+  func addNewConfluence(location: CLLocationCoordinate2D) {
+    let confluencePoint = LocationPointer(title: "Confluence", subtitle: "Confluence", discipline: "Confluence", coordinate: location)
+    map.addAnnotation(confluencePoint)
+  }
+  
+  //Updates confluence point annotation on the map
+  func updateConfluence(confluencePoint: LocationPointer, newLocation: CLLocationCoordinate2D) {
+    map.removeAnnotation(confluencePoint)
+    confluencePoint.changeLocationTo(newLocation)
+    map.addAnnotation(confluencePoint)
+  }
+  
+  func confluenceAlert() {
+    let alert = UIAlertController(title: "Confluence Request", message: "Would you like to meet at a confluence?", preferredStyle: UIAlertControllerStyle.alert)
+    alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: nil))
+    alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.default, handler: nil))
+    self.present(alert, animated: true, completion: nil)
+  }
+  
+  //~~~~~~~~~~~~~~~~~~~~~~~~CONFLUENCE~~~~~~~~~~~~~~~~~~~~~~~~
   
   func dateToString(datetime: Date) -> String {
     let timeFormatter: DateFormatter = DateFormatter()

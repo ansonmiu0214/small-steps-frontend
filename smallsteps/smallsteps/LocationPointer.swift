@@ -8,6 +8,8 @@ class LocationPointer: NSObject, MKAnnotation {
             return .red
         case "In Progress":
             return .green
+        case "Confluence":
+            return .purple
         default:
             return .blue
         }
@@ -16,7 +18,7 @@ class LocationPointer: NSObject, MKAnnotation {
     let title: String?
     let subtitle: String?
     let discipline: String
-    let coordinate: CLLocationCoordinate2D
+    var coordinate: CLLocationCoordinate2D
     let groupId: String
     let group: Group?
     
@@ -29,6 +31,10 @@ class LocationPointer: NSObject, MKAnnotation {
         self.group = group
         
         super.init()
+    }
+    
+    func changeLocationTo(_ newLocation: CLLocationCoordinate2D) {
+        self.coordinate = newLocation
     }
     
 }

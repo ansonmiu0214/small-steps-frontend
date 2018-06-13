@@ -17,9 +17,10 @@ class Group: Equatable {
   var hasKid: Bool
   var adminID: String
   var isWalking: Bool
+  var description: String
   var groupId: String
   
-  init(groupName: String, datetime: Date, repeats: String, duration: Date, latitude: String, longitude: String, hasDog: Bool, hasKid: Bool = false, adminID: String, isWalking: Bool = false, groupId: String = "-1") {
+    init(groupName: String, datetime: Date, repeats: String, duration: Date, latitude: String, longitude: String, hasDog: Bool, hasKid: Bool = false, adminID: String, isWalking: Bool = false, description: String = "A Small Steps walking group", groupId: String = "-1") {
     self.groupName = groupName
     self.datetime = datetime
     self.repeats = repeats
@@ -30,6 +31,7 @@ class Group: Equatable {
     self.hasKid = hasKid
     self.adminID = adminID
     self.isWalking = isWalking
+    self.description = description
     self.groupId = groupId
     
     let location = CLLocation(latitude: Double(self.latitude)!, longitude: Double(self.longitude)!)
