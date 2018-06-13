@@ -8,6 +8,8 @@ class LocationPointer: NSObject, MKAnnotation {
             return .red
         case "In Progress":
             return .green
+        case "Confluence":
+            return .purple
         default:
             return .blue
         }

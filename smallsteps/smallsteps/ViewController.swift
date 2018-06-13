@@ -131,6 +131,9 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       let span = MKCoordinateSpanMake(0.01, 0.01)
       let region = MKCoordinateRegion(center: self.manager.location!.coordinate, span: span)
       self.map.setRegion(region, animated: true)
+      
+      //Add confluence point
+      self.addConfluence()
     }
     
 //    getGroups(center: (manager.location?.coordinate)!) { [unowned self] allGroups in
@@ -170,6 +173,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       isButtonClick = !isButtonClick
       getRoute()
     }
+    
+
     
     super.viewDidLoad()
   }
@@ -399,6 +404,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     let annotation = LocationPointer(title: placemark.name!, subtitle: subtitle, discipline: "", coordinate: placemark.coordinate)
     map.addAnnotation(annotation)
     
+    
     let span = MKCoordinateSpanMake(0.03, 0.03)
     let region = MKCoordinateRegionMake(placemark.coordinate, span)
     map.setRegion(region, animated: true)
@@ -455,6 +461,13 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         }
       }
     }
+  }
+  
+  //Adds confluence point annotation to map
+  func addConfluence() {
+    let confluencePoint = LocationPointer(title: "Confluence", subtitle: "Confluence", discipline: "Confluence", coordinate: self.manager.location!.coordinate)
+    //let confluencePoint = MeetingPointMarker(identifier: "confluence", title: "Confluence", coordinate: self.manager.location!.coordinate)
+    map.addAnnotation(confluencePoint)
   }
   
   func dateToString(datetime: Date) -> String {
