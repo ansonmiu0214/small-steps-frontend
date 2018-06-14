@@ -114,6 +114,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var pinToGroup: [Int: Group] = [:]
   
   
+  // Confluence utils
   var socketClient = StompClientLib()
   let subscriptionURL = "/topic/confluence"
   let initDestinationURL = "/app/request"
@@ -124,6 +125,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   let deviceIDAppend = UIDevice.current.identifierForVendor!.uuidString
 
   var confluenceGroupId = "-1"
+  var pendingConfluenceAlert: UIAlertController?
   
   func registerSocket(){
     let url = NSURL(string: registrationURL)
@@ -313,11 +315,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     detailDescription.text = group.description
     detailTimings.text = "\(dateToString(datetime: group.datetime))"
     
-    if let placeName = group.placemark?.name {
-      detailLocation.text = placeName
-    } else {
-      detailLocation.text = "\(group.latitude)º \(group.longitude)º"
-    }
+    detailLocation.text = ""
     
     detailActions.setTitle("Joined", for: .disabled)
     detailActions.tag = Int(group.groupId)!
@@ -470,7 +468,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     if group.hasDog { subtitle += "\nHas dogs" }
     if group.hasKid { subtitle += "\nHas kids" }
-    if let placemark = group.placemark { subtitle += "\nMeeting Place: \(placemark.name!)" }
     
     print("the group when creaintg pin is: \(group)")
     let discipline = group.isWalking ? "In Progress" : "Not Started"
@@ -509,9 +506,13 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     //TODO: fix the group
     confluenceGroupId = String(sender.tag)
     print("meeting up with group: \(confluenceGroupId)")
-    getAdminFromGroup(groupId: confluenceGroupId){ adminId in
+    getAdminFromGroup(groupId: confluenceGroupId){ [unowned self] adminId in
       print(adminId)
       self.requestAdminPermission(adminId: adminId)
+      
+      let pendingAlert = buildLoadingOverlay(message: "Waiting for response...")
+      self.pendingConfluenceAlert = pendingAlert
+      self.present(pendingAlert, animated: true, completion: nil)
     }
   }
   
@@ -696,18 +697,22 @@ extension ViewController: StompClientLibDelegate{
       let coordinate = CLLocationCoordinate2D(latitude: Double(locationResponse.lat)!, longitude: Double(locationResponse.long)!)
       print(coordinate)
     } else if let response = try? JSONDecoder().decode(Response.self, from: data!){
-      if response.response{
-        print("WOOO HOOOO WE'RE JOIN A GROUP")
-        //TODO: send your location to admin
-        print("sending location to group: \(currGroupId)")
-        getAdminFromGroup(groupId: confluenceGroupId){ adminId in
-          print(adminId)
-          self.sendLocToAdmin(adminId: adminId)
+      
+      self.pendingConfluenceAlert?.dismiss(animated: true) { [unowned self] in
+        if response.response{
+          print("WOOO HOOOO WE'RE JOIN A GROUP")
+          //TODO: send your location to admin
+          print("sending location to group: \(self.currGroupId)")
+          self.getAdminFromGroup(groupId: self.confluenceGroupId){ adminId in
+            print(adminId)
+            self.sendLocToAdmin(adminId: adminId)
+          }
+        } else{
+          print("awwwww you were declined")
+          self.confluenceDeclinedAlert()
         }
-      } else{
-        print("awwwww you were declined")
-        confluenceDeclinedAlert()
       }
+
     }
   }
   

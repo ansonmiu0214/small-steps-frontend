@@ -12,7 +12,6 @@ class Group: Equatable {
   var duration: Date
   var latitude: String
   var longitude: String
-  var placemark: CLPlacemark?
   var hasDog: Bool
   var hasKid: Bool
   var adminID: String
@@ -35,15 +34,6 @@ class Group: Equatable {
     self.groupId = groupId
     
     let location = CLLocation(latitude: Double(self.latitude)!, longitude: Double(self.longitude)!)
-    
-//    DispatchQueue(label: "Geocoding", qos: .background).async { [unowned self] in
-//      CLGeocoder().reverseGeocodeLocation(location) { placemarks, error in
-//        self.placemark = error == nil ? placemarks![0] : nil
-//        print(">> Placemark for \(self.groupName) is \(String(describing: self.placemark?.name!))")
-//      }
-//    }
-    
-    
   }
   
   

@@ -36,7 +36,8 @@ class LocationSearchTable : UITableViewController {
   
   func filterContentForSearchText(_ searchText: String) {
     matchingGroups = groups.filter { (group: Group) -> Bool in
-      return group.groupName.lowercased().contains(searchText.lowercased())
+      return group.groupName.lowercased().contains(searchText.lowercased()) ||
+        group.description.lowercased().contains(searchText.lowercased())
     }
   }
   
@@ -61,15 +62,9 @@ extension LocationSearchTable {
     
     // Set title
     cell.textLabel?.text = selectedGroup.groupName
-    
+
     // Set subtitle
-    if let placemark = selectedGroup.placemark {
-      cell.detailTextLabel?.text = parseAddress(selectedItem: placemark)
-    } else {
-      let formatter = DateFormatter()
-      formatter.dateFormat = "dd MMMM yyyy HH:mm"
-      cell.detailTextLabel?.text = formatter.string(from: selectedGroup.datetime)
-    }
+    cell.detailTextLabel?.text = selectedGroup.description
     
     return cell
   }
