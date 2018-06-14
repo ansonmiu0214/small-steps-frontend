@@ -76,7 +76,7 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if let destVC = segue.destination as? ViewController {
-      destVC.isButtonClick = true
+      destVC.isGroupDetailButtonClick = true
     }
   }
   

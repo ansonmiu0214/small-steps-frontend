@@ -38,7 +38,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Confluence"/>
                                 <connections>
-                                    <action selector="confluenceBtn:" destination="BYZ-38-t0r" eventType="touchUpInside" id="m5c-0H-CgR"/>
+                                    <segue destination="sfa-D2-B8l" kind="show" id="PHn-P4-E6m"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K5I-i3-KQy">
@@ -141,6 +141,24 @@
                 </view>
             </objects>
             <point key="canvasLocation" x="2244.375" y="-144.71830985915494"/>
+        </scene>
+        <!--Create ConfluenceVC-->
+        <scene sceneID="yJy-DI-eaV">
+            <objects>
+                <viewController id="sfa-D2-B8l" customClass="CreateConfluenceVC" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="OuW-du-Azq">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="uTs-ww-8yi"/>
+                    </view>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="confluenceToMain" id="ePH-k9-6f7"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DhY-vK-TM2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3041" y="-558"/>
         </scene>
         <!--Join Group PopupVC-->
         <scene sceneID="9Ro-VN-ITk">
@@ -768,7 +786,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Mik-Eo-aM5"/>
-        <segue reference="CnP-qi-gvu"/>
+        <segue reference="ePH-k9-6f7"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.72156862749999995" green="0.38823529410000002" blue="0.49803921569999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>
