@@ -14,12 +14,47 @@ import AVFoundation
 import SwiftyJSON
 import StompClientLib
 
+struct SenderResponse: Decodable{
+  let sender: String
+  
+  enum CodingKeys: String, CodingKey {
+    case sender
+  }
+}
+
+struct LocationResponse: Decodable{
+  let lat: String
+  let long: String
+  enum CodingKeys: String, CodingKey{
+    case lat
+    case long
+  }
+}
+
+struct Response: Decodable{
+  let response:Bool
+  enum CodingKeys: String, CodingKey{
+    case response
+  }
+}
+
 protocol HandleGroupSelection {
   func selectAnnotation(group: Group)
 }
 
-func createCoordinateFromJSON(item: JSON) -> CLLocationCoordinate2D {
-  return CLLocationCoordinate2D(latitude: Double(item["lat"].string!)!, longitude: Double(item["long"].string!)!)
+func getDeviceOwner(deviceID:String, completion: @escaping (String) -> Void) {
+  DispatchQueue(label: "Get Device Owner", qos: .background).async {
+    let params: Parameters = [
+      "device_id": deviceID,
+    ]
+    
+    Alamofire.request("\(SERVER_IP)/walker/name", method: .get, parameters: params)
+      .responseJSON { response in
+        if let data = response.data, let name = String(data: data, encoding: .utf8) {
+          completion(name.trimmingCharacters(in: .whitespaces))
+        }
+    }
+  }
 }
 
 func getGroups(center: CLLocationCoordinate2D, completion: @escaping ([Group]) -> Void) {
@@ -70,19 +105,38 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   var socketClient = StompClientLib()
   let subscriptionURL = "/topic/confluence"
-  let destinationURL = "/app/confluence"
+  let initDestinationURL = "/app/request"
+  let locDestinationURL = "/app/confluence"
+  let responseDestinationURL = "/app/response"
   //let registrationURL = "http://localhost:8080/ws"
-  //  let subscriptionURL = "/topic/frontEnd"
   let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"
-  //  let destinationURL = "/app/backEnd"
-  //  var deviceIDAppend = "/-1"
-  var deviceIDAppend = UIDevice.current.identifierForVendor!.uuidString
- // var adminIDAppend = "F0B53972-55DC-446E-8919-F096E4D91236"
+  let deviceIDAppend = UIDevice.current.identifierForVendor!.uuidString
+
+  var confluenceGroupId = "-1"
   
   func registerSocket(){
     let url = NSURL(string: registrationURL)
     
     socketClient.openSocketWithURLRequest(request: NSURLRequest(url: url! as URL) , delegate: self as StompClientLibDelegate)
+  }
+  
+  func requestAdminPermission(adminId:String){
+      print("asking permission")
+      let msg = """
+      {"sender":"\(deviceIDAppend)"}
+      """
+      let newDestinationURL = "\(self.initDestinationURL)/\(adminId)"
+      //socketClient.sendJSONForDict(dict: msg as AnyObject, toDestination: destinationURL)
+      self.socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
+  }
+  
+  func respondToRequest(requesterId:String, didAccept:Bool){
+    print("confirming request")
+    let msg = """
+    {"response":\(didAccept)}
+    """
+    let newDestinationURL = "\(self.responseDestinationURL)/\(requesterId)"
+    self.socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
   }
   
   func sendLocToAdmin(adminId:String){
@@ -112,40 +166,19 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       """
     }
  
-    let newDestinationURL = "\(destinationURL)/\(adminId)"
+    let newDestinationURL = "\(locDestinationURL)/\(adminId)"
     print("destination is: " + newDestinationURL)
     socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
   }
   
   @IBAction func message(_ sender: Any) {
     print("messaging")
-    var location = manager.location?.coordinate
     
-    var msg: String
-    if let lat = location?.latitude {
-      if let long = location?.longitude{
-        msg = """
-        {"lat": \(lat),
-        "long": \(long)
-        }
-        """
-      } else{
-          msg = """
-          {"lat": \(lat),
-          "long": -0.1790
-          }
-          """
-        }
-    } else{
-      msg = """
-      {"lat": 51.4989,
-      "long": -0.1790
-      }
-      """
-    }
+    let msg = """
+    {"sender":"\(deviceIDAppend)"}
+    """
     
-    let newDestinationURL = "\(destinationURL)/\(deviceIDAppend)"
-    let newSubscriptionURL = "\(subscriptionURL)/\(deviceIDAppend)"
+    let newDestinationURL = "\(initDestinationURL)/\(deviceIDAppend)"
     
     //socketClient.sendJSONForDict(dict: msg as AnyObject, toDestination: destinationURL)
     socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
@@ -231,7 +264,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       let region = MKCoordinateRegion(center: location!, span: span)
       self.map.setRegion(region, animated: true)
       
-      self.addNewConfluence(location: (self.manager.location?.coordinate)!)
+      //self.addNewConfluence(location: (self.manager.location?.coordinate)!)
       
     }
     
@@ -380,12 +413,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   @objc func meetUp(){
     //TODO: fix the group
     print("meeting up with group: \(currGroupId)")
-    getAdminFromGroup(groupId: currGroupId){ adminId in
+    getAdminFromGroup(groupId: confluenceGroupId){ adminId in
       print(adminId)
-      //self.adminIDAppend = "/\(adminId)"
-      self.sendLocToAdmin(adminId: adminId)
+      self.requestAdminPermission(adminId: adminId)
     }
-    //TODO: subscribe to the group admin's channel
   }
   
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView?{
@@ -406,9 +437,9 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
         infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
         if(locPointAnnotation.discipline == "In Progress"){
+          confluenceGroupId = currGroupId
           infoButton.setTitle("Meet Up", for: .normal)
           infoButton.addTarget(self, action: #selector(self.meetUp), for: .touchUpInside)
-
         } else{
           infoButton.setTitle("Join", for: .normal)
           print("locpointannotgroup: \(locPointAnnotation)")
@@ -510,11 +541,28 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     map.addAnnotation(confluencePoint)
   }
   
-  func confluenceAlert() {
-    let alert = UIAlertController(title: "Confluence Request", message: "Would you like to meet at a confluence?", preferredStyle: UIAlertControllerStyle.alert)
-    alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: nil))
-    alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.default, handler: nil))
+  func confluenceAlert(requesterId:String) {
+    getDeviceOwner(deviceID: requesterId){ name in
+
+    let alert = UIAlertController(title: "Confluence Request", message: "Would you like to meet with \(name)?", preferredStyle: UIAlertControllerStyle.alert)
+    alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default){ _ in
+      print("accepted")
+      self.respondToRequest(requesterId: requesterId, didAccept: true)
+    })
+    alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.default){_ in
+      print("declined")
+      self.respondToRequest(requesterId: requesterId, didAccept: false)
+    })
     self.present(alert, animated: true, completion: nil)
+    }
+  }
+  
+  func confluenceDeclinedAlert(){
+    let alert = UIAlertController(title: "Confluence Declined", message: "Sorry, \(currGroupId) has declined your request to join...", preferredStyle: UIAlertControllerStyle.alert)
+    alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
+    
+    self.present(alert, animated: true, completion: nil)
+
   }
   
   //~~~~~~~~~~~~~~~~~~~~~~~~CONFLUENCE~~~~~~~~~~~~~~~~~~~~~~~~
@@ -529,7 +577,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     let newDate: String = dateFormatter.string(for: datetime)!
     return "\(newTime) \(newDate)"
   }
-  
 }
 
 extension ViewController: StompClientLibDelegate{
@@ -541,7 +588,34 @@ extension ViewController: StompClientLibDelegate{
   func stompClientJSONBody(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
     print("> DESTINATION : \(destination)")
     print("> String JSON BODY : \(String(describing: jsonBody!))")
+//    let jsonOutput = JSON(jsonBody!)
+//    print(jsonOutput.type)
+    let data = jsonBody?.data(using: .utf8)
+   // print(jsonOutput)
+    if let senderResponse = try? JSONDecoder().decode(SenderResponse.self, from: data!){
+        print(senderResponse.sender)
+        self.confluenceAlert(requesterId: senderResponse.sender)
+      
+    } else if let locationResponse = try? JSONDecoder().decode(LocationResponse.self, from: data!){
+      let coordinate = CLLocationCoordinate2D(latitude: Double(locationResponse.lat)!, longitude: Double(locationResponse.long)!)
+      print(coordinate)
+    } else if let response = try? JSONDecoder().decode(Response.self, from: data!){
+      if response.response{
+        print("WOOO HOOOO WE'RE JOIN A GROUP")
+        //TODO: send your location to admin
+        print("sending location to group: \(currGroupId)")
+        getAdminFromGroup(groupId: confluenceGroupId){ adminId in
+          print(adminId)
+          self.sendLocToAdmin(adminId: adminId)
+        }
+      } else{
+        print("awwwww you were declined")
+        confluenceDeclinedAlert()
+      }
+    }
   }
+  
+  
   
   func serverDidSendReceipt(client: StompClientLib!, withReceiptId receiptId: String) {
     print("> Receipt : \(receiptId)")
@@ -557,14 +631,10 @@ extension ViewController: StompClientLibDelegate{
   
   func stompClientDidConnect(client: StompClientLib!) {
     print("> Socket is connected")
-    // Stomp subscribe will be here!
-    
-    let ack = "ack_\(destinationURL)" // It can be any unique string
-    let subsId = subscriptionURL // It can be any unique string
-    let header = ["destination": destinationURL, "ack": ack, "id": subsId]
+
     let newURL = "\(subscriptionURL)/\(deviceIDAppend)"
-    print("i am subscribed toL " + newURL)
-    socketClient.subscribeWithHeader(destination: newURL, withHeader: header)
+    //print("i am subscribed toL " + newURL)
+    socketClient.subscribe(destination: newURL)
     
   }
   
