@@ -106,7 +106,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   @IBOutlet weak var detailActions: UIButton!
   @IBOutlet weak var detailDescription: UITextView!
   @IBOutlet weak var detailTimings: UITextView!
-  @IBOutlet weak var detailLocation: UITextView!
   
   var resultSearchController:UISearchController? = nil
   
@@ -305,6 +304,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     // Initialise visual effect view
     fxView.isHidden = true
     pinDetailView.layer.cornerRadius = 5
+    
+    view.autoresizesSubviews = true
     fxView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTap)))
     super.viewDidLoad()
   }
@@ -319,9 +320,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     detailTitle.text = group.groupName
     detailDescription.text = group.description
     detailTimings.text = "\(dateToString(datetime: group.datetime))"
-    
-    detailLocation.text = ""
-    
     detailActions.setTitle("Joined", for: .disabled)
     detailActions.tag = Int(group.groupId)!
     if userGroups.contains(group) {

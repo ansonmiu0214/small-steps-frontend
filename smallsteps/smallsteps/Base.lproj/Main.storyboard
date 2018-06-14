@@ -55,7 +55,6 @@
                     <connections>
                         <outlet property="detailActions" destination="9hE-Fx-3sv" id="Bpi-Ld-OtY"/>
                         <outlet property="detailDescription" destination="2ok-0X-p4U" id="XMp-9q-UfQ"/>
-                        <outlet property="detailLocation" destination="bkq-9c-XzV" id="hfl-YW-9bU"/>
                         <outlet property="detailTimings" destination="9cH-mz-8lB" id="rXl-zd-ffk"/>
                         <outlet property="detailTitle" destination="G07-3e-JXO" id="uKS-vb-7BW"/>
                         <outlet property="fxView" destination="L63-c4-d5r" id="fyg-it-S4V"/>
@@ -104,19 +103,8 @@
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             <dataDetectorType key="dataDetectorTypes" calendarEvent="YES" lookupSuggestion="YES"/>
                         </textView>
-                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" scrollEnabled="NO" editable="NO" text="Location" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="bkq-9c-XzV">
-                            <rect key="frame" x="23" y="97" width="308" height="55"/>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="308" id="0kP-3x-8SV"/>
-                                <constraint firstAttribute="height" constant="55" id="Dn0-vf-S5u"/>
-                            </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            <dataDetectorType key="dataDetectorTypes" address="YES" lookupSuggestion="YES"/>
-                        </textView>
                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="Description" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="2ok-0X-p4U">
-                            <rect key="frame" x="23" y="175" width="308" height="154"/>
+                            <rect key="frame" x="23" y="112" width="308" height="217"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -125,9 +113,7 @@
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="0.69999999999999996" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstItem="bkq-9c-XzV" firstAttribute="top" secondItem="9cH-mz-8lB" secondAttribute="bottom" constant="-1" id="0s5-TO-4gE"/>
                         <constraint firstItem="9cH-mz-8lB" firstAttribute="top" secondItem="G07-3e-JXO" secondAttribute="bottom" constant="8" id="77V-Pc-DV0"/>
-                        <constraint firstItem="bkq-9c-XzV" firstAttribute="leading" secondItem="xoj-D7-iN9" secondAttribute="leading" constant="23" id="F6I-w1-Yd7"/>
                         <constraint firstItem="wZl-QR-9ZU" firstAttribute="top" secondItem="2ok-0X-p4U" secondAttribute="bottom" constant="49" id="G3w-hj-DoB"/>
                         <constraint firstItem="G07-3e-JXO" firstAttribute="top" secondItem="xoj-D7-iN9" secondAttribute="top" constant="34" id="OH2-Nk-7BI"/>
                         <constraint firstItem="xoj-D7-iN9" firstAttribute="trailing" secondItem="wZl-QR-9ZU" secondAttribute="trailing" constant="16" id="OQ3-br-gXc"/>
@@ -138,11 +124,10 @@
                         <constraint firstItem="9cH-mz-8lB" firstAttribute="leading" secondItem="xoj-D7-iN9" secondAttribute="leading" constant="23" id="Utu-PV-tx5"/>
                         <constraint firstItem="9cH-mz-8lB" firstAttribute="top" secondItem="xoj-D7-iN9" secondAttribute="top" constant="69" id="cFz-4o-5jj"/>
                         <constraint firstItem="G07-3e-JXO" firstAttribute="leading" secondItem="xoj-D7-iN9" secondAttribute="leading" constant="23" id="n1N-Hn-fnM"/>
+                        <constraint firstItem="2ok-0X-p4U" firstAttribute="top" secondItem="9cH-mz-8lB" secondAttribute="bottom" constant="8" id="oJf-Cw-Amq"/>
                         <constraint firstItem="2ok-0X-p4U" firstAttribute="leading" secondItem="xoj-D7-iN9" secondAttribute="leading" constant="23" id="osb-5H-ISU"/>
-                        <constraint firstItem="xoj-D7-iN9" firstAttribute="trailing" secondItem="bkq-9c-XzV" secondAttribute="trailing" constant="16" id="qhm-ch-pM5"/>
                         <constraint firstItem="xoj-D7-iN9" firstAttribute="bottom" secondItem="wZl-QR-9ZU" secondAttribute="bottom" constant="20" id="t10-Li-43f"/>
                         <constraint firstItem="9hE-Fx-3sv" firstAttribute="leading" secondItem="xoj-D7-iN9" secondAttribute="leading" constant="23" id="uSn-Bd-dwd"/>
-                        <constraint firstItem="2ok-0X-p4U" firstAttribute="top" secondItem="xoj-D7-iN9" secondAttribute="top" constant="175" id="zbA-tt-o1K"/>
                     </constraints>
                     <viewLayoutGuide key="safeArea" id="xoj-D7-iN9"/>
                 </view>
