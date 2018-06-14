@@ -118,7 +118,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   let manager = CLLocationManager()
   
-  var isButtonClick: Bool = false
+  var isGroupDetailButtonClick: Bool = false
+  var isConfluenceButtonClick: Bool = false
   
   var allGroups: [Group] = []
   var userGroups: [Group] = []
@@ -301,9 +302,14 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   override func viewDidLoad() {
-    if isButtonClick {
-      isButtonClick = !isButtonClick
+    if isGroupDetailButtonClick {
+      isGroupDetailButtonClick = !isGroupDetailButtonClick
       getRoute()
+    }
+    
+    if isConfluenceButtonClick {
+      isConfluenceButtonClick = !isConfluenceButtonClick
+      addConfluencePoint(location: confluenceLocation)
     }
     
     registerSocket()
@@ -397,9 +403,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     print("WE GETTTTTT AFTER \(confluenceLocation)")
   }
   
-  @IBAction func confluenceBtn(_ sender: Any) {
-    setAndCreateConfluence()
-  }
+
   
   func pinConfluence() {
     addConfluencePoint(location: confluenceLocation)
@@ -682,7 +686,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       confluencePoint = MKPointAnnotation()
       confluencePoint?.coordinate = location
       confluencePoint?.title = "Confluence Point"
-      
+      print("THE LOCATION OF CONFLUENCE IS: \(location)")
       map.addAnnotation(confluencePoint!)
     }
   }
