@@ -150,9 +150,17 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   func respondToRequest(requesterId:String, didAccept:Bool){
     print("confirming request")
+    let location = manager.location?.coordinate
+    let lat = location?.latitude
+    let long = location?.longitude
+
     let msg = """
-    {"response":\(didAccept)}
+    {"response":\(didAccept),
+    "latitude": \(lat ?? 51.4989),
+    "longitude": \(long ?? -0.1790)
+    }
     """
+    
     let newDestinationURL = "\(self.responseDestinationURL)/\(requesterId)"
     self.socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
   }
@@ -160,30 +168,15 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   func sendLocToAdmin(adminId:String){
     print("messaging")
     let location = manager.location?.coordinate
-    var msg: String
-    
-    if let lat = location?.latitude {
-      if let long = location?.longitude{
-        msg = """
-        {"lat": \(lat),
-        "long": \(long)
+    let lat = location?.latitude
+    let long = location?.latitude
+
+    let msg = """
+        {"lat": \(lat ?? 51.4989),
+        "long": \(long ?? -0.1790)
         }
         """
-      } else{
-        msg = """
-        {"lat": \(lat),
-        "long": -0.1790
-        }
-        """
-      }
-    } else{
-      msg = """
-      {"lat": 51.4989,
-      "long": -0.1790
-      }
-      """
-    }
- 
+
     let newDestinationURL = "\(locDestinationURL)/\(adminId)"
     print("destination is: " + newDestinationURL)
     socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
@@ -627,7 +620,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
   }
   
-  
   //------------------------CONFLUENCE------------------------
   
   //Adds confluence point annotation to the map
@@ -705,12 +697,19 @@ extension ViewController: StompClientLibDelegate{
       self.pendingConfluenceAlert?.dismiss(animated: true) { [unowned self] in
         if response.response{
           print("WOOO HOOOO WE'RE JOIN A GROUP")
-          //TODO: send your location to admin
-          print("sending location to group: \(self.currGroupId)")
-          self.getAdminFromGroup(groupId: self.confluenceGroupId){ adminId in
-            print(adminId)
-            self.sendLocToAdmin(adminId: adminId)
-          }
+          
+          let location = CLLocationCoordinate2D(latitude: Double(response.latitude!)!, longitude: Double(response.longitude!)!)
+          print("the admin is at lat: \(response.latitude) and longL \(response.longitude)")
+         // let location = CLLocationCoordinate2D(latitude: 51.4989, longitude: -0.179)
+          
+          self.addNewConfluence(location: location)
+          
+//          //Send your location to admin
+//          print("sending location to group: \(self.currGroupId)")
+//          self.getAdminFromGroup(groupId: self.confluenceGroupId){ adminId in
+//            print(adminId)
+//            self.sendLocToAdmin(adminId: adminId)
+          //}
         } else{
           print("awwwww you were declined")
           self.confluenceDeclinedAlert()
