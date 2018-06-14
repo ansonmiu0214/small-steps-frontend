@@ -133,6 +133,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var pendingConfluenceAlert: UIAlertController?
   var confluencePoint: LocationPointer?
 
+  var otherConfluenceID: String?
+  
   func registerSocket(){
     let url = NSURL(string: registrationURL)
     
@@ -213,10 +215,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   // On new location data
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//    self.getAdminFromGroup(groupId: self.confluenceGroupId){ adminId in
-//      print(adminId)
-//      self.sendLocToUser(userId: adminId)
-//    }
+    if let confluenceID = otherConfluenceID {
+      self.sendLocToUser(userId: confluenceID)
+    }
+    
     
     let location = locations.last as! CLLocation
     
@@ -678,6 +680,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default){ _ in
       print("accepted")
       self.respondToRequest(requesterId: requesterId, didAccept: true)
+      self.otherConfluenceID = requesterId
     })
     alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.default){_ in
       print("declined")
@@ -750,6 +753,7 @@ extension ViewController: StompClientLibDelegate{
 
           self.getAdminFromGroup(groupId: self.confluenceGroupId){ adminId in
             print(adminId)
+            self.otherConfluenceID = adminId
             self.sendLocToUser(userId: adminId)
           }
         } else{
