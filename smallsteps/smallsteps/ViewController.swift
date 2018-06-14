@@ -19,9 +19,12 @@ let TIMEOUT_IN_SECS: Double = 60
 
 struct SenderResponse: Decodable{
   let sender: String
-  
+  let senderLat: String
+  let senderLong: String
   enum CodingKeys: String, CodingKey {
     case sender
+    case senderLat
+    case senderLong
   }
 }
 
@@ -154,11 +157,23 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   func requestAdminPermission(adminId:String){
       print("asking permission")
+      var lat: Double
+      var long: Double
+      if let location = manager.location{
+        lat = location.coordinate.latitude
+        long = location.coordinate.longitude
+      } else{
+        lat = 51.4989
+        long = -0.1790
+      }
+    print("requesting admin permission with long: \(long) and lat: \(lat)")
       let msg = """
-      {"sender":"\(deviceIDAppend)"}
+      {"sender":"\(deviceIDAppend)",
+      "senderLat": "\(lat)",
+      "senderLong": "\(long)"
+      }
       """
       let newDestinationURL = "\(self.initDestinationURL)/\(adminId)"
-      //socketClient.sendJSONForDict(dict: msg as AnyObject, toDestination: destinationURL)
       self.socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
   }
   
@@ -719,27 +734,34 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     map.addAnnotation(confluencePoint)
   }
   
-  func confluenceAlert(requesterId:String) {
+  func confluenceAlert(requesterId:String, requesterLoc:CLLocation) {
     getDeviceOwner(deviceID: requesterId){ name in
 
-    let alert = UIAlertController(title: "Confluence Request", message: "Would you like to meet with \(name)?", preferredStyle: UIAlertControllerStyle.alert)
-    alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default){ _ in
-      print("accepted")
-      self.otherConfluenceID = requesterId
-
-      self.performSegue(withIdentifier: "setConfluence", sender: nil)
-//
-//
-//      print("the location of confluence is: \(self.confluenceLocation.latitude) \(self.confluenceLocation.longitude)")
-//
-//      self.respondToRequest(requesterId: requesterId, didAccept: true)
-      
-    })
-    alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.default){_ in
-      print("declined")
-      self.respondToRequest(requesterId: requesterId, didAccept: false)
-    })
-    self.present(alert, animated: true, completion: nil)
+      var placeName = ""
+//      let otherLoc = CLLocation(latitude: 51.494474, longitude: -0.182619)
+      CLGeocoder().reverseGeocodeLocation(requesterLoc) { (res, err) in
+        placeName = (res?[0].name)!
+        
+        let alert = UIAlertController(title: "Confluence Request", message: "\(name) in \(placeName) would like to join your group.", preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "Accept", style: UIAlertActionStyle.default){ _ in
+          print("accepted")
+          self.otherConfluenceID = requesterId
+          
+          self.performSegue(withIdentifier: "setConfluence", sender: nil)
+          //
+          //
+          //      print("the location of confluence is: \(self.confluenceLocation.latitude) \(self.confluenceLocation.longitude)")
+          //
+          //      self.respondToRequest(requesterId: requesterId, didAccept: true)
+          
+        })
+        alert.addAction(UIAlertAction(title: "Decline", style: UIAlertActionStyle.default){_ in
+          print("declined")
+          self.respondToRequest(requesterId: requesterId, didAccept: false)
+        })
+        self.present(alert, animated: true, completion: nil)
+        
+      }
     }
   }
   
@@ -782,7 +804,9 @@ extension ViewController: StompClientLibDelegate{
     if let senderResponse = try? JSONDecoder().decode(SenderResponse.self, from: data!){
       // Someone else asking to join YOUR group
         print(senderResponse.sender)
-        self.confluenceAlert(requesterId: senderResponse.sender)
+        let coordinate = CLLocation(latitude: Double(senderResponse.senderLat)!, longitude: Double(senderResponse.senderLong)!)
+      
+      self.confluenceAlert(requesterId: senderResponse.sender, requesterLoc: coordinate)
       
     } else if let locationResponse = try? JSONDecoder().decode(LocationResponse.self, from: data!){
       // SENDING LOCATION BACK AND FORTH

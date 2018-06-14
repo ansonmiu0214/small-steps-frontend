@@ -52,6 +52,7 @@
                         <outlet property="fxView" destination="L63-c4-d5r" id="fyg-it-S4V"/>
                         <outlet property="map" destination="d3d-yF-TBA" id="JDk-gx-IQT"/>
                         <outlet property="pinDetailView" destination="vhE-oJ-31V" id="Xc0-g3-IJe"/>
+                        <segue destination="sfa-D2-B8l" kind="show" identifier="setConfluence" id="K6N-f0-AIz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -263,7 +264,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hdF-Xp-212" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="971.25" y="1583.4507042253522"/>
+            <point key="canvasLocation" x="1187" y="2053"/>
         </scene>
         <!--Group DetailVC-->
         <scene sceneID="aLY-TE-YK7">
@@ -298,15 +299,17 @@
                                     <constraint firstAttribute="height" constant="154" id="C7s-i0-k76"/>
                                 </constraints>
                             </mapView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Vq-c1-Ha7">
-                                <rect key="frame" x="16" y="300" width="343" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Description" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Vq-c1-Ha7">
+                                <rect key="frame" x="16" y="300" width="343" height="329"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vi2-rn-0Ji">
                                 <rect key="frame" x="138" y="637" width="46" height="30"/>
-                                <state key="normal" title="Button"/>
+                                <state key="normal" title="Button">
+                                    <color key="titleColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
                                 <connections>
                                     <segue destination="I5j-8r-Rpi" kind="show" id="qU1-KV-eiY"/>
                                 </connections>
@@ -346,7 +349,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="byr-a6-ovB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2242.5" y="1672.1830985915494"/>
+            <point key="canvasLocation" x="2242.5" y="1671.5"/>
         </scene>
         <!--Create GroupVC-->
         <scene sceneID="Km3-Jp-EdV">
@@ -770,7 +773,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Mik-Eo-aM5"/>
-        <segue reference="ePH-k9-6f7"/>
+        <segue reference="CnP-qi-gvu"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.72156862749999995" green="0.38823529410000002" blue="0.49803921569999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>
