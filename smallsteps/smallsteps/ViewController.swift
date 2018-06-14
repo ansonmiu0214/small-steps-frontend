@@ -33,8 +33,13 @@ struct LocationResponse: Decodable{
 
 struct Response: Decodable{
   let response:Bool
+  let lat: String
+  let long: String
+  
   enum CodingKeys: String, CodingKey{
     case response
+    case lat
+    case long
   }
 }
 
@@ -692,13 +697,13 @@ extension ViewController: StompClientLibDelegate{
         print(senderResponse.sender)
         self.confluenceAlert(requesterId: senderResponse.sender)
       
-    } else if let locationResponse = try? JSONDecoder().decode(LocationResponse.self, from: data!){
-      let coordinate = CLLocationCoordinate2D(latitude: Double(locationResponse.lat)!, longitude: Double(locationResponse.long)!)
-      print(coordinate)
     } else if let response = try? JSONDecoder().decode(Response.self, from: data!){
       if response.response{
         print("WOOO HOOOO WE'RE JOIN A GROUP")
-        //TODO: send your location to admin
+        let coordinate = CLLocationCoordinate2D(latitude: Double(response.lat)!, longitude: Double(response.long)!)
+        print("the admin is currently at coordinate: \(coordinate)")
+        
+        //Send your location to admin
         print("sending location to group: \(currGroupId)")
         getAdminFromGroup(groupId: confluenceGroupId){ adminId in
           print(adminId)
@@ -708,6 +713,9 @@ extension ViewController: StompClientLibDelegate{
         print("awwwww you were declined")
         confluenceDeclinedAlert()
       }
+    } else if let locationResponse = try? JSONDecoder().decode(LocationResponse.self, from: data!){
+      let coordinate = CLLocationCoordinate2D(latitude: Double(locationResponse.lat)!, longitude: Double(locationResponse.long)!)
+      print(coordinate)
     }
   }
   
