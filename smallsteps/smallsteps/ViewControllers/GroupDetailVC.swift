@@ -8,7 +8,6 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
     @IBOutlet weak var durationLabel: UILabel!
     @IBOutlet weak var meetingMap: MKMapView!
     @IBOutlet weak var descriptionLabel: UILabel!
-    @IBOutlet weak var joinGroupBtn: UIButton!
     
     let dropPin = MeetingPointMarker(identifier: "meetingPoint", title: globalUserGroups[currGroup].groupName, coordinate: CLLocationCoordinate2D(latitude: Double(globalUserGroups[currGroup].latitude)!, longitude: Double(globalUserGroups[currGroup].longitude)!))
     let manager = CLLocationManager()

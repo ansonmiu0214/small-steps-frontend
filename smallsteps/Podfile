@@ -9,4 +9,5 @@ target 'smallsteps' do
     pod "StompClientLib"
     pod 'PopupWindow'
     pod 'Starscream'
+    pod "LocationPickerController"
 end

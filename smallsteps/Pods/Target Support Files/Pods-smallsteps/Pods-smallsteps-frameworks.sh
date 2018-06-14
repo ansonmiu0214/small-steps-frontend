@@ -145,6 +145,7 @@ strip_invalid_archs() {
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Eureka/Eureka.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/LocationPickerController/LocationPickerController.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/PopupWindow/PopupWindow.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework"
@@ -154,6 +155,7 @@ fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Eureka/Eureka.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/LocationPickerController/LocationPickerController.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/PopupWindow/PopupWindow.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework"

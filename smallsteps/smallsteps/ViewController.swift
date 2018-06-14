@@ -152,7 +152,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   // On new location data
-  func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+  func locationManager(_ manager: CLLocationManager, didUpdateUserLocation locations: [CLLocation]) {
     let location = locations.last as! CLLocation
     
     let center = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
