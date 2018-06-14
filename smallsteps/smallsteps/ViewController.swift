@@ -13,6 +13,7 @@ import Alamofire
 import AVFoundation
 import SwiftyJSON
 import StompClientLib
+import LocationPickerController
 
 struct SenderResponse: Decodable{
   let sender: String
@@ -120,6 +121,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var pinToGroup: [Int: Group] = [:]
   
   // Confluence utils
+  var confluenceLocation: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 51.5109208, longitude: -0.1377691)
+  
   var socketClient = StompClientLib()
   let subscriptionURL = "/topic/confluence"
   let initDestinationURL = "/app/request"
@@ -131,7 +134,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
 
   var confluenceGroupId = "-1"
   var pendingConfluenceAlert: UIAlertController?
-  var confluencePoint: LocationPointer?
+  var confluencePoint: MKPointAnnotation?
 
   var otherConfluenceID: String?
   
@@ -200,26 +203,9 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
   }
   
-  @IBAction func message(_ sender: Any) {
-    print("messaging")
-    
-    let msg = """
-    {"sender":"\(deviceIDAppend)"}
-    """
-    
-    let newDestinationURL = "\(initDestinationURL)/\(deviceIDAppend)"
-    
-    //socketClient.sendJSONForDict(dict: msg as AnyObject, toDestination: destinationURL)
-    socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
-  }
-  
   // On new location data
-  func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    if let confluenceID = otherConfluenceID {
-      self.sendLocToUser(userId: confluenceID)
-    }
-    
-    
+
+  func locationManager(_ manager: CLLocationManager, didUpdateUserLocation locations: [CLLocation]) {
     let location = locations.last as! CLLocation
     
     let center = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
@@ -303,7 +289,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       let region = MKCoordinateRegion(center: location!, span: span)
       self.map.setRegion(region, animated: true)
       
-      //self.addNewConfluence(location: (self.manager.location?.coordinate)!)
+      //self.addOrUpdateConfluence(location: (self.manager.location?.coordinate)!)
       
     }
     
@@ -390,6 +376,34 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     self.view.endEditing(true)
   }
+  
+  fileprivate func setAndCreateConfluence() {
+    let viewController = LocationPickerController(success: {
+      [unowned self] (coordinate: CLLocationCoordinate2D) -> Void in
+      //self?.locationLabel.text = "".appendingFormat("%.4f, %.4f",
+      //coordinate.latitude, coordinate.longitude)
+      //self?.addOrUpdateConfluence(location: coordinate)
+      self.confluenceLocation = coordinate
+      print("WE GETTTTTT BEFORE \(self.confluenceLocation)")
+      
+    })
+    let navigationController = UINavigationController(rootViewController: viewController)
+    self.addOrUpdateOtherLoc(location: self.confluenceLocation)
+    self.present(navigationController, animated: true, completion: pinConfluence)
+    print("WE GETTTTTT AFTER \(confluenceLocation)")
+  }
+  
+  @IBAction func confluenceBtn(_ sender: Any) {
+    setAndCreateConfluence()
+  }
+  
+  func pinConfluence() {
+    addConfluencePoint(location: confluenceLocation)
+  }
+   
+    @IBAction func addConfluenceBtn(_ sender: Any) {
+        addConfluencePoint(location: confluenceLocation)
+    }
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
@@ -655,21 +669,38 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   //------------------------CONFLUENCE------------------------
   
-  //Adds confluence point annotation to the map
-  func addOrUpdateConfluence(location: CLLocationCoordinate2D) {
+  //Adds the location of other to the map
+  func addConfluencePoint(location: CLLocationCoordinate2D) {
     if let confluence = confluencePoint{
       print("confluence was already added. Updating instead")
-      updateConfluence(confluencePoint: confluence, newLocation: location)
+      updateLoc(confluencePoint: confluence, newLocation: location)
     } else{
-      confluencePoint = LocationPointer(title: "Confluence", subtitle: "Confluence", discipline: "Confluence", coordinate: location)
+      confluencePoint = MKPointAnnotation()
+      confluencePoint?.coordinate = location
+      confluencePoint?.title = "Confluence Point"
+      
+      map.addAnnotation(confluencePoint!)
+    }
+  }
+  
+  func addOrUpdateOtherLoc(location: CLLocationCoordinate2D) {
+    if let confluence = confluencePoint{
+      print("confluence was already added. Updating instead")
+      updateLoc(confluencePoint: confluence, newLocation: location)
+    } else{
+      confluencePoint = MKPointAnnotation()
+      confluencePoint?.coordinate = location
+      confluencePoint?.title = "Other Person"
+      
       map.addAnnotation(confluencePoint!)
     }
   }
   
   //Updates confluence point annotation on the map
-  func updateConfluence(confluencePoint: LocationPointer, newLocation: CLLocationCoordinate2D) {
+  func updateLoc(confluencePoint: MKPointAnnotation, newLocation: CLLocationCoordinate2D) {
     map.removeAnnotation(confluencePoint)
-    confluencePoint.changeLocationTo(newLocation)
+    confluencePoint.coordinate = newLocation
+    //confluencePoint.changeLocationTo(newLocation)
     map.addAnnotation(confluencePoint)
   }
   
@@ -679,6 +710,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     let alert = UIAlertController(title: "Confluence Request", message: "Would you like to meet with \(name)?", preferredStyle: UIAlertControllerStyle.alert)
     alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default){ _ in
       print("accepted")
+      self.setAndCreateConfluence()
       self.respondToRequest(requesterId: requesterId, didAccept: true)
       self.otherConfluenceID = requesterId
     })
@@ -735,7 +767,7 @@ extension ViewController: StompClientLibDelegate{
       // SENDING LOCATION BACK AND FORTH
       let coordinate = CLLocationCoordinate2D(latitude: Double(locationResponse.lat)!, longitude: Double(locationResponse.long)!)
       print(coordinate)
-      addOrUpdateConfluence(location: coordinate)
+      addOrUpdateOtherLoc(location: coordinate)
     } else if let response = try? JSONDecoder().decode(Response.self, from: data!){
       // You getting a response from SOMEONE ELSE
       
@@ -746,7 +778,7 @@ extension ViewController: StompClientLibDelegate{
          let location = CLLocationCoordinate2D(latitude: Double(response.latitude!)!, longitude: Double(response.longitude!)!)
           print("the admin is at lat: \(response.latitude) and longL \(response.longitude)")
          // let location = CLLocationCoordinate2D(latitude: 51.4989, longitude: -0.179)
-          self.addOrUpdateConfluence(location: location)
+          self.addOrUpdateOtherLoc(location: location)
           
           //Send your location to admin
           print("sending location to group: \(self.confluenceGroupId)")

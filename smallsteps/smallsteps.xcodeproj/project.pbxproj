@@ -31,6 +31,7 @@
 		6E0348C620BF3A72008EFC5D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6E0348C520BF3A72008EFC5D /* GoogleService-Info.plist */; };
 		6E57B19720D1656E0062BEDE /* MeetingPointMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E57B19620D1656E0062BEDE /* MeetingPointMarker.swift */; };
 		6E57B19920D16F810062BEDE /* MeetingPointMarkerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E57B19820D16F810062BEDE /* MeetingPointMarkerView.swift */; };
+		6E57B19D20D2743C0062BEDE /* ConfluenceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E57B19C20D2743C0062BEDE /* ConfluenceVC.swift */; };
 		6EA7782820C0483A00D885C8 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EA7782720C0483A00D885C8 /* CoreLocation.framework */; };
 		6EAD1FBF20C5AD4500E5DF61 /* CreateUserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EAD1FBE20C5AD4500E5DF61 /* CreateUserVC.swift */; };
 		E5308FDE632403EB2FD8F542 /* Pods_smallsteps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 31BE804FD74B4010CC95E798 /* Pods_smallsteps.framework */; };
@@ -85,6 +86,7 @@
 		6E0348C520BF3A72008EFC5D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		6E57B19620D1656E0062BEDE /* MeetingPointMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingPointMarker.swift; sourceTree = "<group>"; };
 		6E57B19820D16F810062BEDE /* MeetingPointMarkerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingPointMarkerView.swift; sourceTree = "<group>"; };
+		6E57B19C20D2743C0062BEDE /* ConfluenceVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfluenceVC.swift; sourceTree = "<group>"; };
 		6EA7782720C0483A00D885C8 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		6EAD1FBE20C5AD4500E5DF61 /* CreateUserVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUserVC.swift; sourceTree = "<group>"; };
 		A2D4966D20D1BE09456D34A8 /* Pods-smallsteps.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-smallsteps.release.xcconfig"; path = "Pods/Target Support Files/Pods-smallsteps/Pods-smallsteps.release.xcconfig"; sourceTree = "<group>"; };
@@ -128,6 +130,7 @@
 				6E01D6D320C6A355004ABE58 /* AllGroupsTVC.swift */,
 				6E01D6D120C69C9F004ABE58 /* CreateGroupVC.swift */,
 				3E72F8DC20CC3357002F4AAC /* LandingVC.swift */,
+				6E57B19C20D2743C0062BEDE /* ConfluenceVC.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -355,12 +358,22 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-smallsteps/Pods-smallsteps-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/Eureka/Eureka.framework",
+				"${BUILT_PRODUCTS_DIR}/LocationPickerController/LocationPickerController.framework",
+				"${BUILT_PRODUCTS_DIR}/PopupWindow/PopupWindow.framework",
+				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
+				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
+				"${BUILT_PRODUCTS_DIR}/StompClientLib/StompClientLib.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Eureka.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LocationPickerController.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PopupWindow.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/StompClientLib.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -398,6 +411,7 @@
 				3E72F8DD20CC3357002F4AAC /* LandingVC.swift in Sources */,
 				6EAD1FBF20C5AD4500E5DF61 /* CreateUserVC.swift in Sources */,
 				6E03485820BEBC77008EFC5D /* smallsteps.xcdatamodeld in Sources */,
+				6E57B19D20D2743C0062BEDE /* ConfluenceVC.swift in Sources */,
 				6E03485220BEBC77008EFC5D /* ViewController.swift in Sources */,
 				0461EBF820C6BB150014EB34 /* LocationSearchTable.swift in Sources */,
 				6E57B19720D1656E0062BEDE /* MeetingPointMarker.swift in Sources */,
@@ -586,14 +600,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = KVLV4PH39V;
+				DEVELOPMENT_TEAM = C5S2XY3BH2;
 				INFOPLIST_FILE = smallsteps/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.group29.smallstep;
+				PRODUCT_BUNDLE_IDENTIFIER = com.group29.smallsteps;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
@@ -608,14 +622,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = KVLV4PH39V;
+				DEVELOPMENT_TEAM = C5S2XY3BH2;
 				INFOPLIST_FILE = smallsteps/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.group29.smallstep;
+				PRODUCT_BUNDLE_IDENTIFIER = com.group29.smallsteps;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
@@ -629,6 +643,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C5S2XY3BH2;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/Pods/**";
 				INFOPLIST_FILE = smallstepsTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
@@ -654,6 +669,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C5S2XY3BH2;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/Pods/**";
 				INFOPLIST_FILE = smallstepsTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;

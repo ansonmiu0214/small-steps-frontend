@@ -8,7 +8,6 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
   @IBOutlet weak var durationLabel: UILabel!
   @IBOutlet weak var meetingMap: MKMapView!
   @IBOutlet weak var descriptionLabel: UILabel!
-  @IBOutlet weak var joinGroupBtn: UIButton!
   
   let group = globalUserGroups[currGroupId]!
   
@@ -16,6 +15,7 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
   let manager = CLLocationManager()
   
   override func viewDidLoad() {
+
     
     self.meetingMap.delegate = self
     
