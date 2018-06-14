@@ -188,7 +188,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     let msg = """
         {"lat": "\(lat)",
         "long": "\(long)",
-        "sender": \(deviceIDAppend)
+        "senderID": "\(deviceIDAppend)"
         }
         """
 
