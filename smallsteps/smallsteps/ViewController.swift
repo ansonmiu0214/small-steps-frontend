@@ -59,9 +59,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var activeAnnotation: MKAnnotation? = nil
   @IBOutlet weak var fxView: UIVisualEffectView!
   @IBOutlet weak var detailTitle: UILabel!
-  @IBOutlet weak var detailDescription: UILabel!
-  @IBOutlet weak var detailTimings: UILabel!
   @IBOutlet weak var detailActions: UIButton!
+  @IBOutlet weak var detailDescription: UITextView!
+  @IBOutlet weak var detailTimings: UITextView!
+  @IBOutlet weak var detailLocation: UITextView!
   
   var resultSearchController:UISearchController? = nil
   
@@ -114,6 +115,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     //      map.setRegion(region, animated: false)
     //    }
   }
+  
+  
   
   func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
     // TODO update groups shown with respect to changed regions
@@ -188,7 +191,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     // Initialise visual effect view
     fxView.isHidden = true
     pinDetailView.layer.cornerRadius = 5
-    
     fxView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTap)))
     super.viewDidLoad()
   }
@@ -202,25 +204,28 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     // Set up the panel
     detailTitle.text = group.groupName
     detailDescription.text = group.description
-    detailTimings.text = "Meeting time: \(dateToString(datetime: group.datetime))"
+    detailTimings.text = "\(dateToString(datetime: group.datetime))"
+    
+    if let placeName = group.placemark?.name {
+      detailLocation.text = placeName
+    } else {
+      detailLocation.text = "\(group.latitude)º \(group.longitude)º"
+    }
     
     detailActions.setTitle("Joined", for: .disabled)
-    
+    detailActions.tag = Int(group.groupId)!
     if userGroups.contains(group) {
       detailActions.isEnabled = false
     } else {
       detailActions.isEnabled = true
       if group.isWalking {
         detailActions.setTitle("Meet", for: .normal)
-        
+        detailActions.addTarget(self, action: #selector(self.meetUp), for: .touchUpInside)
       } else {
         detailActions.setTitle("Join", for: .normal)
-        detailActions.tag = Int(group.groupId)!
         detailActions.addTarget(self, action: #selector(self.joinGroup(_:)), for: .touchUpInside)
       }
-      
-      detailActions.setTitle(group.isWalking ? "Meet" : "Join", for: .normal)
-      
+
     }
     
     

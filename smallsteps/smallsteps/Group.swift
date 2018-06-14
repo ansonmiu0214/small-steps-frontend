@@ -38,8 +38,8 @@ class Group: Equatable {
     
     DispatchQueue(label: "Geocoding", qos: .background).async { [unowned self] in
       CLGeocoder().reverseGeocodeLocation(location) { placemarks, error in
-        //self.placemark = error == nil ? placemarks![0] : nil
-        //print(">> Placemark for \(self.groupName) is \(String(describing: self.placemark?.name!))")
+        self.placemark = error == nil ? placemarks![0] : nil
+        print(">> Placemark for \(self.groupName) is \(String(describing: self.placemark?.name!))")
       }
     }
     
