@@ -93,7 +93,7 @@ func addWalkerToGroup(groupId: String, completion: @escaping (Bool) -> Void)  {
 
 class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleGroupSelection {
   var selectedPin:MKPlacemark? = nil
-  var currGroupId: String = "-1"
+  var currentGroupId: String = "-1"
   
   @IBOutlet var map: MKMapView!
 
@@ -409,9 +409,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   //used by group detail
   func getRoute() {
+  
     let directionRequest = MKDirectionsRequest()
     directionRequest.source = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: (manager.location?.coordinate.latitude)!, longitude: (manager.location?.coordinate.longitude)!)))
-    directionRequest.destination = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: Double(globalUserGroups[currGroup].latitude)!, longitude: Double(globalUserGroups[currGroup].longitude)!)))
+    directionRequest.destination = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: Double(globalUserGroups[currGroupId]!.latitude)!, longitude: Double(globalUserGroups[currGroupId]!.longitude)!)))
     directionRequest.transportType = .walking
     let directions = MKDirections(request: directionRequest)
     directions.calculate { (response, error) in
@@ -423,7 +424,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       }
       
       let ALocation: CLLocation = CLLocation(latitude: (self.manager.location?.coordinate.latitude)!, longitude: (self.manager.location?.coordinate.longitude)!)
-      let BLocation: CLLocation = CLLocation(latitude: Double(globalUserGroups[currGroup].latitude)!, longitude: Double(globalUserGroups[currGroup].longitude)!)
+      let BLocation: CLLocation = CLLocation(latitude: Double(globalUserGroups[currGroupId]!.latitude)!, longitude: Double(globalUserGroups[currGroupId]!.longitude)!)
       let midPointLat = (ALocation.coordinate.latitude + BLocation.coordinate.latitude) / 2
       let midPointLong = (ALocation.coordinate.longitude + BLocation.coordinate.longitude) / 2
       let midPoint: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: Double(midPointLat), longitude: Double(midPointLong))
@@ -457,7 +458,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       activeAnnotation = locationPointer
       initialisePinDetailView(group: locationPointer.group!)
       
-      currGroupId = locationPointer.group!.groupId
+      currentGroupId = locationPointer.group!.groupId
     }
   }
   
@@ -548,7 +549,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
         infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
         if(locPointAnnotation.discipline == "In Progress"){
-          confluenceGroupId = currGroupId
+          confluenceGroupId = currentGroupId
           infoButton.setTitle("Meet Up", for: .normal)
           infoButton.addTarget(self, action: #selector(self.meetUp), for: .touchUpInside)
         } else{
@@ -669,7 +670,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   func confluenceDeclinedAlert(){
-    let alert = UIAlertController(title: "Confluence Declined", message: "Sorry, \(currGroupId) has declined your request to join...", preferredStyle: UIAlertControllerStyle.alert)
+    let alert = UIAlertController(title: "Confluence Declined", message: "Sorry, \(currentGroupId) has declined your request to join...", preferredStyle: UIAlertControllerStyle.alert)
     alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
     
     self.present(alert, animated: true, completion: nil)
@@ -716,7 +717,7 @@ extension ViewController: StompClientLibDelegate{
         if response.response{
           print("WOOO HOOOO WE'RE JOIN A GROUP")
           //TODO: send your location to admin
-          print("sending location to group: \(self.currGroupId)")
+          print("sending location to group: \(self.currentGroupId)")
           self.getAdminFromGroup(groupId: self.confluenceGroupId){ adminId in
             print(adminId)
             self.sendLocToAdmin(adminId: adminId)
