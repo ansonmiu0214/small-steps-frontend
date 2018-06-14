@@ -38,11 +38,15 @@ struct Response: Decodable{
   let response:Bool
   let latitude: String?
   let longitude: String?
+  let confluenceLat: String?
+  let confluenceLong: String?
   
   enum CodingKeys: String, CodingKey{
     case response
     case latitude
     case longitude
+    case confluenceLat
+    case confluenceLong
   }
 }
 
@@ -710,7 +714,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     let alert = UIAlertController(title: "Confluence Request", message: "Would you like to meet with \(name)?", preferredStyle: UIAlertControllerStyle.alert)
     alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default){ _ in
       print("accepted")
-      self.setAndCreateConfluence()
+      //self.setAndCreateConfluence()
       self.respondToRequest(requesterId: requesterId, didAccept: true)
       self.otherConfluenceID = requesterId
     })
