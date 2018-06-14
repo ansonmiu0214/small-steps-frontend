@@ -516,6 +516,17 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       let pendingAlert = buildLoadingOverlay(message: "Waiting for response...")
       self.pendingConfluenceAlert = pendingAlert
       self.present(pendingAlert, animated: true, completion: nil)
+      
+      DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [unowned self] in
+        if let alert = self.pendingConfluenceAlert {
+          alert.dismiss(animated: true) {
+            let group = self.pinToGroup[sender.tag]!
+            let failureAlert = UIAlertController(title: "Request Timeout", message: "The group admin for \(group.groupName) did not respond to your confluence request.", preferredStyle: .alert)
+            failureAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(failureAlert, animated: true, completion: nil)
+          }
+        }
+      }
     }
   }
   
@@ -701,6 +712,7 @@ extension ViewController: StompClientLibDelegate{
       // You getting a response from SOMEONE ELSE
       
       self.pendingConfluenceAlert?.dismiss(animated: true) { [unowned self] in
+        self.pendingConfluenceAlert = nil
         if response.response{
           print("WOOO HOOOO WE'RE JOIN A GROUP")
           //TODO: send your location to admin
