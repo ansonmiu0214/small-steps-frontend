@@ -25,6 +25,7 @@ class ConfluenceVC: UIViewController, MKMapViewDelegate {
                                                           coordinate.latitude, coordinate.longitude)
         })
         let navigationController = UINavigationController(rootViewController: viewController)
+    
         self.present(navigationController, animated: true, completion: nil)
         
     }

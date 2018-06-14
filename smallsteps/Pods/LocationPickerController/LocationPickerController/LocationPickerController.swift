@@ -37,6 +37,8 @@ open class LocationPickerController: UIViewController {
     fileprivate var failure: failureClosure?
 
     fileprivate var isInitialized = false
+    
+    var location: CLLocationCoordinate2D? = nil
 
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -89,6 +91,8 @@ open class LocationPickerController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+
 }
 
 // MARK: - Internal methods
@@ -111,6 +115,7 @@ internal extension LocationPickerController {
 
         self.dismiss(animated: true, completion: nil)
     }
+    
 }
 
 // MARK: - MKMapView delegate
@@ -155,8 +160,11 @@ extension LocationPickerController: CLLocationManagerDelegate {
 
         self.pointAnnotation = MKPointAnnotation()
         self.pointAnnotation.coordinate = newLocation.coordinate
+        self.location = CLLocationCoordinate2D(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude)
         self.mapView.addAnnotation(self.pointAnnotation)
 
         self.isInitialized = true
     }
+    
+
 }

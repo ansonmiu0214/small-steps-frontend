@@ -13,6 +13,7 @@ import Alamofire
 import AVFoundation
 import SwiftyJSON
 import StompClientLib
+import LocationPickerController
 
 protocol HandleGroupSelection {
   func selectAnnotation(group: Group)
@@ -67,6 +68,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var userGroups: [Group] = []
   var pinToGroup: [Int: Group] = [:]
   
+  var confluenceLocation: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 51.5109208, longitude: -0.1377691)
   
   var socketClient = StompClientLib()
   let subscriptionURL = "/topic/confluence"
@@ -246,9 +248,34 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     registerSocket()
     
+    
     super.viewDidLoad()
   }
   
+  @IBAction func confluenceBtn(_ sender: Any) {
+    let viewController = LocationPickerController(success: {
+      [weak self] (coordinate: CLLocationCoordinate2D) -> Void in
+      //self?.locationLabel.text = "".appendingFormat("%.4f, %.4f",
+      //coordinate.latitude, coordinate.longitude)
+      //self?.addNewConfluence(location: coordinate)
+      self?.confluenceLocation = coordinate
+      print("WE GETTTTTT BEFORE \(self?.confluenceLocation)")
+    })
+    let navigationController = UINavigationController(rootViewController: viewController)
+    self.addNewConfluence(location: self.confluenceLocation)
+    self.present(navigationController, animated: true, completion: pinConfluence)
+    print("WE GETTTTTT AFTER \(confluenceLocation)")
+  }
+  
+  func pinConfluence() {
+    addNewConfluence(location: confluenceLocation)
+  }
+    
+   
+    @IBAction func addConfluenceBtn(_ sender: Any) {
+        addNewConfluence(location: confluenceLocation)
+    }
+    
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) { self.view.endEditing(true) }
   
   override func didReceiveMemoryWarning() {
