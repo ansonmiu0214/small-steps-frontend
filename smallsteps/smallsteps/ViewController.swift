@@ -33,8 +33,13 @@ struct LocationResponse: Decodable{
 
 struct Response: Decodable{
   let response:Bool
+  let latitude: String?
+  let longitude: String?
+  
   enum CodingKeys: String, CodingKey{
     case response
+    case latitude
+    case longitude
   }
 }
 
@@ -690,13 +695,12 @@ extension ViewController: StompClientLibDelegate{
     let data = jsonBody?.data(using: .utf8)
    // print(jsonOutput)
     if let senderResponse = try? JSONDecoder().decode(SenderResponse.self, from: data!){
+      // Someone else asking to join YOUR group
         print(senderResponse.sender)
         self.confluenceAlert(requesterId: senderResponse.sender)
       
-    } else if let locationResponse = try? JSONDecoder().decode(LocationResponse.self, from: data!){
-      let coordinate = CLLocationCoordinate2D(latitude: Double(locationResponse.lat)!, longitude: Double(locationResponse.long)!)
-      print(coordinate)
     } else if let response = try? JSONDecoder().decode(Response.self, from: data!){
+      // You getting a response from SOMEONE ELSE
       
       self.pendingConfluenceAlert?.dismiss(animated: true) { [unowned self] in
         if response.response{
@@ -712,7 +716,13 @@ extension ViewController: StompClientLibDelegate{
           self.confluenceDeclinedAlert()
         }
       }
-
+    } else if let locationResponse = try? JSONDecoder().decode(LocationResponse.self, from: data!){
+      // SENDING LOCATION BACK AND FORTH
+      let coordinate = CLLocationCoordinate2D(latitude: Double(locationResponse.lat)!, longitude: Double(locationResponse.long)!)
+      print(coordinate)
+    } else {
+      print("Should not get here")
+      print()
     }
   }
   
