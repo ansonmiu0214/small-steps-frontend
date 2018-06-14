@@ -25,9 +25,11 @@ struct SenderResponse: Decodable{
 struct LocationResponse: Decodable{
   let lat: String
   let long: String
+  let sender: String
   enum CodingKeys: String, CodingKey{
     case lat
     case long
+    case sender
   }
 }
 
@@ -93,7 +95,7 @@ func addWalkerToGroup(groupId: String, completion: @escaping (Bool) -> Void)  {
 
 class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleGroupSelection {
   var selectedPin:MKPlacemark? = nil
-  var currGroupId: String = "-1"
+  //var currGroupId: String = "-1"
   
   @IBOutlet var map: MKMapView!
 
@@ -106,7 +108,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   @IBOutlet weak var detailActions: UIButton!
   @IBOutlet weak var detailDescription: UITextView!
   @IBOutlet weak var detailTimings: UITextView!
-  @IBOutlet weak var detailLocation: UITextView!
   
   var resultSearchController:UISearchController? = nil
   
@@ -117,7 +118,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var allGroups: [Group] = []
   var userGroups: [Group] = []
   var pinToGroup: [Int: Group] = [:]
-  
   
   // Confluence utils
   var socketClient = StompClientLib()
@@ -131,7 +131,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
 
   var confluenceGroupId = "-1"
   var pendingConfluenceAlert: UIAlertController?
-  
+  var confluencePoint: LocationPointer?
+
   func registerSocket(){
     let url = NSURL(string: registrationURL)
     
@@ -150,14 +151,21 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   func respondToRequest(requesterId:String, didAccept:Bool){
     print("confirming request")
-    let location = manager.location?.coordinate
-    let lat = location?.latitude
-    let long = location?.longitude
+    var lat: Double
+    var long: Double
+    if let location = manager.location{
+      lat = location.coordinate.latitude
+      long = location.coordinate.longitude
+    } else{
+      lat = 51.4989
+      long = -0.1790
+    }
+    print("sending the coordinates: \(lat) and \(long)")
 
     let msg = """
     {"response":\(didAccept),
-    "latitude": \(lat ?? 51.4989),
-    "longitude": \(long ?? -0.1790)
+    "latitude": "\(lat)",
+    "longitude": "\(long)"
     }
     """
     
@@ -165,20 +173,28 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     self.socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
   }
   
-  func sendLocToAdmin(adminId:String){
+  func sendLocToUser(userId:String){
     print("messaging")
-    let location = manager.location?.coordinate
-    let lat = location?.latitude
-    let long = location?.latitude
+    var lat: Double
+    var long: Double
+    if let location = manager.location{
+      lat = location.coordinate.latitude
+      long = location.coordinate.longitude
+    } else{
+      lat = 51.4989
+      long = -0.1790
+    }
 
     let msg = """
-        {"lat": \(lat ?? 51.4989),
-        "long": \(long ?? -0.1790)
+        {"lat": "\(lat)",
+        "long": "\(long)",
+        "sender": \(deviceIDAppend)
         }
         """
 
-    let newDestinationURL = "\(locDestinationURL)/\(adminId)"
+    let newDestinationURL = "\(locDestinationURL)/\(userId)"
     print("destination is: " + newDestinationURL)
+    print("the message is: \(msg)")
     socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
   }
   
@@ -197,6 +213,11 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   // On new location data
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    self.getAdminFromGroup(groupId: self.confluenceGroupId){ adminId in
+      print(adminId)
+      self.sendLocToUser(userId: adminId)
+    }
+    
     let location = locations.last as! CLLocation
     
     let center = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
@@ -298,6 +319,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     // Initialise visual effect view
     fxView.isHidden = true
     pinDetailView.layer.cornerRadius = 5
+    
+    view.autoresizesSubviews = true
     fxView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTap)))
     super.viewDidLoad()
   }
@@ -312,9 +335,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     detailTitle.text = group.groupName
     detailDescription.text = group.description
     detailTimings.text = "\(dateToString(datetime: group.datetime))"
-    
-    detailLocation.text = ""
-    
     detailActions.setTitle("Joined", for: .disabled)
     detailActions.tag = Int(group.groupId)!
     if userGroups.contains(group) {
@@ -451,9 +471,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     if let locationPointer = view.annotation as? LocationPointer {
       activeAnnotation = locationPointer
       initialisePinDetailView(group: locationPointer.group!)
-      
-      currGroupId = locationPointer.group!.groupId
-    }
+          }
   }
   
   func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
@@ -511,6 +529,17 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       let pendingAlert = buildLoadingOverlay(message: "Waiting for response...")
       self.pendingConfluenceAlert = pendingAlert
       self.present(pendingAlert, animated: true, completion: nil)
+      
+      DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [unowned self] in
+        if let alert = self.pendingConfluenceAlert {
+          alert.dismiss(animated: true) {
+            let group = self.pinToGroup[sender.tag]!
+            let failureAlert = UIAlertController(title: "Request Timeout", message: "The group admin for \(group.groupName) did not respond to your confluence request.", preferredStyle: .alert)
+            failureAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(failureAlert, animated: true, completion: nil)
+          }
+        }
+      }
     }
   }
   
@@ -532,7 +561,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
         infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
         if(locPointAnnotation.discipline == "In Progress"){
-          confluenceGroupId = currGroupId
           infoButton.setTitle("Meet Up", for: .normal)
           infoButton.addTarget(self, action: #selector(self.meetUp), for: .touchUpInside)
         } else{
@@ -623,9 +651,14 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   //------------------------CONFLUENCE------------------------
   
   //Adds confluence point annotation to the map
-  func addNewConfluence(location: CLLocationCoordinate2D) {
-    let confluencePoint = LocationPointer(title: "Confluence", subtitle: "Confluence", discipline: "Confluence", coordinate: location)
-    map.addAnnotation(confluencePoint)
+  func addOrUpdateConfluence(location: CLLocationCoordinate2D) {
+    if let confluence = confluencePoint{
+      print("confluence was already added. Updating instead")
+      updateConfluence(confluencePoint: confluence, newLocation: location)
+    } else{
+      confluencePoint = LocationPointer(title: "Confluence", subtitle: "Confluence", discipline: "Confluence", coordinate: location)
+      map.addAnnotation(confluencePoint!)
+    }
   }
   
   //Updates confluence point annotation on the map
@@ -652,7 +685,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   func confluenceDeclinedAlert(){
-    let alert = UIAlertController(title: "Confluence Declined", message: "Sorry, \(currGroupId) has declined your request to join...", preferredStyle: UIAlertControllerStyle.alert)
+    let alert = UIAlertController(title: "Confluence Declined", message: "Sorry, \(confluenceGroupId) has declined your request to join...", preferredStyle: UIAlertControllerStyle.alert)
     alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
     
     self.present(alert, animated: true, completion: nil)
@@ -695,21 +728,21 @@ extension ViewController: StompClientLibDelegate{
       // You getting a response from SOMEONE ELSE
       
       self.pendingConfluenceAlert?.dismiss(animated: true) { [unowned self] in
+        self.pendingConfluenceAlert = nil
         if response.response{
           print("WOOO HOOOO WE'RE JOIN A GROUP")
           
           let location = CLLocationCoordinate2D(latitude: Double(response.latitude!)!, longitude: Double(response.longitude!)!)
           print("the admin is at lat: \(response.latitude) and longL \(response.longitude)")
          // let location = CLLocationCoordinate2D(latitude: 51.4989, longitude: -0.179)
+          self.addOrUpdateConfluence(location: location)
           
-          self.addNewConfluence(location: location)
-          
-//          //Send your location to admin
-//          print("sending location to group: \(self.currGroupId)")
-//          self.getAdminFromGroup(groupId: self.confluenceGroupId){ adminId in
-//            print(adminId)
-//            self.sendLocToAdmin(adminId: adminId)
-          //}
+          //Send your location to admin
+          print("sending location to group: \(self.confluenceGroupId)")
+          self.getAdminFromGroup(groupId: self.confluenceGroupId){ adminId in
+            print(adminId)
+            self.sendLocToUser(userId: adminId)
+          }
         } else{
           print("awwwww you were declined")
           self.confluenceDeclinedAlert()
@@ -719,13 +752,12 @@ extension ViewController: StompClientLibDelegate{
       // SENDING LOCATION BACK AND FORTH
       let coordinate = CLLocationCoordinate2D(latitude: Double(locationResponse.lat)!, longitude: Double(locationResponse.long)!)
       print(coordinate)
+      addOrUpdateConfluence(location: coordinate)
     } else {
       print("Should not get here")
       print()
     }
   }
-  
-  
   
   func serverDidSendReceipt(client: StompClientLib!, withReceiptId receiptId: String) {
     print("> Receipt : \(receiptId)")
