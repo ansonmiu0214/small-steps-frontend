@@ -25,11 +25,11 @@ struct SenderResponse: Decodable{
 struct LocationResponse: Decodable{
   let lat: String
   let long: String
-  let sender: String
+  let senderID: String
   enum CodingKeys: String, CodingKey{
     case lat
     case long
-    case sender
+    case senderID
   }
 }
 
@@ -728,6 +728,11 @@ extension ViewController: StompClientLibDelegate{
         print(senderResponse.sender)
         self.confluenceAlert(requesterId: senderResponse.sender)
       
+    } else if let locationResponse = try? JSONDecoder().decode(LocationResponse.self, from: data!){
+      // SENDING LOCATION BACK AND FORTH
+      let coordinate = CLLocationCoordinate2D(latitude: Double(locationResponse.lat)!, longitude: Double(locationResponse.long)!)
+      print(coordinate)
+      addOrUpdateConfluence(location: coordinate)
     } else if let response = try? JSONDecoder().decode(Response.self, from: data!){
       // You getting a response from SOMEONE ELSE
       
@@ -752,11 +757,6 @@ extension ViewController: StompClientLibDelegate{
           self.confluenceDeclinedAlert()
         }
       }
-    } else if let locationResponse = try? JSONDecoder().decode(LocationResponse.self, from: data!){
-      // SENDING LOCATION BACK AND FORTH
-      let coordinate = CLLocationCoordinate2D(latitude: Double(locationResponse.lat)!, longitude: Double(locationResponse.long)!)
-      print(coordinate)
-      addOrUpdateConfluence(location: coordinate)
     } else {
       print("Should not get here")
       print()
