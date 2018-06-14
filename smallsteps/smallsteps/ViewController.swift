@@ -95,7 +95,7 @@ func addWalkerToGroup(groupId: String, completion: @escaping (Bool) -> Void)  {
 
 class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleGroupSelection {
   var selectedPin:MKPlacemark? = nil
-  //var currGroupId: String = "-1"
+  var currentGroupId: String = "-1"
   
   @IBOutlet var map: MKMapView!
 
@@ -213,10 +213,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   // On new location data
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    self.getAdminFromGroup(groupId: self.confluenceGroupId){ adminId in
-      print(adminId)
-      self.sendLocToUser(userId: adminId)
-    }
+//    self.getAdminFromGroup(groupId: self.confluenceGroupId){ adminId in
+//      print(adminId)
+//      self.sendLocToUser(userId: adminId)
+//    }
     
     let location = locations.last as! CLLocation
     
@@ -424,9 +424,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
   //used by group detail
   func getRoute() {
+  
     let directionRequest = MKDirectionsRequest()
     directionRequest.source = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: (manager.location?.coordinate.latitude)!, longitude: (manager.location?.coordinate.longitude)!)))
-    directionRequest.destination = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: Double(globalUserGroups[currGroup].latitude)!, longitude: Double(globalUserGroups[currGroup].longitude)!)))
+    directionRequest.destination = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: Double(globalUserGroups[currGroupId]!.latitude)!, longitude: Double(globalUserGroups[currGroupId]!.longitude)!)))
     directionRequest.transportType = .walking
     let directions = MKDirections(request: directionRequest)
     directions.calculate { (response, error) in
@@ -438,7 +439,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       }
       
       let ALocation: CLLocation = CLLocation(latitude: (self.manager.location?.coordinate.latitude)!, longitude: (self.manager.location?.coordinate.longitude)!)
-      let BLocation: CLLocation = CLLocation(latitude: Double(globalUserGroups[currGroup].latitude)!, longitude: Double(globalUserGroups[currGroup].longitude)!)
+      let BLocation: CLLocation = CLLocation(latitude: Double(globalUserGroups[currGroupId]!.latitude)!, longitude: Double(globalUserGroups[currGroupId]!.longitude)!)
       let midPointLat = (ALocation.coordinate.latitude + BLocation.coordinate.latitude) / 2
       let midPointLong = (ALocation.coordinate.longitude + BLocation.coordinate.longitude) / 2
       let midPoint: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: Double(midPointLat), longitude: Double(midPointLong))
@@ -472,7 +473,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       activeAnnotation = locationPointer
       initialisePinDetailView(group: locationPointer.group!)
           }
-  }
+    }
+  
   
   func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
     deinitialisePinDetailView()
@@ -593,6 +595,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     return pinView
   }
 
+
   
   //Fits all pins on the map to the map view
   func fitAll(showGroups: Bool) {
@@ -706,6 +709,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
 }
 
+
 extension ViewController: StompClientLibDelegate{
   func stompClient(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: AnyObject?, withHeader header: [String : String]?, withDestination destination: String) {
     print("> Destination : \(destination)")
@@ -731,14 +735,14 @@ extension ViewController: StompClientLibDelegate{
         self.pendingConfluenceAlert = nil
         if response.response{
           print("WOOO HOOOO WE'RE JOIN A GROUP")
-          
-          let location = CLLocationCoordinate2D(latitude: Double(response.latitude!)!, longitude: Double(response.longitude!)!)
+         let location = CLLocationCoordinate2D(latitude: Double(response.latitude!)!, longitude: Double(response.longitude!)!)
           print("the admin is at lat: \(response.latitude) and longL \(response.longitude)")
          // let location = CLLocationCoordinate2D(latitude: 51.4989, longitude: -0.179)
           self.addOrUpdateConfluence(location: location)
           
           //Send your location to admin
           print("sending location to group: \(self.confluenceGroupId)")
+
           self.getAdminFromGroup(groupId: self.confluenceGroupId){ adminId in
             print(adminId)
             self.sendLocToUser(userId: adminId)
