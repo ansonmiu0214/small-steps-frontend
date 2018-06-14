@@ -15,6 +15,8 @@ import SwiftyJSON
 import StompClientLib
 import LocationPickerController
 
+let TIMEOUT_IN_SECS: Double = 60
+
 struct SenderResponse: Decodable{
   let sender: String
   
@@ -139,6 +141,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
 
   var confluenceGroupId = "-1"
   var pendingConfluenceAlert: UIAlertController?
+  var otherLocPoint: MKPointAnnotation?
   var confluencePoint: MKPointAnnotation?
 
   var otherConfluenceID: String?
@@ -170,12 +173,25 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       lat = 51.4989
       long = -0.1790
     }
+    
+    var confLat: Double
+    var confLong: Double
+    if let confluence = confluencePoint{
+      confLat = confluence.coordinate.latitude
+      confLong = confluence.coordinate.longitude
+    } else{
+      confLat = 51.4989
+      confLong = -0.1790
+    }
+    
     print("sending the coordinates: \(lat) and \(long)")
 
     let msg = """
     {"response":\(didAccept),
     "latitude": "\(lat)",
-    "longitude": "\(long)"
+    "longitude": "\(long)",
+    "confluenceLat": "\(confLat)",
+    "confluenceLong": "\(confLong)"
     }
     """
     
@@ -257,6 +273,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   }
   
   override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+  }
+  
+  override func viewDidLoad() {
     setUpGroupData { [unowned self] in
       // Set up MapView
       self.map.delegate = self
@@ -296,20 +316,17 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       
       //self.addOrUpdateConfluence(location: (self.manager.location?.coordinate)!)
       
-    }
-    
-    super.viewWillAppear(animated)
-  }
-  
-  override func viewDidLoad() {
-    if isGroupDetailButtonClick {
-      isGroupDetailButtonClick = !isGroupDetailButtonClick
-      getRoute()
-    }
-    
-    if isConfluenceButtonClick {
-      isConfluenceButtonClick = !isConfluenceButtonClick
-      addConfluencePoint(location: confluenceLocation)
+      if self.isGroupDetailButtonClick {
+        self.isGroupDetailButtonClick = !self.isGroupDetailButtonClick
+        self.getRoute()
+      }
+      
+      if self.isConfluenceButtonClick {
+        self.isConfluenceButtonClick = !self.isConfluenceButtonClick
+        self.addConfluencePoint()
+        self.getDirections()
+        self.respondToRequest(requesterId: self.otherConfluenceID!, didAccept: true)
+      }
     }
     
     registerSocket()
@@ -347,7 +364,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         detailActions.addTarget(self, action: #selector(self.joinGroup(_:)), for: .touchUpInside)
       }
     }
-    
     
     // First initialise to transparent
     pinDetailView.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
@@ -387,32 +403,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     self.view.endEditing(true)
   }
   
-  fileprivate func setAndCreateConfluence() {
-    let viewController = LocationPickerController(success: {
-      [unowned self] (coordinate: CLLocationCoordinate2D) -> Void in
-      //self?.locationLabel.text = "".appendingFormat("%.4f, %.4f",
-      //coordinate.latitude, coordinate.longitude)
-      //self?.addOrUpdateConfluence(location: coordinate)
-      self.confluenceLocation = coordinate
-      print("WE GETTTTTT BEFORE \(self.confluenceLocation)")
-      
-    })
-    let navigationController = UINavigationController(rootViewController: viewController)
-    self.addOrUpdateOtherLoc(location: self.confluenceLocation)
-    self.present(navigationController, animated: true, completion: pinConfluence)
-    print("WE GETTTTTT AFTER \(confluenceLocation)")
-  }
-  
-
-  
-  func pinConfluence() {
-    addConfluencePoint(location: confluenceLocation)
-  }
-   
-    @IBAction func addConfluenceBtn(_ sender: Any) {
-        addConfluencePoint(location: confluenceLocation)
-    }
-  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
@@ -421,7 +411,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   @objc func getDirections(){
     let request = MKDirectionsRequest()
     request.source = MKMapItem.forCurrentLocation()
-    request.destination = MKMapItem(placemark: selectedPin!)
+    request.destination = MKMapItem(placemark: MKPlacemark(coordinate: confluenceLocation))
     request.requestsAlternateRoutes = false
     request.transportType = .walking
     let directions = MKDirections(request: request)
@@ -482,6 +472,13 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
   }
   
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if segue.identifier == "setConfluence" {
+      if let dstVC = segue.destination as? CreateConfluenceVC {
+        dstVC.otherConfluenceID = otherConfluenceID
+      }
+    }
+  }
   
   //Style and color of the route
   func mapView(_ mapView: MKMapView, rendererFor
@@ -556,7 +553,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       self.pendingConfluenceAlert = pendingAlert
       self.present(pendingAlert, animated: true, completion: nil)
       
-      DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [unowned self] in
+      DispatchQueue.main.asyncAfter(deadline: .now() + TIMEOUT_IN_SECS) { [unowned self] in
         if let alert = self.pendingConfluenceAlert {
           alert.dismiss(animated: true) {
             let group = self.pinToGroup[sender.tag]!
@@ -572,6 +569,16 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView?{
     // Return on user location
     if annotation is MKUserLocation { return nil }
+    
+    if annotation is MKPointAnnotation {
+      let annotationView = LocationPointerView(annotation: annotation, reuseIdentifier: "Pin")
+      
+      let pinTitle = annotation.title!!
+    
+      annotationView.markerTintColor = annotation.title!! == "Other Person" ? UIColor.blue : UIColor.red
+      
+      return annotationView
+    }
     
     let reuseId = "Pin"
     let pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
@@ -678,29 +685,29 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   //------------------------CONFLUENCE------------------------
   
   //Adds the location of other to the map
-  func addConfluencePoint(location: CLLocationCoordinate2D) {
+  func addConfluencePoint() {
     if let confluence = confluencePoint{
       print("confluence was already added. Updating instead")
-      updateLoc(confluencePoint: confluence, newLocation: location)
+      updateLoc(confluencePoint: confluence, newLocation: confluenceLocation)
     } else{
       confluencePoint = MKPointAnnotation()
-      confluencePoint?.coordinate = location
+      confluencePoint?.coordinate = confluenceLocation
       confluencePoint?.title = "Confluence Point"
-      print("THE LOCATION OF CONFLUENCE IS: \(location)")
+      print("THE LOCATION OF CONFLUENCE IS: \(confluenceLocation)")
       map.addAnnotation(confluencePoint!)
     }
   }
   
   func addOrUpdateOtherLoc(location: CLLocationCoordinate2D) {
-    if let confluence = confluencePoint{
+    if let confluence = otherLocPoint{
       print("confluence was already added. Updating instead")
       updateLoc(confluencePoint: confluence, newLocation: location)
     } else{
-      confluencePoint = MKPointAnnotation()
-      confluencePoint?.coordinate = location
-      confluencePoint?.title = "Other Person"
+      otherLocPoint = MKPointAnnotation()
+      otherLocPoint?.coordinate = location
+      otherLocPoint?.title = "Other Person"
       
-      map.addAnnotation(confluencePoint!)
+      map.addAnnotation(otherLocPoint!)
     }
   }
   
@@ -718,9 +725,15 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     let alert = UIAlertController(title: "Confluence Request", message: "Would you like to meet with \(name)?", preferredStyle: UIAlertControllerStyle.alert)
     alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default){ _ in
       print("accepted")
-      //self.setAndCreateConfluence()
-      self.respondToRequest(requesterId: requesterId, didAccept: true)
       self.otherConfluenceID = requesterId
+
+      self.performSegue(withIdentifier: "setConfluence", sender: nil)
+//
+//
+//      print("the location of confluence is: \(self.confluenceLocation.latitude) \(self.confluenceLocation.longitude)")
+//
+//      self.respondToRequest(requesterId: requesterId, didAccept: true)
+      
     })
     alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.default){_ in
       print("declined")
@@ -784,9 +797,17 @@ extension ViewController: StompClientLibDelegate{
         if response.response{
           print("WOOO HOOOO WE'RE JOIN A GROUP")
          let location = CLLocationCoordinate2D(latitude: Double(response.latitude!)!, longitude: Double(response.longitude!)!)
-          print("the admin is at lat: \(response.latitude) and longL \(response.longitude)")
-         // let location = CLLocationCoordinate2D(latitude: 51.4989, longitude: -0.179)
+
           self.addOrUpdateOtherLoc(location: location)
+          
+          //set up confluence point
+          let confLoc = CLLocationCoordinate2D(latitude: Double(response.confluenceLat!)!, longitude: Double(response.confluenceLong!)!)
+          //self.confluencePoint?.coordinate = confLoc
+          self.confluenceLocation = confLoc
+          print("the coordinates are: \(confLoc.longitude), \(confLoc.latitude)")
+          self.addConfluencePoint()
+          
+          self.getDirections()
           
           //Send your location to admin
           print("sending location to group: \(self.confluenceGroupId)")

@@ -13,6 +13,8 @@ import CoreLocation
 
 class CreateConfluenceVC: FormViewController {
     
+    var otherConfluenceID: String?
+    
     override func viewDidLoad() {
         setUpCreateGroupForm()
         super.viewDidLoad()
@@ -40,7 +42,9 @@ class CreateConfluenceVC: FormViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let destVC = segue.destination as? ViewController {
             destVC.isConfluenceButtonClick = true
+            destVC.otherConfluenceID = otherConfluenceID
             destVC.confluenceLocation = CLLocationCoordinate2D(latitude: Double("\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.latitude)!)")!, longitude: Double("\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.longitude)!)")!)
+            
         }
     }
 
