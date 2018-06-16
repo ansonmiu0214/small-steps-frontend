@@ -118,6 +118,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   @IBOutlet weak var detailActions: UIButton!
   @IBOutlet weak var detailDescription: UITextView!
   @IBOutlet weak var detailTimings: UITextView!
+  @IBOutlet weak var detailDuration: UITextView!
   
   var resultSearchController:UISearchController? = nil
   
@@ -349,8 +350,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     // Initialise visual effect view
     fxView.isHidden = true
     pinDetailView.layer.cornerRadius = 5
+    pinDetailView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width * 0.8, height: self.view.frame.height * 0.7)
+    pinDetailView.center = self.view.center
     
-    view.autoresizesSubviews = true
+    // Add dismiss-on-tap gesture recogniser
     fxView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTap)))
     super.viewDidLoad()
   }
