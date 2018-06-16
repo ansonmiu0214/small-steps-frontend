@@ -205,7 +205,14 @@ public class MapViewController : UIViewController, TypedRowControllerType, MKMap
     fmt.minimumFractionDigits = 4
     let latitude = fmt.string(from: NSNumber(value: mapView.centerCoordinate.latitude))!
     let longitude = fmt.string(from: NSNumber(value: mapView.centerCoordinate.longitude))!
-    title = "\(latitude), \(longitude)"
+    
+    CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: mapView.centerCoordinate.latitude, longitude: mapView.centerCoordinate.longitude)) { (placemarks, error) in
+      if error == nil {
+        self.title = placemarks?[0].name
+      } else {
+        self.title = "\(latitude), \(longitude)"
+      }
+    }
   }
   
   public func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
