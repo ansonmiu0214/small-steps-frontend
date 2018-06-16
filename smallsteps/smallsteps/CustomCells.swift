@@ -41,7 +41,6 @@ public final class LocationRow: OptionsRow<PushSelectorCell<CLLocation>>, Presen
   open var onPresentCallback: ((FormViewController, PresenterRow) -> Void)?
   
   var otherPerson: (String, CLLocationCoordinate2D)? = nil
-  var mapController: MapViewController? = nil
   
   public required init(tag: String?) {
     super.init(tag: tag)
@@ -87,9 +86,6 @@ public final class LocationRow: OptionsRow<PushSelectorCell<CLLocation>>, Presen
     rowVC.row = self
   }
   
-//  func addOtherPersonOnMap(otherPerson: (String, CLLocationCoordinate2D)) {
-//    mapController?.addOtherPersonOnMap(otherPerson: otherPerson)
-//  }
 }
 
 public class MapViewController : UIViewController, TypedRowControllerType, MKMapViewDelegate {
