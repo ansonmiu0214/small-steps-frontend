@@ -43,11 +43,6 @@ public final class LocationRow: OptionsRow<PushSelectorCell<CLLocation>>, Presen
   var otherPerson: (String, CLLocationCoordinate2D)? = nil
   var mapController: MapViewController? = nil
   
-  public convenience init(tag: String?, otherPerson: (String, CLLocationCoordinate2D)) {
-    self.init(tag: tag)
-    self.otherPerson = otherPerson
-  }
-  
   public required init(tag: String?) {
     super.init(tag: tag)
     presentationMode = .show(controllerProvider: ControllerProvider.callback { return MapViewController(){ _ in } }, onDismiss: { vc in _ = vc.navigationController?.popViewController(animated: true) })
@@ -161,11 +156,6 @@ public class MapViewController : UIViewController, TypedRowControllerType, MKMap
     onDismissCallback = callback
   }
   
-  convenience public init(_ callback: ((UIViewController) -> ())?, otherPerson: (String, CLLocationCoordinate2D)) {
-    self.init(callback)
-    self.otherPerson = otherPerson
-  }
-  
   public override func viewDidLoad() {
     super.viewDidLoad()
     view.addSubview(mapView)
@@ -201,15 +191,6 @@ public class MapViewController : UIViewController, TypedRowControllerType, MKMap
     let center = mapView.convert(mapView.centerCoordinate, toPointTo: pinView)
     pinView.center = CGPoint(x: center.x, y: center.y - (pinView.bounds.height/2))
     ellipsisLayer.position = center
-  }
-  
-  func addOtherPersonOnMap(otherPerson: (String, CLLocationCoordinate2D)) {
-    let (otherName, otherCoord) = otherPerson
-    let otherPin = MKPointAnnotation()
-
-    otherPin.title = otherName
-    otherPin.coordinate = otherCoord
-    mapView.addAnnotation(otherPin)
   }
   
   @objc func tappedDone(_ sender: UIBarButtonItem){
