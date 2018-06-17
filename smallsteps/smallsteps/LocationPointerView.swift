@@ -9,5 +9,4 @@ class LocationPointerView: MKMarkerAnnotationView {
       markerTintColor = artwork.markerTintColor
     }
   }
-  
 }

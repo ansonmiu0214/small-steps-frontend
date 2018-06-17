@@ -51,13 +51,13 @@ class CreateGroupVC: FormViewController {
         $0.title = "Date and Time"
         $0.value = Date()
       }
-      <<< ActionSheetRow<String>() {
-        $0.tag = "repeat"
-        $0.title = "Repeat"
-        $0.selectorTitle = "Pick a Day"
-        $0.options = ["Daily"]
-        $0.value = "Daily"    // initially selected
-      }
+//      <<< ActionSheetRow<String>() {
+//        $0.tag = "repeat"
+//        $0.title = "Repeat"
+//        $0.selectorTitle = "Pick a Day"
+//        $0.options = ["Daily"]
+//        $0.value = "Daily"    // initially selected
+//      }
       <<< CountDownRow() {
         $0.tag = "duration"
         $0.title = "Estimated Duration"
@@ -83,7 +83,6 @@ class CreateGroupVC: FormViewController {
     let valuesDict = form.values()
     let newGroup: Group = Group(groupName: valuesDict["groupName"] as! String,
                                 datetime: valuesDict["datetime"] as! Date,
-                                repeats: valuesDict["repeat"] as! String ,
                                 duration: valuesDict["duration"] as! Date,
                                 latitude: "\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.latitude)!)",
                                 longitude: "\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.longitude)!)",

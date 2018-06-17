@@ -15,14 +15,6 @@ import SwiftyJSON
 import StompClientLib
 import LocationPickerController
 
-let TIMEOUT_IN_SECS: Double = 60
-
-
-
-protocol HandleGroupSelection {
-  func selectAnnotation(group: Group)
-}
-
 class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleGroupSelection {
   var selectedPin:MKPlacemark? = nil
   var currentGroupId: String = "-1"
@@ -38,7 +30,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   @IBOutlet weak var detailActions: UIButton!
   @IBOutlet weak var detailDescription: UITextView!
   @IBOutlet weak var detailTimings: UITextView!
-  @IBOutlet weak var detailDuration: UITextView!
   
   var resultSearchController:UISearchController? = nil
   
@@ -52,7 +43,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   var pinToGroup: [Int: Group] = [:]
   
   // Confluence utils
-  var confluenceLocation: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 51.5109208, longitude: -0.1377691)
+  
   
   var socketClient = StompClientLib()
   let subscriptionURL = "/topic/confluence"
@@ -63,14 +54,19 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"
   let deviceIDAppend = UIDevice.current.identifierForVendor!.uuidString
   
-  var confluenceGroupId = "-1"
   var pendingConfluenceAlert: UIAlertController?
-  var otherLocPoint: MKPointAnnotation?
-  var confluencePoint: MKPointAnnotation?
   
-  var otherConfluenceID: String?
-  var otherConfluenceCoord: CLLocationCoordinate2D?
-  var otherConfluencerName: String?
+  var confluenceGroupId = "-1"
+  var confluencePoint: MKPointAnnotation?
+  var confluenceLocation: CLLocationCoordinate2D = DEFAULT_COORD
+  
+  var otherPersonWalkerId: String?
+  var otherWalkerCoord: CLLocationCoordinate2D?
+  var otherWalkerName: String?
+  var otherWalkerMapAnnotation: MKPointAnnotation?
+  
+  
+  var confluenceRoutes: [MKRoute] = []
   
   
   func registerSocket(){
@@ -79,143 +75,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     socketClient.openSocketWithURLRequest(request: NSURLRequest(url: url! as URL) , delegate: self as StompClientLibDelegate)
   }
   
-  func requestAdminPermission(adminId:String){
-    print("asking permission")
-    var lat: Double
-    var long: Double
-    if let location = manager.location{
-      lat = location.coordinate.latitude
-      long = location.coordinate.longitude
-    } else{
-      lat = 51.4989
-      long = -0.1790
-    }
-    print("requesting admin permission with long: \(long) and lat: \(lat)")
-    let msg = """
-    {"sender":"\(deviceIDAppend)",
-    "senderLat": "\(lat)",
-    "senderLong": "\(long)"
-    }
-    """
-    let newDestinationURL = "\(self.initDestinationURL)/\(adminId)"
-    self.socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
-  }
-  
-  func respondToRequest(requesterId:String, didAccept:Bool){
-    print("confirming request")
-    var lat: Double
-    var long: Double
-    if let location = manager.location{
-      lat = location.coordinate.latitude
-      long = location.coordinate.longitude
-    } else{
-      lat = 51.4989
-      long = -0.1790
-    }
-    
-    var confLat: Double
-    var confLong: Double
-    if let confluence = confluencePoint{
-      confLat = confluence.coordinate.latitude
-      confLong = confluence.coordinate.longitude
-    } else{
-      confLat = 51.4989
-      confLong = -0.1790
-    }
-    
-    print("sending the coordinates: \(lat) and \(long)")
-    
-    let msg = """
-    {"response":\(didAccept),
-    "latitude": "\(lat)",
-    "longitude": "\(long)",
-    "confluenceLat": "\(confLat)",
-    "confluenceLong": "\(confLong)"
-    }
-    """
-    
-    let newDestinationURL = "\(self.responseDestinationURL)/\(requesterId)"
-    self.socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
-  }
-  
-  func sendLocToUser(userId:String){
-    print("messaging")
-    var lat: Double
-    var long: Double
-    if let location = manager.location{
-      lat = location.coordinate.latitude
-      long = location.coordinate.longitude
-    } else{
-      lat = 51.4989
-      long = -0.1790
-    }
-    
-    let msg = """
-    {"lat": "\(lat)",
-    "long": "\(long)",
-    "senderID": "\(deviceIDAppend)"
-    }
-    """
-    
-    let newDestinationURL = "\(locDestinationURL)/\(userId)"
-    print("destination is: " + newDestinationURL)
-    print("the message is: \(msg)")
-    socketClient.sendMessage(message: msg, toDestination: newDestinationURL, withHeaders: nil, withReceipt: nil)
-  }
-  
-  // On new location data
-  
-  func locationManager(_ manager: CLLocationManager, didUpdateUserLocation locations: [CLLocation]) {
-    let location = locations.last as! CLLocation
-    
-    let center = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-    let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
-    
-    self.map.setRegion(region, animated: true)
-    
-    //    if groups.count == 0 {
-    //      let myLocation = locations[0]
-    //      let span = MKCoordinateSpanMake(0.01, 0.01)
-    //      let region: MKCoordinateRegion = MKCoordinateRegion(center: myLocation.coordinate, span: span)
-    //      map.setRegion(region, animated: false)
-    //    }
-  }
-  
-  
-  
-  func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-    // TODO update groups shown with respect to changed regions
-  }
-  
-  func setUpGroupData(completion: (() -> Void)? = nil) {
-    var location = manager.location?.coordinate
-    if location == nil{
-      location = CLLocationCoordinate2DMake(51.4989, -0.1790)
-    }
-    getGroups(center: location!) { [unowned self] allGroups in
-      getGroupsByUUID { userGroups in
-        // Set fields
-        self.allGroups = allGroups
-        self.userGroups = userGroups
-        
-        for group in self.allGroups {
-          self.pinToGroup[Int(group.groupId)!] = group
-        }
-        
-        // Reset annotations
-        self.map.removeAnnotations(self.map.annotations)
-        self.allGroups.forEach(self.createPinFromGroup)
-        
-        completion?()
-      }
-    }
-  }
-  
   override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-  }
-  
-  override func viewDidLoad() {
     setUpGroupData { [unowned self] in
       // Set up MapView
       self.map.delegate = self
@@ -223,7 +83,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       
       // Set up CoreLocation manager
       self.manager.delegate = self
-      self.manager.desiredAccuracy = kCLLocationAccuracyBest
+      self.manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
       self.manager.requestWhenInUseAuthorization()
       self.manager.startUpdatingLocation()
       
@@ -262,12 +122,16 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       
       if self.isConfluenceButtonClick {
         self.isConfluenceButtonClick = !self.isConfluenceButtonClick
-        self.addConfluencePoint()
+        self.renderConfluencePoint()
         self.getDirections()
-        self.respondToRequest(requesterId: self.otherConfluenceID!, didAccept: true)
+        self.respondToRequest(otherPersonId: self.otherPersonWalkerId!, didAccept: true)
       }
     }
     
+    super.viewWillAppear(animated)
+  }
+  
+  override func viewDidLoad() {
     registerSocket()
     
     // Initialise visual effect view
@@ -281,16 +145,607 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     super.viewDidLoad()
   }
   
+  func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    let currentLocation = locations.first!
+    if let otherUserId = otherPersonWalkerId {
+      if let otherCoord = otherWalkerCoord {
+        let otherLat = otherCoord.latitude
+        let otherLong = otherCoord.longitude
+        
+        let distance = currentLocation.distance(from: CLLocation(latitude: otherLat, longitude: otherLong))
+        print("[#] Distance from other person: \(distance)")
+        if distance < CONFLUENCE_THRESHOLD_IN_METRES {
+          // Remove pins
+          if let point = self.confluencePoint { self.map.removeAnnotation(point) }
+          if let otherPoint = self.otherWalkerMapAnnotation { self.map.removeAnnotation(otherPoint) }
+          self.map.removeOverlays(self.map.overlays)
+          resetConfluenceVariables()
+          
+          let alert = UIAlertController(title: nil, message: "Confluence reached", preferredStyle: .alert)
+          alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+          present(alert, animated: true, completion: nil)
+        } else {
+          sendLocationToUser(otherUserId: otherUserId)
+        }
+      } else {
+        sendLocationToUser(otherUserId: otherUserId)
+      }
+    }
+  }
+  
+  func setUpGroupData(completion: (() -> Void)? = nil) {
+    var location = manager.location?.coordinate
+    if location == nil{
+      location = CLLocationCoordinate2DMake(51.4989, -0.1790)
+    }
+    getGroups(center: location!) { [unowned self] allGroups in
+      getGroupsByUUID { userGroups in
+        // Set fields
+        self.allGroups = allGroups
+        self.userGroups = userGroups
+        
+        for group in self.allGroups {
+          self.pinToGroup[Int(group.groupId)!] = group
+        }
+        
+        // Reset annotations
+        self.map.removeAnnotations(self.map.annotations)
+        self.allGroups.forEach(self.createPinFromGroup)
+        
+        completion?()
+      }
+    }
+  }
+  
   @objc func dismissOnTap() {
     map.deselectAnnotation(activeAnnotation, animated: false)
     deinitialisePinDetailView()
   }
   
+  @IBAction func closePinDetailView(_ sender: Any) {
+    map.deselectAnnotation(activeAnnotation, animated: false)
+    deinitialisePinDetailView()
+  }
+  
+  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    self.view.endEditing(true)
+  }
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    // Dispose of any resources that can be recreated.
+  }
+  
+  @objc func getDirections(){
+    let request = MKDirectionsRequest()
+    request.source = MKMapItem.forCurrentLocation()
+    request.destination = MKMapItem(placemark: MKPlacemark(coordinate: confluenceLocation))
+    request.requestsAlternateRoutes = false
+    request.transportType = .walking
+    let directions = MKDirections(request: request)
+    
+    directions.calculate { (response, error) in
+      if error == nil {
+        self.showRoute(response!)
+      }
+    }
+  }
+  
+  func showRoute(_ response: MKDirectionsResponse) {
+    map.removeOverlays(map.overlays)
+    
+    self.confluenceRoutes = response.routes
+    for route in response.routes {
+      map.add(route.polyline,
+              level: MKOverlayLevel.aboveRoads)
+    }
+
+    self.fitAll(showGroups: false)
+  }
+  
+  //used by group detail
+  func getRoute() {
+    
+    let directionRequest = MKDirectionsRequest()
+    directionRequest.source = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: (manager.location?.coordinate.latitude)!, longitude: (manager.location?.coordinate.longitude)!)))
+    directionRequest.destination = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: Double(globalUserGroups[currGroupId]!.latitude)!, longitude: Double(globalUserGroups[currGroupId]!.longitude)!)))
+    directionRequest.transportType = .walking
+    let directions = MKDirections(request: directionRequest)
+    directions.calculate { (response, error) in
+      guard let directionResponse = response else {
+        if let error = error {
+          print("We have an error getting the right directions \(error.localizedDescription)")
+        }
+        return
+      }
+      
+      let ALocation: CLLocation = CLLocation(latitude: (self.manager.location?.coordinate.latitude)!, longitude: (self.manager.location?.coordinate.longitude)!)
+      let BLocation: CLLocation = CLLocation(latitude: Double(globalUserGroups[currGroupId]!.latitude)!, longitude: Double(globalUserGroups[currGroupId]!.longitude)!)
+      let midPointLat = (ALocation.coordinate.latitude + BLocation.coordinate.latitude) / 2
+      let midPointLong = (ALocation.coordinate.longitude + BLocation.coordinate.longitude) / 2
+      let midPoint: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: Double(midPointLat), longitude: Double(midPointLong))
+      let dist: CLLocationDistance = ALocation.distance(from: BLocation)
+      let region: MKCoordinateRegion = MKCoordinateRegionMakeWithDistance(midPoint, 2 * dist, 2 * dist)
+      let route = directionResponse.routes[0]
+      self.map.add(route.polyline, level: .aboveRoads)
+      self.map.setRegion(region, animated: true)
+    }
+  }
+  
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if segue.identifier == "setConfluence" {
+      if let dstVC = segue.destination as? CreateConfluenceVC {
+        dstVC.otherConfluenceID = otherPersonWalkerId
+        dstVC.otherPerson = (otherWalkerName!, otherWalkerCoord!)
+      }
+    }
+  }
+  
+  //Style and color of the route
+  func mapView(_ mapView: MKMapView, rendererFor
+    overlay: MKOverlay) -> MKOverlayRenderer {
+    let renderer = MKPolylineRenderer(overlay: overlay)
+    renderer.strokeColor = self.view.tintColor
+    renderer.lineWidth = 7.0
+    return renderer
+  }
+  
+  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+    if let locationPointer = view.annotation as? LocationPointer {
+      activeAnnotation = locationPointer
+      initialisePinDetailView(group: locationPointer.group!)
+    }
+  }
+  
+  func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+    deinitialisePinDetailView()
+  }
+  
+  func createPinFromGroup(group: Group){
+    var subtitle = "Meeting Time: \(prettyDateToString(date: group.datetime))"
+    subtitle += "\nDuration: \(prettyDurationToString(time: group.duration))"
+    
+    if group.hasDog { subtitle += "\nHas dogs" }
+    if group.hasKid { subtitle += "\nHas kids" }
+    
+    let discipline = group.isWalking ? "In Progress" : "Not Started"
+    let coordinate = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
+    let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate: coordinate, groupId: group.groupId, group: group)
+    
+    map.addAnnotation(annotation)
+  }
+  
+  func selectAnnotation(group: Group) {
+    // Filter location pointers only
+    let annotations: [LocationPointer] = map.annotations.filter({ $0 is LocationPointer }) as! [LocationPointer]
+    
+    // Show annotation
+    if let annotation = annotations.filter({ $0.group! == group }).first {
+      map.selectAnnotation(annotation, animated: true)
+    }
+  }
+
+  
+  
+  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView?{
+    // Return on user location
+    if annotation is MKUserLocation { return nil }
+    
+    if annotation is MKPointAnnotation {
+      let annotationView = LocationPointerView(annotation: annotation, reuseIdentifier: "Pin")
+      annotationView.markerTintColor = annotation.title!! == "Confluence" ? .red : .blue
+      return annotationView
+    }
+    
+    let reuseId = "Pin"
+    let pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
+    pinView.canShowCallout = true
+    let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 30, height: 30)))
+    directionButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
+    directionButton.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
+    
+    pinView.leftCalloutAccessoryView = directionButton
+    if let locPointAnnotation = annotation as? LocationPointer{
+      if(locPointAnnotation.discipline != ""){
+        let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
+        infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
+        if(locPointAnnotation.discipline == "In Progress"){
+          infoButton.setTitle("Meet Up", for: .normal)
+          infoButton.addTarget(self, action: #selector(self.meetUp), for: .touchUpInside)
+        } else{
+          infoButton.setTitle("Join", for: .normal)
+          if let grp = locPointAnnotation.group {
+            // Add entry to lookup dictionary for `tag -> group`
+            
+            infoButton.tag = Int(grp.groupId)!
+            let tag = infoButton.tag
+            pinToGroup[infoButton.tag] = grp
+            if userGroups.contains(grp) {
+              infoButton.setTitle("Joined", for: .normal)
+              infoButton.isEnabled = false
+            }
+          }
+          infoButton.addTarget(self, action: #selector(self.joinGroup(_:)), for: .touchUpInside)
+        }
+        pinView.rightCalloutAccessoryView = infoButton
+      }
+    }
+    
+    let subtitleView = UILabel()
+    subtitleView.font = subtitleView.font.withSize(12)
+    subtitleView.numberOfLines = 4
+    subtitleView.text = annotation.subtitle!
+    pinView.detailCalloutAccessoryView = subtitleView
+    
+    return pinView
+  }
+  
+  
+  
+  //Fits all pins on the map to the map view
+  func fitAll(showGroups: Bool) {
+    var zoomRect = MKMapRectNull;
+    for annotation in map.annotations {
+      if showGroups
+        || annotation is MKUserLocation
+        || (annotation.coordinate.latitude == selectedPin?.coordinate.latitude
+          && annotation.coordinate.longitude == selectedPin?.coordinate.longitude) {
+        let annotationPoint = MKMapPointForCoordinate(annotation.coordinate)
+        let pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.05, 0.05);
+        zoomRect = MKMapRectUnion(zoomRect, pointRect);
+      }
+    }
+    map.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(70, 70, 70, 70), animated: true)
+  }
+  
+//  func callPopUp(identifier: String){
+//    let popOverVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: identifier) as! JoinGroupPopupVC
+//    self.addChildViewController(popOverVC)
+//    popOverVC.view.frame = self.view.frame
+//    self.view.addSubview(popOverVC.view)
+//    popOverVC.didMove(toParentViewController: self)
+//  }
+  
+  func buildCompletionAlert(success: Bool, group: Group) -> UIAlertController {
+    let title = success ? "Success!" : "Error occurred"
+    let msg = success ? "You have joined \(group.groupName)" : "Please try again later."
+    
+    let alert = UIAlertController(title: title, message: msg, preferredStyle: UIAlertControllerStyle.alert)
+    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+    return alert
+  }
+  
+  @objc func meetUp(_ sender: UIButton){
+    confluenceGroupId = String(sender.tag)
+    getAdminFromGroup(groupId: confluenceGroupId){ [unowned self] adminId in
+      self.otherPersonWalkerId = adminId
+      self.requestAdminPermission(adminId: adminId)
+      
+      let pendingAlert = buildLoadingOverlay(message: "Waiting for response...")
+      self.pendingConfluenceAlert = pendingAlert
+      self.present(pendingAlert, animated: true, completion: nil)
+      
+      DispatchQueue.main.asyncAfter(deadline: .now() + TIMEOUT_IN_SECS) { [unowned self] in
+        if let alert = self.pendingConfluenceAlert {
+          alert.dismiss(animated: true) {
+            let group = self.pinToGroup[sender.tag]!
+            let failureAlert = UIAlertController(title: "Request Timeout", message: "The group admin for \(group.groupName) did not respond to your confluence request.", preferredStyle: .alert)
+            failureAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(failureAlert, animated: true, completion: nil)
+          }
+        }
+      }
+    }
+  }
+  
+  @objc func joinGroup(_ sender: UIButton) {
+    let tag = sender.tag
+    let groupToJoin = pinToGroup[tag]!
+    
+    // Show loading overlay
+    let alert = buildLoadingOverlay(message: "Adding you to \(groupToJoin.groupName)...")
+    present(alert, animated: true) { [unowned self] in
+      // Submit request to server, dismiss alert on complete, show error alert on error
+      addWalkerToGroup(groupId: groupToJoin.groupId) { isSuccess in
+        alert.dismiss(animated: true) {
+          let completionAlert = self.buildCompletionAlert(success: isSuccess, group: groupToJoin)
+          self.present(completionAlert, animated: true, completion: nil)
+          
+          // Reload groups if success
+          if isSuccess { self.setUpGroupData() }
+        }
+      }
+    }
+  }
+}
+
+// ~~~~~~~~~ StompClientLibDelegate
+extension ViewController: StompClientLibDelegate{
+  
+  func stompClient(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: AnyObject?, withHeader header: [String : String]?, withDestination destination: String) {
+    print("[Socket] stompClient: " + destination)
+  }
+  
+  func stompClientJSONBody(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
+    print("[Socket] stomClientJSONBody: " + destination)
+    let data = jsonBody!.data(using: .utf8)!
+    
+    // Someone is asking to join your group
+    if let senderResponse = try? JSONDecoder().decode(SenderResponse.self, from: data) {
+      print("[Admin] received request from #\(senderResponse.sender.prefix(3)) to join your group...")
+      
+      let coordinate = CLLocation(latitude: Double(senderResponse.senderLat)!, longitude: Double(senderResponse.senderLong)!)
+      self.confluenceRequestAlert(otherPersonId: senderResponse.sender, otherPersonLoc: coordinate)
+      return
+    }
+    
+    // Someone is sending you their location
+    if let locationResponse = try? JSONDecoder().decode(LocationResponse.self, from: data){
+      print("[#\(UUID.prefix(3))] received location data from #\(locationResponse.senderID.prefix(3))...")
+      
+      guard let _ = confluencePoint else { return }
+      
+      let otherLocation = CLLocation(latitude: Double(locationResponse.lat)!, longitude: Double(locationResponse.long)!)
+      renderOtherPersonLocation(newLocation: otherLocation.coordinate)
+      
+      // Check for stopping condition
+      if let myLocation = manager.location {
+        let distance = myLocation.distance(from: otherLocation)
+        print("[#] Distance from other person: \(distance)")
+        if distance < CONFLUENCE_THRESHOLD_IN_METRES {
+          
+          let alert = UIAlertController(title: nil, message: "Confluence reached", preferredStyle: .alert)
+          alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            // Remove pins
+            if let point = self.confluencePoint { self.map.removeAnnotation(point) }
+            if let otherPoint = self.otherWalkerMapAnnotation { self.map.removeAnnotation(otherPoint) }
+            
+            self.map.removeOverlays(self.map.overlays)
+            
+            self.resetConfluenceVariables()
+          })
+          
+          present(alert, animated: true, completion: nil)
+        }
+      }
+      
+      return
+    }
+    
+    // You previously submitted a confluence request and are receiving a response
+    if let response = try? JSONDecoder().decode(Response.self, from: data) {
+      self.pendingConfluenceAlert?.dismiss(animated: true) { [unowned self] in
+        self.pendingConfluenceAlert = nil
+        
+        if response.response {
+          // Confluence request accepted
+          print("[Joiner] Confluence request accepted...")
+          
+          // Parse other person's location
+          let location = CLLocationCoordinate2D(latitude: Double(response.latitude!)!, longitude: Double(response.longitude!)!)
+          self.renderOtherPersonLocation(newLocation: location)
+          
+          // Parse confluence point
+          self.confluenceLocation = CLLocationCoordinate2D(latitude: Double(response.confluenceLat!)!, longitude: Double(response.confluenceLong!)!)
+          self.renderConfluencePoint()
+          
+          // Send your location to group admin
+          print("[Joiner] Sending location to group admin")
+          self.sendLocationToUser(otherUserId: self.otherPersonWalkerId!)
+          
+          // Show confluence accepted alert
+          let acceptedAlert = UIAlertController(title: "Success!", message: "Confluence request accepted", preferredStyle: .alert)
+          acceptedAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+          self.present(acceptedAlert, animated: true) {
+            // Hide pin detail view
+            self.map.deselectAnnotation(self.activeAnnotation, animated: false)
+            self.deinitialisePinDetailView()
+            
+            // Show directions
+            self.getDirections()
+          }
+        } else{
+          print("[Joiner] Confluence request declined...")
+          self.confluenceDeclinedAlert()
+        }
+      }
+
+    } else {
+      // Unknown JSON packet received
+      print("[Socket] received unknown JSON: " + String(describing: jsonBody!))
+    }
+  }
+  
+  func serverDidSendReceipt(client: StompClientLib!, withReceiptId receiptId: String) {
+    print("[Socket] receipt: " + receiptId)
+  }
+  
+  func serverDidSendError(client: StompClientLib!, withErrorMessage description: String, detailedErrorMessage message: String?) {
+    print("[Socket] serverDidSendError: " + String(describing: message))
+  }
+  
+  func serverDidSendPing() {
+    print("[Socket] serverDidSendPing")
+  }
+  
+  func stompClientDidConnect(client: StompClientLib!) {
+    print("[Socket] stompClientDidConnect")
+    socketClient.subscribe(destination: (subscriptionURL + "/" + UUID))
+    
+  }
+  
+  func stompClientDidDisconnect(client: StompClientLib!) {
+    print("[Socket] stompClientWillDisconnect")
+    socketClient.unsubscribe(destination: subscriptionURL)
+  }
+  
+  func stompClientWillDisconnect(client: StompClientLib!, withError error: NSError) {
+    print("[Socket] stompClientWillDisconnect")
+  }
+  
+}
+
+// ~~~~~~~~~ ConfluenceDelegate
+extension ViewController: ConfluenceDelegate {
+  
+  func requestAdminPermission(adminId: String) {
+    // Obtain current location
+    let lat = manager.location?.coordinate.latitude ?? DEFAULT_LAT
+    let long = manager.location?.coordinate.longitude ?? DEFAULT_LNG
+    
+    // Print debugging message
+    print("[Joiner] Requesting admin #\(adminId) sending own coords (\(lat), \(long))...")
+    
+    // Compose request
+    let permissionRequest = SenderResponse(sender: UUID, senderLat: String(lat), senderLong: String(long))
+    let jsonRequest = try? JSONEncoder().encode(permissionRequest)
+    let jsonMsg = String(data: jsonRequest!, encoding: .utf8)
+    let dstUrl = initDestinationURL + "/" + adminId
+    socketClient.sendMessage(message: jsonMsg!, toDestination: dstUrl, withHeaders: nil, withReceipt: nil)
+  }
+
+  func respondToRequest(otherPersonId: String, didAccept: Bool) {
+    // Obtain current location
+    let lat = manager.location?.coordinate.latitude ?? DEFAULT_LAT
+    let long = manager.location?.coordinate.longitude ?? DEFAULT_LNG
+
+    // Parse confluence location
+    let confLat = confluencePoint?.coordinate.latitude ?? DEFAULT_LAT
+    let confLong = confluencePoint?.coordinate.longitude ?? DEFAULT_LNG
+    
+    if didAccept { renderConfluencePoint() }
+    
+    // Print debugging message
+    print("[Admin] Responding to user #\(otherPersonId.prefix(3)) with own coords (\(lat), \(long)) and confluence coords (\(confLat), \(confLong))...")
+    
+    // Compose response
+    let confluenceResponse = Response(response: didAccept, latitude: String(lat), longitude: String(long), confluenceLat: String(confLat), confluenceLong: String(confLong))
+    let jsonRequest = try? JSONEncoder().encode(confluenceResponse)
+    let jsonMsg = String(data: jsonRequest!, encoding: .utf8)
+    let dstUrl = responseDestinationURL + "/" + otherPersonId
+    socketClient.sendMessage(message: jsonMsg!, toDestination: dstUrl, withHeaders: nil, withReceipt: nil)
+  }
+  
+  func sendLocationToUser(otherUserId: String) {
+    // Obtain current location
+    let lat = manager.location?.coordinate.latitude ?? DEFAULT_LAT
+    let long = manager.location?.coordinate.longitude ?? DEFAULT_LNG
+    
+    // Print debugging message
+    print("[#\(UUID.prefix(3))] Responding to user #\(otherUserId.prefix(3)) with own coords (\(lat), \(long))...")
+    
+    // Compose response
+    let locationResponse = LocationResponse(lat: String(lat), long: String(long), senderID: otherUserId)
+    let jsonRequest = try? JSONEncoder().encode(locationResponse)
+    let jsonMsg = String(data: jsonRequest!, encoding: .utf8)
+    let dstUrl = locDestinationURL + "/" + otherUserId
+    socketClient.sendMessage(message: jsonMsg!, toDestination: dstUrl, withHeaders: nil, withReceipt: nil)
+  }
+  
+  func renderConfluencePoint() {
+    if let confluence = confluencePoint {
+      print("[#\(UUID.prefix(3))] updating confluence point...")
+      
+      map.removeAnnotation(confluence)
+      confluence.coordinate = confluenceLocation
+      map.addAnnotation(confluence)
+    } else {
+      print("[#\(UUID.prefix(3))] adding confluence point...")
+      
+      confluencePoint = MKPointAnnotation()
+      confluencePoint?.coordinate = confluenceLocation
+      confluencePoint?.title = "Confluence"
+      map.addAnnotation(confluencePoint!)
+    }
+  }
+  
+  func renderOtherPersonLocation(newLocation: CLLocationCoordinate2D) {
+    if let otherPerson = otherWalkerMapAnnotation {
+      print("[#\(UUID.prefix(3))] updating other location point...")
+      map.removeAnnotation(otherPerson)
+      otherPerson.coordinate = newLocation
+      map.addAnnotation(otherPerson)
+    } else {
+      print("[#\(UUID.prefix(3))] adding other location point...")
+      otherWalkerMapAnnotation = MKPointAnnotation()
+      otherWalkerMapAnnotation?.coordinate = newLocation
+      otherWalkerMapAnnotation?.title = otherWalkerName ?? "Other Person"
+      map.addAnnotation(otherWalkerMapAnnotation!)
+    }
+  }
+  
+  func confluenceRequestAlert(otherPersonId: String, otherPersonLoc: CLLocation) {
+    otherWalkerCoord = otherPersonLoc.coordinate
+    getDeviceOwner(deviceID: otherPersonId) { name in
+      self.otherWalkerName = name
+      
+      // Look up placemark of other person's location
+      CLGeocoder().reverseGeocodeLocation(otherPersonLoc) { (res, err) in
+        let placename = res?[0].name ?? "(\(otherPersonLoc.coordinate.latitude), \(otherPersonLoc.coordinate.longitude))"
+        
+        print("[Admin] setting up confluence request alert...")
+        // Set up confluence alert
+        let title = "Confluence Request"
+        let msg = "\(name) in \(placename) would like to join your group."
+        
+        let acceptAction = UIAlertAction(title: "Accept", style: .default) { _ in
+          print("[Admin] accepted confluence...")
+          self.otherPersonWalkerId = otherPersonId
+          self.performSegue(withIdentifier: "setConfluence", sender: nil)
+        }
+        
+        let declineAction = UIAlertAction(title: "Decline", style: .default) { _ in
+          print("[Admin] declined confluence...")
+          self.respondToRequest(otherPersonId: otherPersonId, didAccept: false)
+        }
+        
+        let confluenceAlert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
+        confluenceAlert.addAction(acceptAction)
+        confluenceAlert.addAction(declineAction)
+        
+        self.present(confluenceAlert, animated: true, completion: nil)
+      }
+    }
+  }
+  
+  func confluenceDeclinedAlert() {
+    print("[Joiner] Displaying confluence declined...")
+    
+    let group = pinToGroup[Int(confluenceGroupId)!]!
+    let title = "Confluence Declined"
+    let msg = "The creator of \(group.groupName) has declined your request to meet up."
+    
+    // Reset variables
+    resetConfluenceVariables()
+    
+    let declineAlert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
+    declineAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+    present(declineAlert, animated: true, completion: nil)
+  }
+  
+  func resetConfluenceVariables() {
+    confluenceGroupId = "-1"
+    confluencePoint = nil
+    confluenceLocation = DEFAULT_COORD
+    pendingConfluenceAlert = nil
+    otherWalkerMapAnnotation = nil
+    otherPersonWalkerId = nil
+    otherWalkerCoord = nil
+    otherWalkerName = nil
+  }
+  
+}
+
+// ~~~~~~~~~ PinViewDelegate
+extension ViewController: PinViewDelegate {
+  
   func initialisePinDetailView(group: Group) {
     // Set up the panel
     detailTitle.text = group.groupName
     detailDescription.text = group.description
-    detailTimings.text = "\(dateToString(datetime: group.datetime))"
+    detailTimings.text = prettyDateToString(date: group.datetime)
+    
+    // Wire up action button depending on joined/meet/join
     detailActions.setTitle("Joined", for: .disabled)
     detailActions.tag = Int(group.groupId)!
     if userGroups.contains(group) {
@@ -335,477 +790,4 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     })
   }
   
-  @IBAction func closePinDetailView(_ sender: Any) {
-    map.deselectAnnotation(activeAnnotation, animated: false)
-    deinitialisePinDetailView()
-  }
-  
-  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    self.view.endEditing(true)
-  }
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
-  }
-  
-  @objc func getDirections(){
-    let request = MKDirectionsRequest()
-    request.source = MKMapItem.forCurrentLocation()
-    request.destination = MKMapItem(placemark: MKPlacemark(coordinate: confluenceLocation))
-    request.requestsAlternateRoutes = false
-    request.transportType = .walking
-    let directions = MKDirections(request: request)
-    
-    directions.calculate(completionHandler: {(response, error) in
-      
-      if error != nil {
-        print("Could not obtain directions!")
-      } else {
-        self.showRoute(response!)
-      }
-    })
-  }
-  
-  func showRoute(_ response: MKDirectionsResponse) {
-    map.removeOverlays(map.overlays)
-    print("showing route!")
-    for route in response.routes {
-      map.add(route.polyline,
-              level: MKOverlayLevel.aboveRoads)
-    }
-    self.fitAll(showGroups: false)
-  }
-  
-  //used by group detail
-  func getRoute() {
-    
-    let directionRequest = MKDirectionsRequest()
-    directionRequest.source = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: (manager.location?.coordinate.latitude)!, longitude: (manager.location?.coordinate.longitude)!)))
-    directionRequest.destination = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: Double(globalUserGroups[currGroupId]!.latitude)!, longitude: Double(globalUserGroups[currGroupId]!.longitude)!)))
-    directionRequest.transportType = .walking
-    let directions = MKDirections(request: directionRequest)
-    directions.calculate { (response, error) in
-      guard let directionResponse = response else {
-        if let error = error {
-          print("We have an error getting the right directions \(error.localizedDescription)")
-        }
-        return
-      }
-      
-      let ALocation: CLLocation = CLLocation(latitude: (self.manager.location?.coordinate.latitude)!, longitude: (self.manager.location?.coordinate.longitude)!)
-      let BLocation: CLLocation = CLLocation(latitude: Double(globalUserGroups[currGroupId]!.latitude)!, longitude: Double(globalUserGroups[currGroupId]!.longitude)!)
-      let midPointLat = (ALocation.coordinate.latitude + BLocation.coordinate.latitude) / 2
-      let midPointLong = (ALocation.coordinate.longitude + BLocation.coordinate.longitude) / 2
-      let midPoint: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: Double(midPointLat), longitude: Double(midPointLong))
-      
-      let dist: CLLocationDistance = ALocation.distance(from: BLocation)
-      
-      let region: MKCoordinateRegion = MKCoordinateRegionMakeWithDistance(midPoint, 2 * dist, 2 * dist)
-      
-      let route = directionResponse.routes[0]
-      self.map.add(route.polyline, level: .aboveRoads)
-      
-      self.map.setRegion(region, animated: true)
-      
-      //      let rect = route.polyline.boundingMapRect
-      //      self.map.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
-    }
-  }
-  
-  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if segue.identifier == "setConfluence" {
-      if let dstVC = segue.destination as? CreateConfluenceVC {
-        dstVC.otherConfluenceID = otherConfluenceID
-        dstVC.otherPerson = (otherConfluencerName!, otherConfluenceCoord!)
-      }
-    }
-  }
-  
-  //Style and color of the route
-  func mapView(_ mapView: MKMapView, rendererFor
-    overlay: MKOverlay) -> MKOverlayRenderer {
-    let renderer = MKPolylineRenderer(overlay: overlay)
-    renderer.strokeColor = self.view.tintColor
-    renderer.lineWidth = 7.0
-    return renderer
-  }
-  
-  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-    if let locationPointer = view.annotation as? LocationPointer {
-      activeAnnotation = locationPointer
-      initialisePinDetailView(group: locationPointer.group!)
-    }
-  }
-  
-  
-  func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-    deinitialisePinDetailView()
-  }
-  
-  func createPinFromGroup(group: Group){
-    var subtitle = "Meeting Time: \(dateToString(datetime: group.datetime))"
-    subtitle += "\nDuration: \(getHoursMinutes(time: group.duration))"
-    
-    if group.hasDog { subtitle += "\nHas dogs" }
-    if group.hasKid { subtitle += "\nHas kids" }
-    
-    print("the group when creaintg pin is: \(group)")
-    let discipline = group.isWalking ? "In Progress" : "Not Started"
-    let coordinate = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
-    let annotation = LocationPointer(title: group.groupName, subtitle: subtitle, discipline: discipline, coordinate: coordinate, groupId: group.groupId, group: group)
-    
-    map.addAnnotation(annotation)
-  }
-  
-  func selectAnnotation(group: Group) {
-    // Filter location pointers only
-    let annotations: [LocationPointer] = map.annotations.filter({ $0 is LocationPointer }) as! [LocationPointer]
-    
-    // Show annotation
-    if let annotation = annotations.filter({ $0.group! == group }).first {
-      map.selectAnnotation(annotation, animated: true)
-    }
-  }
-  
-  func getAdminFromGroup(groupId:String, completion: @escaping((String)->()) ){
-    DispatchQueue(label: "Get AdminId", qos: .background).async {
-      let params: Parameters = [
-        "group_id": groupId
-      ]
-      
-      Alamofire.request("\(SERVER_IP)/groups/admin", method: .get, parameters: params)
-        .response { response in
-          if let data = response.data, let id = String(data: data, encoding: .utf8) {
-            completion(id.trimmingCharacters(in: .whitespaces))
-          }
-      }
-    }
-  }
-  
-  @objc func meetUp(_ sender: UIButton){
-    //TODO: fix the group
-    confluenceGroupId = String(sender.tag)
-    print("meeting up with group: \(confluenceGroupId)")
-    getAdminFromGroup(groupId: confluenceGroupId){ [unowned self] adminId in
-      print(adminId)
-      self.requestAdminPermission(adminId: adminId)
-      
-      let pendingAlert = buildLoadingOverlay(message: "Waiting for response...")
-      self.pendingConfluenceAlert = pendingAlert
-      self.present(pendingAlert, animated: true, completion: nil)
-      
-      DispatchQueue.main.asyncAfter(deadline: .now() + TIMEOUT_IN_SECS) { [unowned self] in
-        if let alert = self.pendingConfluenceAlert {
-          alert.dismiss(animated: true) {
-            let group = self.pinToGroup[sender.tag]!
-            let failureAlert = UIAlertController(title: "Request Timeout", message: "The group admin for \(group.groupName) did not respond to your confluence request.", preferredStyle: .alert)
-            failureAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            self.present(failureAlert, animated: true, completion: nil)
-          }
-        }
-      }
-    }
-  }
-  
-  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView?{
-    // Return on user location
-    if annotation is MKUserLocation { return nil }
-    
-    if annotation is MKPointAnnotation {
-      let annotationView = LocationPointerView(annotation: annotation, reuseIdentifier: "Pin")
-      
-      let pinTitle = annotation.title!!
-      
-      annotationView.markerTintColor = annotation.title!! == "Other Person" ? UIColor.blue : UIColor.red
-      
-      return annotationView
-    }
-    
-    let reuseId = "Pin"
-    let pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
-    pinView.canShowCallout = true
-    print(annotation.title ?? "no title!!")
-    let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 30, height: 30)))
-    directionButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
-    directionButton.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
-    
-    pinView.leftCalloutAccessoryView = directionButton
-    if let locPointAnnotation = annotation as? LocationPointer{
-      if(locPointAnnotation.discipline != ""){
-        let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
-        infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
-        if(locPointAnnotation.discipline == "In Progress"){
-          infoButton.setTitle("Meet Up", for: .normal)
-          infoButton.addTarget(self, action: #selector(self.meetUp), for: .touchUpInside)
-        } else{
-          infoButton.setTitle("Join", for: .normal)
-          print("locpointannotgroup: \(locPointAnnotation)")
-          if let grp = locPointAnnotation.group {
-            // Add entry to lookup dictionary for `tag -> group`
-            
-            infoButton.tag = Int(grp.groupId)!
-            let tag = infoButton.tag
-            pinToGroup[infoButton.tag] = grp
-            print("group is: \(grp.groupName)")
-            if userGroups.contains(grp) {
-              infoButton.setTitle("Joined", for: .normal)
-              infoButton.isEnabled = false
-            }
-          }
-          infoButton.addTarget(self, action: #selector(self.joinGroup(_:)), for: .touchUpInside)
-        }
-        pinView.rightCalloutAccessoryView = infoButton
-      }
-    }
-    
-    let subtitleView = UILabel()
-    subtitleView.font = subtitleView.font.withSize(12)
-    subtitleView.numberOfLines = 4
-    subtitleView.text = annotation.subtitle!
-    pinView.detailCalloutAccessoryView = subtitleView
-    
-    return pinView
-  }
-  
-  
-  
-  //Fits all pins on the map to the map view
-  func fitAll(showGroups: Bool) {
-    var zoomRect = MKMapRectNull;
-    //print(map.annotations)
-    for annotation in map.annotations {
-      if showGroups
-        || annotation is MKUserLocation
-        || (annotation.coordinate.latitude == selectedPin?.coordinate.latitude
-          && annotation.coordinate.longitude == selectedPin?.coordinate.longitude) {
-        let annotationPoint = MKMapPointForCoordinate(annotation.coordinate)
-        let pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.05, 0.05);
-        zoomRect = MKMapRectUnion(zoomRect, pointRect);
-      }
-    }
-    map.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(70, 70, 70, 70), animated: true)
-  }
-  
-  func callPopUp(identifier: String){
-    let popOverVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: identifier) as! JoinGroupPopupVC
-    self.addChildViewController(popOverVC)
-    popOverVC.view.frame = self.view.frame
-    self.view.addSubview(popOverVC.view)
-    popOverVC.didMove(toParentViewController: self)
-  }
-  
-  func buildCompletionAlert(success: Bool, group: Group) -> UIAlertController {
-    let title = success ? "Success!" : "Error occurred"
-    let msg = success ? "You have joined \(group.groupName)" : "Please try again later."
-    
-    let alert = UIAlertController(title: title, message: msg, preferredStyle: UIAlertControllerStyle.alert)
-    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-    return alert
-  }
-  
-  @objc func joinGroup(_ sender: UIButton) {
-    let tag = sender.tag
-    let groupToJoin = pinToGroup[tag]!
-    
-    // Show loading overlay
-    let alert = buildLoadingOverlay(message: "Adding you to \(groupToJoin.groupName)...")
-    present(alert, animated: true) { [unowned self] in
-      // Submit request to server, dismiss alert on complete, show error alert on error
-      addWalkerToGroup(groupId: groupToJoin.groupId) { isSuccess in
-        alert.dismiss(animated: true) {
-          let completionAlert = self.buildCompletionAlert(success: isSuccess, group: groupToJoin)
-          self.present(completionAlert, animated: true, completion: nil)
-          
-          // Reload groups if success
-          if isSuccess { self.setUpGroupData() }
-        }
-      }
-    }
-  }
-  
-  //------------------------CONFLUENCE------------------------
-  
-  //Adds the location of other to the map
-  func addConfluencePoint() {
-    if let confluence = confluencePoint{
-      print("confluence was already added. Updating instead")
-      updateLoc(confluencePoint: confluence, newLocation: confluenceLocation)
-    } else{
-      confluencePoint = MKPointAnnotation()
-      confluencePoint?.coordinate = confluenceLocation
-      confluencePoint?.title = "Confluence Point"
-      print("THE LOCATION OF CONFLUENCE IS: \(confluenceLocation)")
-      map.addAnnotation(confluencePoint!)
-    }
-  }
-  
-  func addOrUpdateOtherLoc(location: CLLocationCoordinate2D) {
-    if let confluence = otherLocPoint{
-      print("confluence was already added. Updating instead")
-      updateLoc(confluencePoint: confluence, newLocation: location)
-    } else{
-      otherLocPoint = MKPointAnnotation()
-      otherLocPoint?.coordinate = location
-      otherLocPoint?.title = "Other Person"
-      
-      map.addAnnotation(otherLocPoint!)
-    }
-  }
-  
-  //Updates confluence point annotation on the map
-  func updateLoc(confluencePoint: MKPointAnnotation, newLocation: CLLocationCoordinate2D) {
-    map.removeAnnotation(confluencePoint)
-    confluencePoint.coordinate = newLocation
-    //confluencePoint.changeLocationTo(newLocation)
-    map.addAnnotation(confluencePoint)
-  }
-  
-  func confluenceAlert(requesterId:String, requesterLoc:CLLocation) {
-    otherConfluenceCoord = requesterLoc.coordinate
-    getDeviceOwner(deviceID: requesterId) { name in
-      self.otherConfluencerName = name
-      var placeName = ""
-      //      let otherLoc = CLLocation(latitude: 51.494474, longitude: -0.182619)
-      CLGeocoder().reverseGeocodeLocation(requesterLoc) { (res, err) in
-        placeName = (res?[0].name)!
-        
-        let alert = UIAlertController(title: "Confluence Request", message: "\(name) in \(placeName) would like to join your group.", preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: "Accept", style: UIAlertActionStyle.default){ _ in
-          print("accepted")
-          self.otherConfluenceID = requesterId
-          
-          self.performSegue(withIdentifier: "setConfluence", sender: self)
-          //
-          //
-          //      print("the location of confluence is: \(self.confluenceLocation.latitude) \(self.confluenceLocation.longitude)")
-          //
-          //      self.respondToRequest(requesterId: requesterId, didAccept: true)
-          
-        })
-        alert.addAction(UIAlertAction(title: "Decline", style: UIAlertActionStyle.default){_ in
-          print("declined")
-          self.respondToRequest(requesterId: requesterId, didAccept: false)
-        })
-        self.present(alert, animated: true, completion: nil)
-        
-      }
-    }
-  }
-  
-  func confluenceDeclinedAlert(){
-    let alert = UIAlertController(title: "Confluence Declined", message: "Sorry, \(confluenceGroupId) has declined your request to join...", preferredStyle: UIAlertControllerStyle.alert)
-    alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
-    
-    self.present(alert, animated: true, completion: nil)
-    
-  }
-  
-  //~~~~~~~~~~~~~~~~~~~~~~~~CONFLUENCE~~~~~~~~~~~~~~~~~~~~~~~~
-  
-  func dateToString(datetime: Date) -> String {
-    let timeFormatter: DateFormatter = DateFormatter()
-    timeFormatter.dateFormat = "H:mm"
-    let newTime: String = timeFormatter.string(for: datetime)!
-    
-    let dateFormatter: DateFormatter = DateFormatter()
-    dateFormatter.dateStyle = .long
-    let newDate: String = dateFormatter.string(for: datetime)!
-    return "\(newTime) \(newDate)"
-  }
-}
-
-
-extension ViewController: StompClientLibDelegate{
-  func stompClient(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: AnyObject?, withHeader header: [String : String]?, withDestination destination: String) {
-    print("> Destination : \(destination)")
-    print("> JSON Body : \(String(describing: jsonBody))")
-  }
-  
-  func stompClientJSONBody(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
-    print("> DESTINATION : \(destination)")
-    print("> String JSON BODY : \(String(describing: jsonBody!))")
-    //    let jsonOutput = JSON(jsonBody!)
-    //    print(jsonOutput.type)
-    let data = jsonBody?.data(using: .utf8)
-    // print(jsonOutput)
-    if let senderResponse = try? JSONDecoder().decode(SenderResponse.self, from: data!){
-      // Someone else asking to join YOUR group
-      print(senderResponse.sender)
-      let coordinate = CLLocation(latitude: Double(senderResponse.senderLat)!, longitude: Double(senderResponse.senderLong)!)
-      
-      self.confluenceAlert(requesterId: senderResponse.sender, requesterLoc: coordinate)
-      
-    } else if let locationResponse = try? JSONDecoder().decode(LocationResponse.self, from: data!){
-      // SENDING LOCATION BACK AND FORTH
-      let coordinate = CLLocationCoordinate2D(latitude: Double(locationResponse.lat)!, longitude: Double(locationResponse.long)!)
-      print(coordinate)
-      addOrUpdateOtherLoc(location: coordinate)
-    } else if let response = try? JSONDecoder().decode(Response.self, from: data!){
-      // You getting a response from SOMEONE ELSE
-      
-      self.pendingConfluenceAlert?.dismiss(animated: true) { [unowned self] in
-        self.pendingConfluenceAlert = nil
-        if response.response{
-          print("WOOO HOOOO WE'RE JOIN A GROUP")
-          let location = CLLocationCoordinate2D(latitude: Double(response.latitude!)!, longitude: Double(response.longitude!)!)
-          
-          self.addOrUpdateOtherLoc(location: location)
-          
-          //set up confluence point
-          let confLoc = CLLocationCoordinate2D(latitude: Double(response.confluenceLat!)!, longitude: Double(response.confluenceLong!)!)
-          //self.confluencePoint?.coordinate = confLoc
-          self.confluenceLocation = confLoc
-          print("the coordinates are: \(confLoc.longitude), \(confLoc.latitude)")
-          self.addConfluencePoint()
-          
-          self.getDirections()
-          
-          //Send your location to admin
-          print("sending location to group: \(self.confluenceGroupId)")
-          
-          self.getAdminFromGroup(groupId: self.confluenceGroupId){ adminId in
-            print(adminId)
-            self.otherConfluenceID = adminId
-            self.sendLocToUser(userId: adminId)
-          }
-        } else{
-          print("awwwww you were declined")
-          self.confluenceDeclinedAlert()
-        }
-      }
-    } else {
-      print("Should not get here")
-      print()
-    }
-  }
-  
-  func serverDidSendReceipt(client: StompClientLib!, withReceiptId receiptId: String) {
-    print("> Receipt : \(receiptId)")
-  }
-  
-  func serverDidSendError(client: StompClientLib!, withErrorMessage description: String, detailedErrorMessage message: String?) {
-    print("> Error Send : \(String(describing: message))")
-  }
-  
-  func serverDidSendPing() {
-    print("> Server ping")
-  }
-  
-  func stompClientDidConnect(client: StompClientLib!) {
-    print("> Socket is connected")
-    
-    let newURL = "\(subscriptionURL)/\(deviceIDAppend)"
-    //print("i am subscribed toL " + newURL)
-    socketClient.subscribe(destination: newURL)
-    
-  }
-  
-  func stompClientDidDisconnect(client: StompClientLib!) {
-    print("> Socket is Disconnected")
-    socketClient.unsubscribe(destination: subscriptionURL)
-  }
-  
-  func stompClientWillDisconnect(client: StompClientLib!, withError error: NSError) {
-  }
 }

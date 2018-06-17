@@ -14,12 +14,38 @@ import MapKit
 // Constants
 let UUID: String = UIDevice.current.identifierForVendor!.uuidString
 let SERVER_IP: String = "http://146.169.45.120:8080/smallsteps"
+let TIMEOUT_IN_SECS = 60.0
+let DEFAULT_LAT = 51.4989
+let DEFAULT_LNG = -0.1790
+let DEFAULT_COORD = CLLocationCoordinate2D(latitude: DEFAULT_LAT, longitude: DEFAULT_LNG)
+let CONFLUENCE_THRESHOLD_IN_METRES = 5.0
 
 // HTTP status codes
 let HTTP_OK = 200
 let HTTP_BAD_REQUEST = 400
 let HTTP_NOT_FOUND = 404
 let HTTP_SERVICE_UNAVAILABLE = 503
+
+// Protocols
+protocol HandleGroupSelection {
+  func selectAnnotation(group: Group)
+}
+
+protocol ConfluenceDelegate {
+  func requestAdminPermission(adminId: String)
+  func respondToRequest(otherPersonId: String, didAccept: Bool)
+  func sendLocationToUser(otherUserId: String)
+  func renderConfluencePoint()
+  func renderOtherPersonLocation(newLocation: CLLocationCoordinate2D)
+  func confluenceRequestAlert(otherPersonId: String, otherPersonLoc: CLLocation)
+  func confluenceDeclinedAlert()
+  func resetConfluenceVariables()
+}
+
+protocol PinViewDelegate {
+  func initialisePinDetailView(group: Group)
+  func deinitialisePinDetailView()
+}
 
 /**
  * Date/Time conversions
@@ -140,6 +166,19 @@ func addWalkerToGroup(groupId: String, completion: @escaping (Bool) -> Void)  {
     Alamofire.request("\(SERVER_IP)/groups", method: .put, parameters: params)
       .responseJSON { response in
         completion(response.response?.statusCode == HTTP_OK)
+    }
+  }
+}
+
+func getAdminFromGroup(groupId: String, completion: @escaping (String) -> ()) {
+  DispatchQueue(label: "Get AdminId", qos: .background).async {
+    let params: Parameters = ["group_id": groupId]
+    
+    Alamofire.request("\(SERVER_IP)/groups/admin", method: .get, parameters: params)
+      .response { response in
+        if let data = response.data, let id = String(data: data, encoding: .utf8) {
+          completion(id.trimmingCharacters(in: .whitespaces))
+        }
     }
   }
 }

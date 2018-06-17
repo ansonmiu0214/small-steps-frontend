@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct SenderResponse: Decodable{
+struct SenderResponse: Codable {
   let sender: String
   let senderLat: String
   let senderLong: String
@@ -19,7 +19,7 @@ struct SenderResponse: Decodable{
   }
 }
 
-struct LocationResponse: Decodable{
+struct LocationResponse: Codable {
   let lat: String
   let long: String
   let senderID: String
@@ -30,7 +30,7 @@ struct LocationResponse: Decodable{
   }
 }
 
-struct Response: Decodable{
+struct Response: Codable {
   let response:Bool
   let latitude: String?
   let longitude: String?

@@ -48,7 +48,7 @@ class CreateConfluenceVC: FormViewController {
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if let destVC = segue.destination as? ViewController {
       destVC.isConfluenceButtonClick = true
-      destVC.otherConfluenceID = otherConfluenceID
+      destVC.otherPersonWalkerId = otherConfluenceID
       destVC.confluenceLocation = CLLocationCoordinate2D(latitude: Double("\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.latitude)!)")!, longitude: Double("\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.longitude)!)")!)
       
     }
