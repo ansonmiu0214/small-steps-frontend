@@ -14,37 +14,6 @@ import CoreLocation
 var groups: [Group] = []
 var myGroups: [Group] = []
 
-func createGroupFromJSON(item: JSON) -> Group{
-  //Convert JSON to string to datetime
-  let dateFormatterDT: DateFormatter = DateFormatter()
-  dateFormatterDT.dateFormat = "yyyy-MM-dd hh:mm:ss"
-  let newDate: Date = dateFormatterDT.date(from: item["time"].string!)!
-  
-  //Convert JSON to string to duration
-  let dateFormatterDur: DateFormatter = DateFormatter()
-  dateFormatterDur.dateFormat = "hh:mm:ss"
-  
-  print("THE DURATION IS :" + item["duration"].string!)
-  let dur = item["duration"].string!  
-  let newDuration: Date = dateFormatterDur.date(from: item["duration"].string!)!
-  
-  //Add new group to group array
-  let newGroup: Group = Group(groupName: item["name"].string!,
-                              datetime: newDate,
-                              repeats: "yes",
-                              duration: newDuration,
-                              latitude: item["location_latitude"].string!,
-                              longitude: item["location_longitude"].string!,
-                              hasDog: item["has_dogs"].bool!,
-                              hasKid: item["has_kids"].bool!,
-                              adminID: item["admin_id"].string!,
-                              isWalking: item["is_walking"].bool!,
-                              description: item["description"].string!,
-                              groupId: item["id"].string!,
-                              numberOfPeople: item["number_of_people"].int!)
-  return newGroup
-}
-
 class AllGroupsTVC: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()

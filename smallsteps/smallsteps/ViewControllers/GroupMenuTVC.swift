@@ -14,36 +14,7 @@ import SwiftyJSON
 var currGroupId: Int = -1
 var globalUserGroups: [Int:Group] = [:]
 
-func parseGroupsFromJSON(res: DataResponse<Any>) -> [Group] {
-  var parsedGroups: [Group] = []
-  if let jsonVal = res.result.value {
-    let jsonVar = JSON(jsonVal)
-    for (_, item) in jsonVar {
-      parsedGroups.append(createGroupFromJSON(item: item))
-    }
-  }
-  return parsedGroups
-}
-
-func getGroupsByUUID(completion: @escaping ([Group]) -> Void) {
-  DispatchQueue(label: "GetUserGroups", qos: .background).async {
-    let query = queryBuilder(endpoint: "groups", params: [("device_id", UUID)])
-    Alamofire.request(query, method: .get).responseJSON { response in
-      let userGroups = parseGroupsFromJSON(res: response)
-      
-      globalUserGroups = [:]
-      for group in userGroups {
-        globalUserGroups[Int(group.groupId)!] = group
-      }
-      
-      completion(userGroups)
-    }
-  }
-}
-
 class GroupMenuTVC: UITableViewController {
-  
-  //  var userGroups: [Group] = []
   
   var sections = ["Created", "Joined"]
   var userGroups: [[Group]] = [[], []]
@@ -72,12 +43,10 @@ class GroupMenuTVC: UITableViewController {
   
   override func numberOfSections(in tableView: UITableView) -> Int {
     return sections.count
-    //    return 1
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return self.userGroups[section].count
-    //    return userGroups.count
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -115,12 +84,10 @@ class GroupMenuTVC: UITableViewController {
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if (editingStyle == UITableViewCellEditingStyle.delete) {
       let groupToDelete = userGroups[indexPath.section][indexPath.row]
-      
       let deleteURL = queryBuilder(endpoint: "groups", params: [("walker_id", UUID), ("group_id", groupToDelete.groupId)])
       
       let loadingPanel = buildLoadingOverlay(message: "Deleting you from '\(groupToDelete.groupName)'...")
       present(loadingPanel, animated: true) {
-        // Make request
         Alamofire.request(deleteURL, method: .delete).response { response in
           loadingPanel.dismiss(animated: true) {
             getGroupsByUUID(completion: self.refreshTable)

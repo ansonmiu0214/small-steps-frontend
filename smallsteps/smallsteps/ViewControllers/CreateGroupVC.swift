@@ -64,14 +64,6 @@ class CreateGroupVC: FormViewController {
         $0.value = Calendar.current.date(bySettingHour: 0, minute: 30, second: 0, of: Date())
       }
       +++ Section("Details")
-      <<< SwitchRow() { row in
-        row.tag = "hasDogs"
-        row.title = "Dog Friendly"
-      }
-      //            <<< SwitchRow() { row in
-      //                row.tag = "hasKids"
-      //                row.title = "With Kids"
-      //            }
       <<< LocationRow("location") {
         $0.title = "Location"
         $0.tag = "location"
@@ -94,10 +86,10 @@ class CreateGroupVC: FormViewController {
                                 repeats: valuesDict["repeat"] as! String ,
                                 duration: valuesDict["duration"] as! Date,
                                 latitude: "\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.latitude)!)",
-      longitude: "\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.longitude)!)",
-        hasDog: ((form.rowBy(tag: "hasDogs") as? SwitchRow)?.cell.switchControl.isOn)!,
-      adminID: UUID,
-      description: valuesDict["description"] as! String)
+                                longitude: "\(((form.rowBy(tag: "location") as? LocationRow)?.value?.coordinate.longitude)!)",
+                                hasDog: false,
+                                adminID: UUID,
+                                description: valuesDict["description"] as! String)
     
     // Show progress overlay
     let alert = buildLoadingOverlay(message: "Setting up \"\(newGroup.groupName)\"")
@@ -106,11 +98,11 @@ class CreateGroupVC: FormViewController {
     //Create the walker parameters
     let groupParams: Parameters = [
       "name": newGroup.groupName,
-      "time": removeTimezone(datetime: newGroup.datetime),
+      "time": dateToString(newGroup.datetime),
       "admin_id": newGroup.adminID,
       "location_latitude": newGroup.latitude,
       "location_longitude": newGroup.longitude,
-      "duration": getHoursMinutesSeconds(time: newGroup.duration),
+      "duration": durationToString(newGroup.duration),
       "has_dogs": false,
       "has_kids": false,
       "description": newGroup.description
@@ -121,25 +113,29 @@ class CreateGroupVC: FormViewController {
       Alamofire.request("\(SERVER_IP)/groups", method: .post, parameters: groupParams, encoding: JSONEncoding.default)
         .responseJSON { [unowned self] response in
           alert.dismiss(animated: false) {
-            if let statusCode = response.response?.statusCode {
-              switch statusCode {
-              case HTTP_OK:
-                // TODO reload groups
+            guard let statusCode = response.response?.statusCode else {
+              self.serviceUnavailableHandler()
+              return
+            }
+
+            switch statusCode {
+            case HTTP_OK:
+              let successAlert = UIAlertController(title: "Success!", message: "Your '\(newGroup.groupName)' walking group has been created.", preferredStyle: .alert)
+              successAlert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
                 self.performSegue(withIdentifier: "returnHome", sender: nil)
-              case HTTP_BAD_REQUEST:
-                self.badFormHandler()
-              default:
-                self.serviceUnavailableHandler()
-              }
-            } else {
+              })
+              self.present(successAlert, animated: true)
+            case HTTP_BAD_REQUEST:
+              self.badFormHandler()
+            default:
               self.serviceUnavailableHandler()
             }
+          
           }
       }
     }
   }
   
-  // TODO enforce protocol for these handlers
   private func badFormHandler() {
     let alert = UIAlertController(title: "Invalid Details", message: "Please verify the details of the group you are trying to create.", preferredStyle: .alert)
     alert.addAction(UIAlertAction(title: "OK", style: .destructive, handler: nil))
@@ -147,29 +143,11 @@ class CreateGroupVC: FormViewController {
     present(alert, animated: true, completion: nil)
   }
   
-  // TODO enforce protocol for these handlers
   private func serviceUnavailableHandler() {
     let alert = UIAlertController(title: "Service Unavailable", message: "Please check your network connections and try again later.", preferredStyle: .alert)
     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
     
     present(alert, animated: true, completion: nil)
-  }
-  
-  func removeTimezone(datetime: Date) -> String {
-    let dateFormatter: DateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy-MM-dd hh:mm:ss"
-    let newDate: String = dateFormatter.string(for: datetime)!
-    //print("THE NEW DATE IS: \(newDate)")
-    return newDate
-  }
-
-  func getHoursMinutesSeconds(time: Date) -> String {
-    let dateFormatter: DateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "hh:mm:ss"
-    let newTime: String = dateFormatter.string(for: time)!
-    print("THE NEW TIME IS: \(newTime)")
-    
-    return newTime
   }
   
 }

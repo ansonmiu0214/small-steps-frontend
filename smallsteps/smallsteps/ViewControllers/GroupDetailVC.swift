@@ -10,45 +10,21 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
   @IBOutlet weak var descriptionLabel: UILabel!
   
   let group = globalUserGroups[currGroupId]!
-  
   let dropPin = MeetingPointMarker(identifier: "meetingPoint", title: globalUserGroups[currGroupId]!.groupName, coordinate: CLLocationCoordinate2D(latitude: Double(globalUserGroups[currGroupId]!.latitude)!, longitude: Double(globalUserGroups[currGroupId]!.longitude)!))
   let manager = CLLocationManager()
   
   override func viewDidLoad() {
-
+    super.viewDidLoad()
     
     self.meetingMap.delegate = self
     
-    
+    // Set up label text
     groupNameLabel.text = group.groupName
-    
-    //Convert from datetime to string
-    let dateFormatter: DateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "MMM d yyyy, h:mm a"
-    let stringDate: String = dateFormatter.string(from:group.datetime)
-    meetingTimeLabel.text = stringDate
-    
-    //Duration
-    let dateFormatter2: DateFormatter = DateFormatter()
-    dateFormatter2.dateFormat = "hh"
-    let hours: String = dateFormatter2.string(from: group.duration)
-    dateFormatter2.dateFormat = "mm"
-    let mins: String = dateFormatter2.string(from: group.duration)
-    
-    if (hours == "") {
-      durationLabel.text = "\(mins) minutes walk"
-    } else if (hours == "01") {
-      durationLabel.text = "\(hours) hour \(mins) minutes walk"
-    } else {
-      durationLabel.text = "\(hours) hours \(mins) minutes walk"
-    }
-    
+    meetingTimeLabel.text = prettyDateToString(date: group.datetime)
+    durationLabel.text = prettyDurationToString(time: group.duration)
     showLocation(location: CLLocation(latitude: Double(group.latitude)!, longitude: Double(group.longitude)!))
     
-    //addGesture()
     descriptionLabel.text = group.description
-    
-    
   }
   
   
@@ -81,8 +57,6 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
   }
   
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    let location = locations[0]
-    
     let span: MKCoordinateSpan = MKCoordinateSpanMake(0.001, 0.001)
     let myLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(Double(group.latitude)!, Double(group.longitude)!)
     let region: MKCoordinateRegion = MKCoordinateRegionMake(myLocation, span)
@@ -128,10 +102,6 @@ class GroupDetailVC: UIViewController, MKMapViewDelegate, CLLocationManagerDeleg
   
   func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
     let meetingPoint = view.annotation as! MeetingPointMarker
-    
-    //        let ac = UIAlertController(title: "Find Route to Meeting Point", message: "", preferredStyle: .alert)
-    //        ac.addAction(UIAlertAction(title: "OK", style: .default))
-    //        present(ac, animated: true)
     let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
     let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
     let routeToMeetingPoint = UIAlertAction(title: "Find Route to Meeting Point", style: .default) { action in

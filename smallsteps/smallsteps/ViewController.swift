@@ -17,90 +17,10 @@ import LocationPickerController
 
 let TIMEOUT_IN_SECS: Double = 60
 
-struct SenderResponse: Decodable{
-  let sender: String
-  let senderLat: String
-  let senderLong: String
-  enum CodingKeys: String, CodingKey {
-    case sender
-    case senderLat
-    case senderLong
-  }
-}
 
-struct LocationResponse: Decodable{
-  let lat: String
-  let long: String
-  let senderID: String
-  enum CodingKeys: String, CodingKey{
-    case lat
-    case long
-    case senderID
-  }
-}
-
-struct Response: Decodable{
-  let response:Bool
-  let latitude: String?
-  let longitude: String?
-  let confluenceLat: String?
-  let confluenceLong: String?
-  
-  enum CodingKeys: String, CodingKey{
-    case response
-    case latitude
-    case longitude
-    case confluenceLat
-    case confluenceLong
-  }
-}
 
 protocol HandleGroupSelection {
   func selectAnnotation(group: Group)
-}
-
-func getDeviceOwner(deviceID:String, completion: @escaping (String) -> Void) {
-  DispatchQueue(label: "Get Device Owner", qos: .background).async {
-    let params: Parameters = [
-      "device_id": deviceID,
-      ]
-    
-    Alamofire.request("\(SERVER_IP)/walker/name", method: .get, parameters: params)
-      .responseJSON { response in
-        if let data = response.data, let name = String(data: data, encoding: .utf8) {
-          completion(name.trimmingCharacters(in: .whitespaces))
-        }
-    }
-  }
-}
-
-func getGroups(center: CLLocationCoordinate2D, completion: @escaping ([Group]) -> Void) {
-  DispatchQueue(label: "Get Groups", qos: .background).async {
-    let params: Parameters = [
-      "latitude": String(center.latitude),
-      "longitude": String(center.longitude)
-    ]
-    
-    Alamofire.request("\(SERVER_IP)/groups", method: .get, parameters: params)
-      .responseJSON { response in
-        let allGroups = parseGroupsFromJSON(res: response)
-        completion(allGroups)
-    }
-  }
-}
-
-func addWalkerToGroup(groupId: String, completion: @escaping (Bool) -> Void)  {
-  DispatchQueue(label: "JoinRequest", qos: .background).async {
-    let params: Parameters = [
-      "group_id": groupId,
-      "walker_id": UUID
-    ]
-    
-    Alamofire.request("\(SERVER_IP)/groups", method: .put, parameters: params)
-      .responseJSON { response in
-        completion(response.response?.statusCode == HTTP_OK)
-    }
-  }
 }
 
 class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleGroupSelection {
