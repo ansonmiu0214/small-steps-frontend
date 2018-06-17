@@ -272,7 +272,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     // Initialise visual effect view
     fxView.isHidden = true
-    pinDetailView.layer.cornerRadius = 5
+    pinDetailView.layer.cornerRadius = 10
     pinDetailView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width * 0.8, height: self.view.frame.height * 0.7)
     pinDetailView.center = self.view.center
     
@@ -289,6 +289,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   func initialisePinDetailView(group: Group) {
     // Set up the panel
     detailTitle.text = group.groupName
+    
     detailDescription.text = group.description
     detailTimings.text = "\(dateToString(datetime: group.datetime))"
     detailActions.setTitle("Joined", for: .disabled)
