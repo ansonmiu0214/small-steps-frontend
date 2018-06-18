@@ -53,6 +53,7 @@
                         <outlet property="map" destination="d3d-yF-TBA" id="JDk-gx-IQT"/>
                         <outlet property="pinDetailView" destination="vhE-oJ-31V" id="Xc0-g3-IJe"/>
                         <segue destination="sfa-D2-B8l" kind="show" identifier="setConfluence" id="K6N-f0-AIz"/>
+                        <segue destination="MRK-uI-l3N" kind="show" identifier="showProfile" id="Oj7-Q5-UGO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -164,10 +165,12 @@
                         <viewLayoutGuide key="safeArea" id="uTs-ww-8yi"/>
                     </view>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="show" identifier="confluenceToMain" id="ePH-k9-6f7"/>
+                        <segue destination="BYZ-38-t0r" kind="showDetail" identifier="confluenceToMainBackup" id="ePH-k9-6f7"/>
+                        <segue destination="PE4-zG-15i" kind="unwind" identifier="unwindToVC" unwindAction="unwindToVCWithSegue:" id="VwG-Va-MT0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DhY-vK-TM2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="PE4-zG-15i" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="3375" y="-687"/>
         </scene>
@@ -703,6 +706,7 @@
                 <viewControllerPlaceholder id="Ps3-A6-j16" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xhA-e4-Qy9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="2819" y="-844"/>
         </scene>
         <!--LandingVC-->
         <scene sceneID="fpo-t0-iLU">
@@ -754,6 +758,36 @@
             </objects>
             <point key="canvasLocation" x="-1213" y="-143"/>
         </scene>
+        <!--ProfileVC-->
+        <scene sceneID="8Bt-z2-UX5">
+            <objects>
+                <viewController id="MRK-uI-l3N" customClass="ProfileVC" customModule="smallsteps" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Zzu-Ae-bNY">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NS1-R1-OWX">
+                                <rect key="frame" x="16" y="84" width="92" height="43"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="36"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="NS1-R1-OWX" firstAttribute="top" secondItem="wav-Es-qeD" secondAttribute="top" constant="20" id="5LQ-Ve-NHN"/>
+                            <constraint firstItem="NS1-R1-OWX" firstAttribute="leading" secondItem="wav-Es-qeD" secondAttribute="leading" constant="16" id="Ydd-Gb-T8j"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="wav-Es-qeD"/>
+                    </view>
+                    <connections>
+                        <outlet property="heading" destination="NS1-R1-OWX" id="K8Q-Wj-0cQ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2Xr-wS-UQa" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-296" y="-464"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Logo" width="1080" height="1080"/>
@@ -762,7 +796,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Mik-Eo-aM5"/>
-        <segue reference="CnP-qi-gvu"/>
+        <segue reference="blc-Hp-EAd"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.72156862749999995" green="0.38823529410000002" blue="0.49803921569999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

@@ -45,3 +45,8 @@ struct Response: Codable {
     case confluenceLong
   }
 }
+
+struct CompletionResponse: Codable {
+  let senderID: String
+  let isReached: Bool
+}

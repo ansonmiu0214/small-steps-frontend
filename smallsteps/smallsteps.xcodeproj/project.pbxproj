@@ -11,6 +11,7 @@
 		0461EBFA20C6E20D0014EB34 /* LocationPointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0461EBF920C6E20C0014EB34 /* LocationPointer.swift */; };
 		0461EBFC20C6E2580014EB34 /* LocationPointerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0461EBFB20C6E2570014EB34 /* LocationPointerView.swift */; };
 		04AB146320C841AF007419F0 /* CustomCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB146220C841AF007419F0 /* CustomCells.swift */; };
+		3E2F68D420D7AA740089794D /* ProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E2F68D320D7AA740089794D /* ProfileVC.swift */; };
 		3E52B2BE20C9CDB000F4C460 /* GroupMenuTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E52B2BD20C9CDB000F4C460 /* GroupMenuTVC.swift */; };
 		3E72F8D920CC1BC1002F4AAC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E72F8D820CC1BC1002F4AAC /* Utils.swift */; };
 		3E72F8DD20CC3357002F4AAC /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E72F8DC20CC3357002F4AAC /* LandingVC.swift */; };
@@ -61,6 +62,7 @@
 		0461EBFB20C6E2570014EB34 /* LocationPointerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationPointerView.swift; sourceTree = "<group>"; };
 		04AB146220C841AF007419F0 /* CustomCells.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCells.swift; sourceTree = "<group>"; };
 		31BE804FD74B4010CC95E798 /* Pods_smallsteps.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_smallsteps.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E2F68D320D7AA740089794D /* ProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileVC.swift; sourceTree = "<group>"; };
 		3E52B2BD20C9CDB000F4C460 /* GroupMenuTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMenuTVC.swift; sourceTree = "<group>"; };
 		3E72F8D820CC1BC1002F4AAC /* Utils.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; tabWidth = 2; };
 		3E72F8DC20CC3357002F4AAC /* LandingVC.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; tabWidth = 2; };
@@ -133,6 +135,7 @@
 				6E01D6D320C6A355004ABE58 /* _AllGroupsTVC.swift */,
 				6E01D6D120C69C9F004ABE58 /* CreateGroupVC.swift */,
 				3E72F8DC20CC3357002F4AAC /* LandingVC.swift */,
+				3E2F68D320D7AA740089794D /* ProfileVC.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -426,6 +429,7 @@
 				6E03485220BEBC77008EFC5D /* ViewController.swift in Sources */,
 				0461EBF820C6BB150014EB34 /* LocationSearchTable.swift in Sources */,
 				6E57B19720D1656E0062BEDE /* MeetingPointMarker.swift in Sources */,
+				3E2F68D420D7AA740089794D /* ProfileVC.swift in Sources */,
 				3E72F8EC20D0671B002F4AAC /* GroupDetailVC.swift in Sources */,
 				6E57B19920D16F810062BEDE /* MeetingPointMarkerView.swift in Sources */,
 				6E01D6D620C6A386004ABE58 /* Group.swift in Sources */,

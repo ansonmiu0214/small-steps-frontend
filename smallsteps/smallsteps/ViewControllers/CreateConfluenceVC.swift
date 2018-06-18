@@ -42,7 +42,8 @@ class CreateConfluenceVC: FormViewController {
   }
   
   @objc func createConfluence() {
-    performSegue(withIdentifier: "confluenceToMain", sender: self)
+    performSegue(withIdentifier: "unwindToVC", sender: self)
+//    performSegue(withIdentifier: "confluenceToMain", sender: self)
   }
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

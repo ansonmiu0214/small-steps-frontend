@@ -16,12 +16,15 @@ import StompClientLib
 import LocationPickerController
 
 class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, HandleGroupSelection {
-  var selectedPin:MKPlacemark? = nil
-  var currentGroupId: String = "-1"
   
-  @IBOutlet var map: MKMapView!
+  // ~~~~~General fields~~~~~
+  var resultSearchController: UISearchController? = nil
+  var isGroupDetailButtonClick: Bool = false
+  var isConfluenceButtonClick: Bool = false
+  // ~~~~~General fields~~~~~
   
-  // Pin details view
+  
+  // ~~~~~Pin details view~~~~~
   @IBOutlet var pinDetailView: UIView!
   var effect: UIVisualEffect!
   var activeAnnotation: MKAnnotation? = nil
@@ -30,43 +33,49 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   @IBOutlet weak var detailActions: UIButton!
   @IBOutlet weak var detailDescription: UITextView!
   @IBOutlet weak var detailTimings: UITextView!
+  // ~~~~~Pin details view~~~~~
   
-  var resultSearchController:UISearchController? = nil
   
+  // ~~~~~LocationManager/MapView~~~~~
   let manager = CLLocationManager()
+  @IBOutlet var map: MKMapView!
+  var selectedPin: MKPlacemark? = nil
+  // ~~~~~LocationManager/MapView~~~~~
   
-  var isGroupDetailButtonClick: Bool = false
-  var isConfluenceButtonClick: Bool = false
   
+  // ~~~~~Group details~~~~~
   var allGroups: [Group] = []
   var userGroups: [Group] = []
   var pinToGroup: [Int: Group] = [:]
+  // ~~~~~Group details~~~~~
   
-  // Confluence utils
   
-  
+  // ~~~~~Socket utils~~~~~
   var socketClient = StompClientLib()
   let subscriptionURL = "/topic/confluence"
   let initDestinationURL = "/app/request"
   let locDestinationURL = "/app/confluence"
   let responseDestinationURL = "/app/response"
-  //let registrationURL = "http://localhost:8080/ws"
-  let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"
-  let deviceIDAppend = UIDevice.current.identifierForVendor!.uuidString
+  let completionDestionationURL = "/app/reached"
+  let registrationURL = "http://146.169.45.120:8080/smallsteps/ws"  // "http://localhost:8080/ws"
+  // ~~~~~Socket utils~~~~~
   
+  
+  // ~~~~~Confluence utils~~~~~
   var pendingConfluenceAlert: UIAlertController?
+  var confluenceInProgress: Bool = false
+  var confluenceIsAdmin: Bool = false
+  var confluenceGroupId = DEFAULT_GROUP_ID
   
-  var confluenceGroupId = "-1"
   var confluencePoint: MKPointAnnotation?
   var confluenceLocation: CLLocationCoordinate2D = DEFAULT_COORD
+  var confluenceRoutes: [MKRoute] = []
   
   var otherPersonWalkerId: String?
   var otherWalkerCoord: CLLocationCoordinate2D?
   var otherWalkerName: String?
   var otherWalkerMapAnnotation: MKPointAnnotation?
-  
-  
-  var confluenceRoutes: [MKRoute] = []
+  // ~~~~~Confluence utils~~~~~
   
   
   func registerSocket(){
@@ -83,23 +92,23 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       
       // Set up CoreLocation manager
       self.manager.delegate = self
-      self.manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+      self.manager.desiredAccuracy = kCLLocationAccuracyBest
       self.manager.requestWhenInUseAuthorization()
       self.manager.startUpdatingLocation()
       
       // Set up LocationSearchTable
       let locationSearchTable = self.storyboard!.instantiateViewController(withIdentifier: "LocationSearchTable") as! LocationSearchTable
       locationSearchTable.groups = self.allGroups
+      locationSearchTable.handleMapSearchDelegate = self
       self.resultSearchController = UISearchController(searchResultsController: locationSearchTable)
       self.resultSearchController?.searchResultsUpdater = locationSearchTable
-      
-      locationSearchTable.handleMapSearchDelegate = self
       
       // Set up SearchBar
       let searchBar = self.resultSearchController!.searchBar
       searchBar.sizeToFit()
       searchBar.placeholder = "Search for groups"
       self.navigationItem.titleView = self.resultSearchController?.searchBar
+      
       self.resultSearchController?.hidesNavigationBarDuringPresentation = false
       self.resultSearchController?.dimsBackgroundDuringPresentation = true
       self.definesPresentationContext = true
@@ -145,40 +154,58 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     super.viewDidLoad()
   }
   
+  @objc func showProfile(_ sender: UIBarButtonItem) {
+    performSegue(withIdentifier: "showProfile", sender: self)
+  }
+  
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    let currentLocation = locations.first!
-    if let otherUserId = otherPersonWalkerId {
-      if let otherCoord = otherWalkerCoord {
-        let otherLat = otherCoord.latitude
-        let otherLong = otherCoord.longitude
-        
-        let distance = currentLocation.distance(from: CLLocation(latitude: otherLat, longitude: otherLong))
-        print("[#] Distance from other person: \(distance)")
-        if distance < CONFLUENCE_THRESHOLD_IN_METRES {
-          // Remove pins
-          if let point = self.confluencePoint { self.map.removeAnnotation(point) }
-          if let otherPoint = self.otherWalkerMapAnnotation { self.map.removeAnnotation(otherPoint) }
-          self.map.removeOverlays(self.map.overlays)
-          resetConfluenceVariables()
-          
-          let alert = UIAlertController(title: nil, message: "Confluence reached", preferredStyle: .alert)
-          alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-          present(alert, animated: true, completion: nil)
-        } else {
-          sendLocationToUser(otherUserId: otherUserId)
-        }
-      } else {
-        sendLocationToUser(otherUserId: otherUserId)
-      }
-    }
+    if !confluenceInProgress { return }
+    guard let otherUserId = otherPersonWalkerId else { return }
+    sendLocationToUser(otherUserId: otherUserId)
+  
+//    if let otherUserId = otherPersonWalkerId {
+//      if let otherCoord = otherWalkerCoord {
+//        if !confluenceInProgress { return }
+//        let otherLat = otherCoord.latitude
+//        let otherLong = otherCoord.longitude
+//
+//        let distance = currentLocation.distance(from: CLLocation(latitude: otherLat, longitude: otherLong))
+//        print("[#] Distance from other person: \(distance)")
+//        if distance < CONFLUENCE_THRESHOLD_IN_METRES {
+//          confluenceInProgress = false
+//
+//          // Submit completion signal
+//          let completionResponse = CompletionResponse(senderID: UUID, isReached: true)
+//          let jsonRequest = try? JSONEncoder().encode(completionResponse)
+//          let jsonMsg = String(data: jsonRequest!, encoding: .utf8)
+//          let dstUrl = completionDestionationURL + "/" + otherPersonWalkerId!
+//
+//          socketClient.sendMessage(message: jsonMsg!, toDestination: dstUrl, withHeaders: nil, withReceipt: nil)
+//
+//          let alert = UIAlertController(title: nil, message: "Confluence reached", preferredStyle: .alert)
+//          alert.addAction(UIAlertAction(title: "Call", style: .default) { _ in
+//            if let url = URL(string: "tel://07756790065"), UIApplication.shared.canOpenURL(url) {
+//              UIApplication.shared.open(url)
+//            }
+//          })
+//          alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+//            // Remove pins
+//            if let point = self.confluencePoint { self.map.removeAnnotation(point) }
+//            if let otherPoint = self.otherWalkerMapAnnotation { self.map.removeAnnotation(otherPoint) }
+//            self.map.removeOverlays(self.map.overlays)
+//            self.resetConfluenceVariables()
+//          })
+//          present(alert, animated: true, completion: nil)
+//        } else {
+//          sendLocationToUser(otherUserId: otherUserId)
+//        }
+//      }
+//    }
   }
   
   func setUpGroupData(completion: (() -> Void)? = nil) {
-    var location = manager.location?.coordinate
-    if location == nil{
-      location = CLLocationCoordinate2DMake(51.4989, -0.1790)
-    }
-    getGroups(center: location!) { [unowned self] allGroups in
+    let location = manager.location?.coordinate ?? DEFAULT_COORD
+    getGroups(center: location) { [unowned self] allGroups in
       getGroupsByUUID { userGroups in
         // Set fields
         self.allGroups = allGroups
@@ -325,57 +352,83 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
   }
 
-  
-  
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView?{
     // Return on user location
     if annotation is MKUserLocation { return nil }
     
     if annotation is MKPointAnnotation {
       let annotationView = LocationPointerView(annotation: annotation, reuseIdentifier: "Pin")
-      annotationView.markerTintColor = annotation.title!! == "Confluence" ? .red : .blue
+      annotationView.canShowCallout = true
+      
+      if annotation.title!! == "Confluence" {
+        // Set up confluence pin
+        annotationView.markerTintColor = .red
+        
+        let cancelButton = UIButton(frame: CGRect(origin: .zero, size: CGSize(width: 90, height: 30)))
+        cancelButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
+        cancelButton.setTitle("Cancel", for: .normal)
+        cancelButton.addTarget(self, action: #selector(self.cancelConfluence(_:)), for: .touchUpInside)
+        annotationView.leftCalloutAccessoryView = cancelButton
+        
+        if confluenceIsAdmin {
+          let confirmButton = UIButton(frame: CGRect(origin: .zero, size: CGSize(width: 90, height: 30)))
+          confirmButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
+          confirmButton.setTitle("Reached", for: .normal)
+          confirmButton.addTarget(self, action: #selector(self.confirmReached(_:)), for: .touchUpInside)
+          annotationView.rightCalloutAccessoryView = confirmButton
+        }
+      } else {
+        // Set up 'other person' pin
+        annotationView.markerTintColor = .blue
+        
+        let callButton = UIButton(frame: CGRect(origin: .zero, size: CGSize(width: 50, height: 30)))
+        callButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
+        callButton.setTitle("Call", for: .normal)
+        callButton.addTarget(self, action: #selector(self.callOtherPerson(_:)), for: .touchUpInside)
+        annotationView.leftCalloutAccessoryView = callButton
+      }
+      
       return annotationView
     }
     
-    let reuseId = "Pin"
-    let pinView = LocationPointerView(annotation: annotation, reuseIdentifier: reuseId)
+    let pinView = LocationPointerView(annotation: annotation, reuseIdentifier: "Pin")
     pinView.canShowCallout = true
-    let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 30, height: 30)))
-    directionButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
-    directionButton.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
-    
-    pinView.leftCalloutAccessoryView = directionButton
-    if let locPointAnnotation = annotation as? LocationPointer{
-      if(locPointAnnotation.discipline != ""){
-        let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
-        infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
-        if(locPointAnnotation.discipline == "In Progress"){
-          infoButton.setTitle("Meet Up", for: .normal)
-          infoButton.addTarget(self, action: #selector(self.meetUp), for: .touchUpInside)
-        } else{
-          infoButton.setTitle("Join", for: .normal)
-          if let grp = locPointAnnotation.group {
-            // Add entry to lookup dictionary for `tag -> group`
-            
-            infoButton.tag = Int(grp.groupId)!
-            let tag = infoButton.tag
-            pinToGroup[infoButton.tag] = grp
-            if userGroups.contains(grp) {
-              infoButton.setTitle("Joined", for: .normal)
-              infoButton.isEnabled = false
-            }
-          }
-          infoButton.addTarget(self, action: #selector(self.joinGroup(_:)), for: .touchUpInside)
-        }
-        pinView.rightCalloutAccessoryView = infoButton
-      }
-    }
-    
-    let subtitleView = UILabel()
-    subtitleView.font = subtitleView.font.withSize(12)
-    subtitleView.numberOfLines = 4
-    subtitleView.text = annotation.subtitle!
-    pinView.detailCalloutAccessoryView = subtitleView
+//    let directionButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 30, height: 30)))
+//    directionButton.setBackgroundImage(#imageLiteral(resourceName: "walking"), for: .normal)
+//    directionButton.addTarget(self, action: #selector(self.getDirections), for: .touchUpInside)
+//
+//    pinView.leftCalloutAccessoryView = directionButton
+//    if let locPointAnnotation = annotation as? LocationPointer{
+//      if(locPointAnnotation.discipline != ""){
+//        let infoButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 70, height: 50)))
+//        infoButton.setTitleColor(#colorLiteral(red: 0.768627451, green: 0.3647058824, blue: 0.4980392157, alpha: 1), for: .normal)
+//        if(locPointAnnotation.discipline == "In Progress"){
+//          infoButton.setTitle("Meet Up", for: .normal)
+//          infoButton.addTarget(self, action: #selector(self.meetUp), for: .touchUpInside)
+//        } else{
+//          infoButton.setTitle("Join", for: .normal)
+//          if let grp = locPointAnnotation.group {
+//            // Add entry to lookup dictionary for `tag -> group`
+//
+//            infoButton.tag = Int(grp.groupId)!
+//            let tag = infoButton.tag
+//            pinToGroup[infoButton.tag] = grp
+//            if userGroups.contains(grp) {
+//              infoButton.setTitle("Joined", for: .normal)
+//              infoButton.isEnabled = false
+//            }
+//          }
+//          infoButton.addTarget(self, action: #selector(self.joinGroup(_:)), for: .touchUpInside)
+//        }
+//        pinView.rightCalloutAccessoryView = infoButton
+//      }
+//    }
+//
+//    let subtitleView = UILabel()
+//    subtitleView.font = subtitleView.font.withSize(12)
+//    subtitleView.numberOfLines = 4
+//    subtitleView.text = annotation.subtitle!
+//    pinView.detailCalloutAccessoryView = subtitleView
     
     return pinView
   }
@@ -397,14 +450,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
     map.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(70, 70, 70, 70), animated: true)
   }
-  
-//  func callPopUp(identifier: String){
-//    let popOverVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: identifier) as! JoinGroupPopupVC
-//    self.addChildViewController(popOverVC)
-//    popOverVC.view.frame = self.view.frame
-//    self.view.addSubview(popOverVC.view)
-//    popOverVC.didMove(toParentViewController: self)
-//  }
   
   func buildCompletionAlert(success: Bool, group: Group) -> UIAlertController {
     let title = success ? "Success!" : "Error occurred"
@@ -457,6 +502,88 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
       }
     }
   }
+  
+  @objc func callOtherPerson(_ sender: UIButton) {
+    print("[] Calling walker ID at number \(sender.tag)...")
+    if let url = URL(string: "tel://\(DEFAULT_TEL)"), UIApplication.shared.canOpenURL(url) {
+      UIApplication.shared.open(url)
+    }
+  }
+  
+  @objc func cancelConfluence(_ sender: UIButton) {
+    let confirmation = UIAlertController(title: nil, message: "Are you sure you want to cancel the confluence?", preferredStyle: .alert)
+    confirmation.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
+      // Turn off
+      self.confluenceInProgress = false
+      
+      // Remove overlays
+      if let point = self.confluencePoint { self.map.removeAnnotation(point) }
+      if let otherPoint = self.otherWalkerMapAnnotation { self.map.removeAnnotation(otherPoint) }
+      self.map.removeOverlays(self.map.overlays)
+      
+      let cancelResponse = CompletionResponse(senderID: UUID, isReached: false)
+      let jsonRequest = try? JSONEncoder().encode(cancelResponse)
+      let jsonMsg = String(data: jsonRequest!, encoding: .utf8)
+      let dstUrl = self.completionDestionationURL + "/" + self.otherPersonWalkerId!
+      self.socketClient.sendMessage(message: jsonMsg!, toDestination: dstUrl, withHeaders: nil, withReceipt: nil)
+      
+      // Reset variables
+      self.resetConfluenceVariables()
+    })
+    
+    confirmation.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+    
+    present(confirmation, animated: true, completion: nil)
+  }
+  
+  @objc func confirmReached(_ sender: UIButton) {
+    let confirmation = UIAlertController(title: nil, message: "Confirm confluence reached?", preferredStyle: .alert)
+    confirmation.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
+      // Turn off
+      self.confluenceInProgress = false
+      
+      // Inform the other person
+      let completionResponse = CompletionResponse(senderID: UUID, isReached: true)
+      let jsonRequest = try? JSONEncoder().encode(completionResponse)
+      let jsonMsg = String(data: jsonRequest!, encoding: .utf8)
+      let dstUrl = self.completionDestionationURL + "/" + self.otherPersonWalkerId!
+      self.socketClient.sendMessage(message: jsonMsg!, toDestination: dstUrl, withHeaders: nil, withReceipt: nil)
+      
+      // Join the group if you aren't the admin
+      if !self.confluenceIsAdmin {
+        let group = self.pinToGroup[Int(self.confluenceGroupId)!]
+        addWalkerToGroup(groupId: self.confluenceGroupId) { isSuccess in
+          let completionAlert = self.buildCompletionAlert(success: isSuccess, group: group!)
+          self.present(completionAlert, animated: true) {
+            // Remove overlays
+            if let point = self.confluencePoint { self.map.removeAnnotation(point) }
+            if let otherPoint = self.otherWalkerMapAnnotation { self.map.removeAnnotation(otherPoint) }
+            self.map.removeOverlays(self.map.overlays)
+            
+            // Reset variables
+            self.resetConfluenceVariables()
+          }
+        }
+      } else {
+        // Remove overlays
+        if let point = self.confluencePoint { self.map.removeAnnotation(point) }
+        if let otherPoint = self.otherWalkerMapAnnotation { self.map.removeAnnotation(otherPoint) }
+        self.map.removeOverlays(self.map.overlays)
+        
+        // Reset variables
+        self.resetConfluenceVariables()
+      }
+    })
+    
+    confirmation.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+    
+    present(confirmation, animated: true, completion: nil)
+  }
+  
+  @IBAction func unwindToVC(segue: UIStoryboardSegue) {
+    
+  }
+  
 }
 
 // ~~~~~~~~~ StompClientLibDelegate
@@ -480,33 +607,54 @@ extension ViewController: StompClientLibDelegate{
     }
     
     // Someone is sending you their location
-    if let locationResponse = try? JSONDecoder().decode(LocationResponse.self, from: data){
+    if let locationResponse = try? JSONDecoder().decode(LocationResponse.self, from: data) {
       print("[#\(UUID.prefix(3))] received location data from #\(locationResponse.senderID.prefix(3))...")
       
+      if !confluenceInProgress { return }
       guard let _ = confluencePoint else { return }
       
       let otherLocation = CLLocation(latitude: Double(locationResponse.lat)!, longitude: Double(locationResponse.long)!)
       renderOtherPersonLocation(newLocation: otherLocation.coordinate)
       
-      // Check for stopping condition
-      if let myLocation = manager.location {
-        let distance = myLocation.distance(from: otherLocation)
-        print("[#] Distance from other person: \(distance)")
-        if distance < CONFLUENCE_THRESHOLD_IN_METRES {
+      return
+    }
+    
+    // You received someone's completion signal
+    if let completionResponse = try? JSONDecoder().decode(CompletionResponse.self, from: data) {
+      self.confluenceInProgress = false
+      let group = pinToGroup[Int(confluenceGroupId)!]
+      if completionResponse.isReached {
+        let alert = UIAlertController(title: "Confluence Reached", message: "\(otherWalkerName ?? "The other walker") indicated they have reached you.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+          // Remove pins
+          if let point = self.confluencePoint { self.map.removeAnnotation(point) }
+          if let otherPoint = self.otherWalkerMapAnnotation { self.map.removeAnnotation(otherPoint) }
+          self.map.removeOverlays(self.map.overlays)
           
-          let alert = UIAlertController(title: nil, message: "Confluence reached", preferredStyle: .alert)
-          alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            // Remove pins
-            if let point = self.confluencePoint { self.map.removeAnnotation(point) }
-            if let otherPoint = self.otherWalkerMapAnnotation { self.map.removeAnnotation(otherPoint) }
-            
-            self.map.removeOverlays(self.map.overlays)
-            
-            self.resetConfluenceVariables()
-          })
-          
-          present(alert, animated: true, completion: nil)
-        }
+          if !self.confluenceIsAdmin {
+            // Join the group
+            addWalkerToGroup(groupId: self.confluenceGroupId) { isSuccess in
+              let completionAlert = self.buildCompletionAlert(success: isSuccess, group: group!)
+              self.present(completionAlert, animated: true) {
+                self.resetConfluenceVariables()
+              }
+            }
+          }
+        })
+        
+        present(alert, animated: true, completion: nil)
+      } else {
+        // Cancel request
+        let alert = UIAlertController(title: "Confluence Cancelled", message: "\(otherWalkerName ?? "The other walker") has cancelled the confluence.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+          // Remove pins
+          if let point = self.confluencePoint { self.map.removeAnnotation(point) }
+          if let otherPoint = self.otherWalkerMapAnnotation { self.map.removeAnnotation(otherPoint) }
+          self.map.removeOverlays(self.map.overlays)
+          self.resetConfluenceVariables()
+        })
+        
+        present(alert, animated: true, completion: nil)
       }
       
       return
@@ -520,31 +668,37 @@ extension ViewController: StompClientLibDelegate{
         if response.response {
           // Confluence request accepted
           print("[Joiner] Confluence request accepted...")
-          
-          // Parse other person's location
-          let location = CLLocationCoordinate2D(latitude: Double(response.latitude!)!, longitude: Double(response.longitude!)!)
-          self.renderOtherPersonLocation(newLocation: location)
-          
-          // Parse confluence point
-          self.confluenceLocation = CLLocationCoordinate2D(latitude: Double(response.confluenceLat!)!, longitude: Double(response.confluenceLong!)!)
-          self.renderConfluencePoint()
-          
-          // Send your location to group admin
-          print("[Joiner] Sending location to group admin")
-          self.sendLocationToUser(otherUserId: self.otherPersonWalkerId!)
-          
-          // Show confluence accepted alert
-          let acceptedAlert = UIAlertController(title: "Success!", message: "Confluence request accepted", preferredStyle: .alert)
-          acceptedAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-          self.present(acceptedAlert, animated: true) {
-            // Hide pin detail view
-            self.map.deselectAnnotation(self.activeAnnotation, animated: false)
-            self.deinitialisePinDetailView()
+        
+          // Get device owner name
+          getDeviceOwner(deviceID: self.otherPersonWalkerId!) { name in
+            self.otherWalkerName = name
             
-            // Show directions
-            self.getDirections()
+            // Parse other person's location
+            self.confluenceInProgress = true
+            let location = CLLocationCoordinate2D(latitude: Double(response.latitude!)!, longitude: Double(response.longitude!)!)
+            self.renderOtherPersonLocation(newLocation: location)
+            
+            // Parse confluence point
+            self.confluenceLocation = CLLocationCoordinate2D(latitude: Double(response.confluenceLat!)!, longitude: Double(response.confluenceLong!)!)
+            self.renderConfluencePoint()
+            
+            // Send your location to group admin
+            print("[Joiner] Sending location to group admin")
+            self.sendLocationToUser(otherUserId: self.otherPersonWalkerId!)
+            
+            // Show confluence accepted alert
+            let acceptedAlert = UIAlertController(title: "Success!", message: "Confluence request accepted", preferredStyle: .alert)
+            acceptedAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(acceptedAlert, animated: true) {
+              // Hide pin detail view
+              self.map.deselectAnnotation(self.activeAnnotation, animated: false)
+              self.deinitialisePinDetailView()
+              
+              // Show directions
+              self.getDirections()
+            }
           }
-        } else{
+        } else {
           print("[Joiner] Confluence request declined...")
           self.confluenceDeclinedAlert()
         }
@@ -663,6 +817,7 @@ extension ViewController: ConfluenceDelegate {
     if let otherPerson = otherWalkerMapAnnotation {
       print("[#\(UUID.prefix(3))] updating other location point...")
       map.removeAnnotation(otherPerson)
+      otherPerson.title = otherWalkerName ?? "Other Person"
       otherPerson.coordinate = newLocation
       map.addAnnotation(otherPerson)
     } else {
@@ -684,13 +839,16 @@ extension ViewController: ConfluenceDelegate {
         let placename = res?[0].name ?? "(\(otherPersonLoc.coordinate.latitude), \(otherPersonLoc.coordinate.longitude))"
         
         print("[Admin] setting up confluence request alert...")
+        
         // Set up confluence alert
+        self.confluenceIsAdmin = true
         let title = "Confluence Request"
         let msg = "\(name) in \(placename) would like to join your group."
         
         let acceptAction = UIAlertAction(title: "Accept", style: .default) { _ in
           print("[Admin] accepted confluence...")
           self.otherPersonWalkerId = otherPersonId
+          self.confluenceInProgress = true
           self.performSegue(withIdentifier: "setConfluence", sender: nil)
         }
         
@@ -724,7 +882,7 @@ extension ViewController: ConfluenceDelegate {
   }
   
   func resetConfluenceVariables() {
-    confluenceGroupId = "-1"
+    confluenceGroupId = DEFAULT_GROUP_ID
     confluencePoint = nil
     confluenceLocation = DEFAULT_COORD
     pendingConfluenceAlert = nil
@@ -732,6 +890,7 @@ extension ViewController: ConfluenceDelegate {
     otherPersonWalkerId = nil
     otherWalkerCoord = nil
     otherWalkerName = nil
+    confluenceIsAdmin = false
   }
   
 }
@@ -753,6 +912,7 @@ extension ViewController: PinViewDelegate {
     } else {
       detailActions.isEnabled = true
       if group.isWalking {
+        detailActions.isEnabled = !confluenceInProgress
         detailActions.setTitle("Meet", for: .normal)
         detailActions.addTarget(self, action: #selector(self.meetUp(_:)), for: .touchUpInside)
       } else {
