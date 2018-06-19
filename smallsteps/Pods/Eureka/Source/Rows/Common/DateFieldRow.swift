@@ -49,6 +49,7 @@ open class DateCell: Cell<Date>, CellType {
         accessoryType = .none
         editingAccessoryType =  .none
         datePicker.datePickerMode = datePickerMode()
+        datePicker.minuteInterval = 5
         datePicker.addTarget(self, action: #selector(DateCell.datePickerValueChanged(_:)), for: .valueChanged)
     }
 
